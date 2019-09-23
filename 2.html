@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>手撕数组</title>
+</head>
+<body>
+    <script>
+        // forEach
+        // value, index, array
+        function forEach (array, callback) {
+            const { length } = array;
+            for (let index = 0; index < length; index++) {
+                const value = array[index];
+                callback(value, index, array);
+            }
+        }
+        const arr1 = [1,2,3,4,5];
+        console.log('=================================================start====================================')
+        console.log('array: forEach')
+        forEach(arr1, console.log);
+        console.log('=================================================end======================================')
+
+        // map
+        // value, index, array
+        function map(array, callback) {
+            let result = [];
+            const { length } = array;
+            for (let index = 0; index < length; index++) {
+                const value = array[index];
+                result[index] = callback(value, index, array);
+            }
+            return result;
+        }
+        const arr2 = [1,2,3,4,5];
+        const res2 = map(arr2, item => item * item);
+        console.log('=================================================start====================================')
+        console.log('array: map => item * item', res2, arr2.map(item => item * item));
+        console.log('=================================================end======================================')
+
+        // filter
+        // value, index, array
+        function filter(array, callback) {
+            let result = [];
+            const { length } = array;
+            for (let index = 0; index < length; index++) {
+                const value = array[index];
+                if (callback(value, index, array)) {
+                    result.push(value);
+                }
+            }
+            return result;
+        }
+        const arr3 = [1,2,3,4,5];
+        const res3 = filter(arr3, item => item > 2);
+        console.log('=================================================start====================================')
+        console.log('array: filter => item > 2', res3, arr3.filter(item => item > 2));
+        console.log('=================================================end======================================')
+
+        // reduce
+        // acc, value, index, array
+        function reduce (array, callback, initialValue) {
+            const { length } = array;
+            let acc = initialValue;
+            let startIndex = 0;
+            if (initialValue === undefined) {
+                acc = array[0];
+                startIndex = 1;
+            }
+            for (let index = startIndex; index < length; index++) {
+                const value = array[index];
+                acc = callback(acc, value, index, array);
+            }
+            return acc;
+        }
+        const arr4 = [1,2,3,4,5];
+        const sum4 = reduce(arr4, (acc, item) => acc + item, 5);
+        console.log('=================================================start====================================')
+        console.log('array: reduce', sum4, arr4.reduce((a, b) => a + b, 5));
+        console.log('=================================================end======================================')
+
+        // findIndex
+        // value, index, array
+        function findIndex (array, callback) {
+            const { length } = array;
+            for (let index = 0; index < length; index++) {
+                const value = array[index];
+                if (callback(value, index, array)) {
+                    return index;
+                }
+            }
+            return -1;
+        }
+        const arr5 = [1,2,3,4,5,3];
+        const index5 = findIndex(arr5, item => item == 3);
+        const index5x = findIndex(arr5, item => item == 10);
+        console.log('=================================================start====================================')
+        console.log('array: findIndex => item = 3', arr5, index5, arr5.findIndex(item => item == 3));
+        console.log('array: findIndex => item = 10', arr5, index5x, arr5.findIndex(item => item == 10));
+        console.log('=================================================end======================================')
+
+        // find
+        // value, index, array
+        function find (array, callback) {
+            const { length } = array;
+            for (let index = 0; index < length; index++) {
+                const value = array[index];
+                if (callback(value, index, array)) {
+                    return value;
+                }
+            }
+            return undefined;
+        }
+        const arr6 = [1,2,3,4,5,3];
+        const index6 = find(arr6, item => item > 3);
+        const index6x = find(arr6, item => item > 10);
+        console.log('=================================================start====================================')
+        console.log('array: find => item > 3', arr6, index6, arr6.find(item => item > 3));
+        console.log('array: find => item > 10', arr6, index6x, arr6.find(item => item > 10));
+        console.log('=================================================end======================================')
+
+        // indexOf
+        // array, searchElement, fromIndex
+        function indexOf (array, searchElement, fromIndex = 0) {
+            const { length } = array;
+            if (Math.abs(fromIndex) >= length) return -1;
+            fromIndex = fromIndex < 0 ? length + fromIndex < 0 ? 0 : length + fromIndex : fromIndex;
+            for (let index = fromIndex; index < length; index++) {
+                const value = array[index];
+                if (value === searchElement) {
+                    return index;
+                }
+            }
+            return -1;
+        }
+        const arr7 = [1,2,3,4,5,3,84,66];
+        const index7 = indexOf(arr7, 3);
+        const index7x = indexOf(arr7, 3, -3);
+        console.log('=================================================start====================================')
+        console.log('array: indexOf => item = 3 正向 0', arr7, index7, arr7.indexOf(3));
+        console.log('array: indexOf => item = 3 负向 -3', arr7, index7x, arr7.indexOf(3, -3));
+        console.log('=================================================end======================================')
+
+        // lastIndexOf
+        // array, searchElement, fromIndex
+        function lastIndexOf (array, searchElement, fromIndex = array.length - 1) {
+            const { length } = array;
+            if (Math.abs(fromIndex) >= length) return -1;
+            fromIndex = fromIndex > 0 ? length - 1 : length + fromIndex;
+            for (let index = fromIndex; index >= 0; index--) {
+                const value = array[index];
+                if (value === searchElement) {
+                    return index;
+                }
+            }
+            return -1;
+        }
+        const arr8 = [1,2,3,4,5,3,84,66];
+        const arr8x = [1,2,3,4,5,3,84,66,5,11,22,33];
+        const index8 = lastIndexOf(arr8, 3);
+        const index8x = lastIndexOf(arr8x, 5, -5);
+        console.log('=================================================start====================================')
+        console.log('array: lastIndexOf => item = 3 负向 0', arr8, index8, arr8.lastIndexOf(3));
+        console.log('array: lastIndexOf => item = 5 负向 -5', arr8x, index8x, arr8x.lastIndexOf(5,-5));
+        console.log('=================================================end======================================')
+
+        // every
+        // value, index, array
+        function every (array, callback) {
+            const { length } = array;
+            if (length === 0) return true;
+            for (let index = 0; index < length; index++) {
+                const value = array[index];
+                return callback(value, index, array);
+            }
+            return false;
+        }
+        const arr9 = [1,2,3,4,5,3,84,66];
+        const res9 = every(arr9, item => item >= 1);
+        const res9x = every([], item => item >= 1);
+        console.log('=================================================start====================================')
+        console.log('array: every => item >= 1', arr9, res9, arr9.every(item => item >= 1));
+        console.log('array: every => item > 0  空数组', [], res9x, [].every(item => item >= 1));
+        console.log('=================================================end======================================')
+
+        // some
+        // value, index, array
+        function some (array, callback) {
+            const { length } = array;
+            if (length === 0) return false;
+            for (let index = 0; index < length; index++) {
+                const value = array[index];
+                if (callback(value, index, array)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        const arr10 = [1,2,3,4,5,3,84,66];
+        const res10 = some(arr10, item => item > 5);
+        const res10x = some([], item => item > 0);
+        console.log('=================================================start====================================')
+        console.log('array: some => item > 5', arr10, res10, arr10.some(item => item > 5));
+        console.log('array: some => item > 0  空数组', [], res10x, [].some(item => item > 0));
+        console.log('=================================================end======================================')
+
+        // includes
+        // valueToFind, fromIndex, array
+        function includes (array, valueToFind, fromIndex=0) {
+            const { length } = array;
+            if (fromIndex > length) return false;
+            fromIndex = fromIndex < 0 ? length + fromIndex < 0 ? 0 : length + fromIndex : fromIndex;
+            for (let index = fromIndex; index < length; index++) {
+                const value = array[index];
+                if (value === valueToFind) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        const arr11 = [1,2,3,4,5,3,84,66];
+        const res11 = includes(arr11, 5);
+        const res11x = includes(arr11, 5, -3);
+        console.log('=================================================start====================================')
+        console.log('array: includes => 5 正向 0', arr11, res11, arr11.includes(5));
+        console.log('array: includes => 5 正向 -3', arr11, res11x, arr11.includes(5, -3));
+        console.log('=================================================end======================================')
+
+        // concat
+        // array, ...values
+        function concat (array, ...values) {
+            values = Array.isArray(values[0]) ? values[0] : values;
+            const { length: valuesLength } = values;
+            const { length: arrayLength } = array;
+            let result = [...array];
+            for (let index = 0; index < valuesLength; index++) {
+                const value = values[index];
+                result[arrayLength+index] = value;
+            }
+            return result;
+        }
+        const arr12 = [1,2,3,4,5];
+        const res12 = concat(arr12, 'a');
+        const res12x = concat(arr12, ["a","b"]);
+        const res12xx = concat(arr12, ["a", [11,12],"b"]);
+        console.log('=================================================start====================================')
+        console.log('array: concat => "a"', arr12, res12, arr12.concat('a'));
+        console.log('array: concat => ["a","b"]', arr12, res12x, arr12.concat(["a","b"]));
+        console.log('array: concat => ["a", [11,12],"b"]', arr12, res12xx, arr12.concat(["a", [11,12],"b"]));
+        console.log('=================================================end======================================')
+
+        // join
+        // array, separator
+        function join (array, separator=',') {
+            const { length } = array;
+            let result = '';
+            for (let index = 0; index < length; index++) {
+                let value = array[index];
+                if (value === undefined || value === null) {
+                    value = '';
+                }
+                result += value + (index < length - 1 && separator);
+            }
+            return result;
+        }
+        function join2 (array, separator=',') {
+            return reduce(
+                array,
+                (result, current, index) => {
+                    if (current === undefined || current === null) {
+                        current = '';
+                    }
+                    if (index === 0) {
+                        return current;
+                    }
+                    return `${result}${separator}${current}`;
+                }
+            )
+        }
+        const arr13 = [1,2,null,3,4,undefined,5];
+        const res13 = join(arr13, '+');
+        const res13x = join2(arr13, '+');
+        console.log('=================================================start====================================')
+        console.log('array: join => +', arr13, res13, arr13.join('+'));
+        console.log('array: join2 => +', arr13, res13x, arr13.join('+'));
+        console.log('=================================================end======================================')
+
+        // reverse
+        // array
+        function reverse (array) {
+            const { length } = array;
+            let result = [];
+            for (let index = 0; index < length; index++) {
+                const value = array[index];
+                result[length - 1 - index] = value;
+            }
+            for (let index = 0; index < length; index++) {
+                const value = result[index];
+                array[index] = value;
+            }
+            return result;
+        }
+        const arr14 = [1,2,3,4,5];
+        const res14 = reverse(arr14);
+        console.log('=================================================start====================================')
+        console.log('array: reverse', [1,2,3,4,5], arr14, res14, [1,2,3,4,5].reverse());
+        console.log('=================================================end======================================')
+
+        // shift
+        // array
+        function shift (array) {
+            const { length } = array;
+            let result = array[0];
+            for (let index = 1; index < length; index++) {
+                const value = array[index];
+                array[index - 1] = value;
+            }
+            array.length = length - 1;
+            return result;
+        }
+        const arr15 = [1,2,3,4,5];
+        const res15 = shift(arr15);
+        console.log('=================================================start====================================')
+        console.log('array: shift', [1,2,3,4,5], arr15, res15, [1,2,3,4,5].shift());
+        console.log('=================================================end======================================')
+
+        // unshift
+        // array, ...values
+        function unshift (array, ...values) {
+            const mergeArray = concat(values, ...array);
+            const { length: mergeArrayLength } = mergeArray;
+            for (let index = 0; index < mergeArrayLength; index++) {
+                const value = mergeArrayLength[index];
+                array[index] = value;
+            }
+            return array.length;
+        }
+        const arr16 = [1,2,3,4,5];
+        const res16 = unshift(arr16, 'a', 'b');
+        console.log('=================================================start====================================')
+        console.log('array: unshift', [1,2,3,4,5], arr16, res16, [1,2,3,4,5].unshift());
+        console.log('=================================================end======================================')
+    </script>
+</body>
+</html>

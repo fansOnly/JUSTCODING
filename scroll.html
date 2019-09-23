@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        .box {
+            height: 2000px;
+        }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <input type="text" name="" value="" oninput="inputTyping()"/>
+    </div>
+    <script>
+        // window.addEventListener('scroll', debunce(() => {
+        //     console.log('scroll end.....')
+        // }))
+        window.addEventListener('scroll', throtte(() => {
+            console.log('scroll throtte')
+        }))
+        const inputTyping = debunce(() => {
+            const input = document.querySelector('input');
+            const value = input.value;
+                if (value.length < 5) {
+                    console.log('err...');
+                } else {
+                    console.log('success');
+                }
+            })
+        function debunce (fn, intval=500) {
+            let timeout = null;
+            return function () {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => {
+                    fn.apply(this, arguments);
+                }, intval)
+            }
+        }
+        function throtte (fn, intval=500) {
+            let run = true;
+            return function () {
+                if (!run) return;
+                run = false;
+                setTimeout(() => {
+                    fn.apply(this, arguments);
+                    run = true;
+                }, intval);
+            }
+        }
+    </script>
+</body>
+</html>
