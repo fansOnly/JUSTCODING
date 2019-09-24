@@ -8,46 +8,48 @@
 </head>
 <body>
     <script>
-        // forEach
-        // value, index, array
+        // forEach - 对数组的每个元素执行一次提供的函数。
+        // array, callback[value, index, array]
         function forEach (array, callback) {
             const { length } = array;
             for (let index = 0; index < length; index++) {
                 const value = array[index];
-                callback(value, index, array);
+                callback(callback[value, index, array]);
             }
         }
         const arr1 = [1,2,3,4,5];
-        console.log('=================================================start====================================')
+        console.log('=================================================start===============================================')
         console.log('array: forEach')
         forEach(arr1, console.log);
-        console.log('=================================================end======================================')
+        console.log('=================================================end=================================================')
+        console.log('')
 
-        // map
-        // value, index, array
+        // map - 创建一个新数组，其结果是该数组中的每个元素都调用一个提供的函数后返回的结果。
+        // array, callback[value, index, array]
         function map(array, callback) {
             let result = [];
             const { length } = array;
             for (let index = 0; index < length; index++) {
                 const value = array[index];
-                result[index] = callback(value, index, array);
+                result[index] = callback(callback[value, index, array]);
             }
             return result;
         }
         const arr2 = [1,2,3,4,5];
         const res2 = map(arr2, item => item * item);
-        console.log('=================================================start====================================')
+        console.log('=================================================start===============================================')
         console.log('array: map => item * item', res2, arr2.map(item => item * item));
-        console.log('=================================================end======================================')
+        console.log('=================================================end=================================================')
+        console.log('')
 
-        // filter
-        // value, index, array
+        // filter - 创建一个新数组, 其包含通过所提供函数实现的测试的所有元素。 
+        // array, callback[value, index, array]
         function filter(array, callback) {
             let result = [];
             const { length } = array;
             for (let index = 0; index < length; index++) {
                 const value = array[index];
-                if (callback(value, index, array)) {
+                if (callback(callback[value, index, array])) {
                     result.push(value);
                 }
             }
@@ -55,12 +57,13 @@
         }
         const arr3 = [1,2,3,4,5];
         const res3 = filter(arr3, item => item > 2);
-        console.log('=================================================start====================================')
+        console.log('=================================================start===============================================')
         console.log('array: filter => item > 2', res3, arr3.filter(item => item > 2));
-        console.log('=================================================end======================================')
+        console.log('=================================================end=================================================')
+        console.log('')
 
-        // reduce
-        // acc, value, index, array
+        // reduce - 对数组中的每个元素执行一个由您提供的reducer函数(升序执行)，将其结果汇总为单个返回值。
+        // array, , callback[value, index, array], acc, initialValue
         function reduce (array, callback, initialValue) {
             const { length } = array;
             let acc = initialValue;
@@ -71,23 +74,24 @@
             }
             for (let index = startIndex; index < length; index++) {
                 const value = array[index];
-                acc = callback(acc, value, index, array);
+                acc = callback(acc, callback[value, index, array]);
             }
             return acc;
         }
         const arr4 = [1,2,3,4,5];
         const sum4 = reduce(arr4, (acc, item) => acc + item, 5);
-        console.log('=================================================start====================================')
+        console.log('=================================================start===============================================')
         console.log('array: reduce', sum4, arr4.reduce((a, b) => a + b, 5));
-        console.log('=================================================end======================================')
+        console.log('=================================================end=================================================')
+        console.log('')
 
-        // findIndex
-        // value, index, array
+        // findIndex - 返回数组中满足提供的测试函数的第一个元素的索引。否则返回-1。
+        // array, callback[value, index, array]
         function findIndex (array, callback) {
             const { length } = array;
             for (let index = 0; index < length; index++) {
                 const value = array[index];
-                if (callback(value, index, array)) {
+                if (callback(callback[value, index, array])) {
                     return index;
                 }
             }
@@ -96,18 +100,19 @@
         const arr5 = [1,2,3,4,5,3];
         const index5 = findIndex(arr5, item => item == 3);
         const index5x = findIndex(arr5, item => item == 10);
-        console.log('=================================================start====================================')
+        console.log('=================================================start===============================================')
         console.log('array: findIndex => item = 3', arr5, index5, arr5.findIndex(item => item == 3));
         console.log('array: findIndex => item = 10', arr5, index5x, arr5.findIndex(item => item == 10));
-        console.log('=================================================end======================================')
+        console.log('=================================================end=================================================')
+        console.log('')
 
-        // find
-        // value, index, array
+        // find - 返回数组中满足提供的测试函数的第一个元素的值。否则返回 undefined。
+        // array, callback[value, index, array]
         function find (array, callback) {
             const { length } = array;
             for (let index = 0; index < length; index++) {
                 const value = array[index];
-                if (callback(value, index, array)) {
+                if (callback(callback[value, index, array])) {
                     return value;
                 }
             }
@@ -116,12 +121,13 @@
         const arr6 = [1,2,3,4,5,3];
         const index6 = find(arr6, item => item > 3);
         const index6x = find(arr6, item => item > 10);
-        console.log('=================================================start====================================')
+        console.log('=================================================start===============================================')
         console.log('array: find => item > 3', arr6, index6, arr6.find(item => item > 3));
         console.log('array: find => item > 10', arr6, index6x, arr6.find(item => item > 10));
-        console.log('=================================================end======================================')
+        console.log('=================================================end=================================================')
+        console.log('')
 
-        // indexOf
+        // indexOf - 返回在数组中可以找到一个给定元素的第一个索引，如果不存在，则返回-1。
         // array, searchElement, fromIndex
         function indexOf (array, searchElement, fromIndex = 0) {
             const { length } = array;
@@ -138,12 +144,13 @@
         const arr7 = [1,2,3,4,5,3,84,66];
         const index7 = indexOf(arr7, 3);
         const index7x = indexOf(arr7, 3, -3);
-        console.log('=================================================start====================================')
+        console.log('=================================================start===============================================')
         console.log('array: indexOf => item = 3 正向 0', arr7, index7, arr7.indexOf(3));
         console.log('array: indexOf => item = 3 负向 -3', arr7, index7x, arr7.indexOf(3, -3));
-        console.log('=================================================end======================================')
+        console.log('=================================================end=================================================')
+        console.log('')
 
-        // lastIndexOf
+        // lastIndexOf - 返回指定元素（也即有效的 JavaScript 值或变量）在数组中的最后一个的索引，如果不存在则返回 -1。从数组的后面向前查找，从 fromIndex 处开始。
         // array, searchElement, fromIndex
         function lastIndexOf (array, searchElement, fromIndex = array.length - 1) {
             const { length } = array;
@@ -161,38 +168,40 @@
         const arr8x = [1,2,3,4,5,3,84,66,5,11,22,33];
         const index8 = lastIndexOf(arr8, 3);
         const index8x = lastIndexOf(arr8x, 5, -5);
-        console.log('=================================================start====================================')
+        console.log('=================================================start===============================================')
         console.log('array: lastIndexOf => item = 3 负向 0', arr8, index8, arr8.lastIndexOf(3));
         console.log('array: lastIndexOf => item = 5 负向 -5', arr8x, index8x, arr8x.lastIndexOf(5,-5));
-        console.log('=================================================end======================================')
+        console.log('=================================================end=================================================')
+        console.log('')
 
-        // every
-        // value, index, array
+        // every - 测试一个数组内的所有元素是否都能通过某个指定函数的测试。它返回一个布尔值。
+        // array, callback[value, index, array]
         function every (array, callback) {
             const { length } = array;
             if (length === 0) return true;
             for (let index = 0; index < length; index++) {
                 const value = array[index];
-                return callback(value, index, array);
+                return callback(callback[value, index, array]);
             }
             return false;
         }
         const arr9 = [1,2,3,4,5,3,84,66];
         const res9 = every(arr9, item => item >= 1);
         const res9x = every([], item => item >= 1);
-        console.log('=================================================start====================================')
+        console.log('=================================================start===============================================')
         console.log('array: every => item >= 1', arr9, res9, arr9.every(item => item >= 1));
         console.log('array: every => item > 0  空数组', [], res9x, [].every(item => item >= 1));
-        console.log('=================================================end======================================')
+        console.log('=================================================end=================================================')
+        console.log('')
 
-        // some
-        // value, index, array
+        // some - 测试数组中是不是有元素通过了被提供的函数测试。它返回的是一个Boolean类型的值。
+        // array, callback[value, index, array]
         function some (array, callback) {
             const { length } = array;
             if (length === 0) return false;
             for (let index = 0; index < length; index++) {
                 const value = array[index];
-                if (callback(value, index, array)) {
+                if (callback(callback[value, index, array])) {
                     return true;
                 }
             }
@@ -201,13 +210,14 @@
         const arr10 = [1,2,3,4,5,3,84,66];
         const res10 = some(arr10, item => item > 5);
         const res10x = some([], item => item > 0);
-        console.log('=================================================start====================================')
+        console.log('=================================================start===============================================')
         console.log('array: some => item > 5', arr10, res10, arr10.some(item => item > 5));
         console.log('array: some => item > 0  空数组', [], res10x, [].some(item => item > 0));
-        console.log('=================================================end======================================')
+        console.log('=================================================end=================================================')
+        console.log('')
 
-        // includes
-        // valueToFind, fromIndex, array
+        // includes - 用来判断一个数组是否包含一个指定的值，根据情况，如果包含则返回 true，否则返回false。
+        // array, valueToFind, fromIndex
         function includes (array, valueToFind, fromIndex=0) {
             const { length } = array;
             if (fromIndex > length) return false;
@@ -223,12 +233,14 @@
         const arr11 = [1,2,3,4,5,3,84,66];
         const res11 = includes(arr11, 5);
         const res11x = includes(arr11, 5, -3);
-        console.log('=================================================start====================================')
+        console.log('=================================================start===============================================')
         console.log('array: includes => 5 正向 0', arr11, res11, arr11.includes(5));
         console.log('array: includes => 5 正向 -3', arr11, res11x, arr11.includes(5, -3));
-        console.log('=================================================end======================================')
+        console.log('=================================================end=================================================')
+        console.log('')
 
-        // concat
+        // 拼接、附加和反转数组
+        // concat - 用于合并两个或多个数组，此方法不会更改现有数组，而是返回一个新数组。
         // array, ...values
         function concat (array, ...values) {
             values = Array.isArray(values[0]) ? values[0] : values;
@@ -245,13 +257,14 @@
         const res12 = concat(arr12, 'a');
         const res12x = concat(arr12, ["a","b"]);
         const res12xx = concat(arr12, ["a", [11,12],"b"]);
-        console.log('=================================================start====================================')
+        console.log('=================================================start===============================================')
         console.log('array: concat => "a"', arr12, res12, arr12.concat('a'));
         console.log('array: concat => ["a","b"]', arr12, res12x, arr12.concat(["a","b"]));
         console.log('array: concat => ["a", [11,12],"b"]', arr12, res12xx, arr12.concat(["a", [11,12],"b"]));
-        console.log('=================================================end======================================')
+        console.log('=================================================end=================================================')
+        console.log('')
 
-        // join
+        // join - 用于把数组中的所有元素放入一个字符串，元素是通过指定的分隔符进行分隔的。
         // array, separator
         function join (array, separator=',') {
             const { length } = array;
@@ -282,12 +295,13 @@
         const arr13 = [1,2,null,3,4,undefined,5];
         const res13 = join(arr13, '+');
         const res13x = join2(arr13, '+');
-        console.log('=================================================start====================================')
+        console.log('=================================================start===============================================')
         console.log('array: join => +', arr13, res13, arr13.join('+'));
         console.log('array: join2 => +', arr13, res13x, arr13.join('+'));
-        console.log('=================================================end======================================')
+        console.log('=================================================end=================================================')
+        console.log('')
 
-        // reverse
+        // reverse - 将数组中元素的位置颠倒，并返回该数组，该方法会改变原数组。
         // array
         function reverse (array) {
             const { length } = array;
@@ -302,13 +316,21 @@
             }
             return result;
         }
+        console.log('=================================================start===============================================')
         const arr14 = [1,2,3,4,5];
         const res14 = reverse(arr14);
-        console.log('=================================================start====================================')
-        console.log('array: reverse', [1,2,3,4,5], arr14, res14, [1,2,3,4,5].reverse());
-        console.log('=================================================end======================================')
+        console.log('array: reverse => reverse([1,2,3,4,5])');
+        console.log('源数组', arr14);
+        console.log('处理后返回', res14);
+        console.log('Array.prototype.reverse');
+        const arr14x = [1,2,3,4,5];
+        const res14x = arr14x.reverse();
+        console.log('源数组', arr14x);
+        console.log('处理后返回', res14x);
+        console.log('=================================================end=================================================')
+        console.log('')
 
-        // shift
+        // shift - 从数组中删除第一个元素，并返回该元素的值，此方法更改数组的长度。
         // array
         function shift (array) {
             const { length } = array;
@@ -320,13 +342,21 @@
             array.length = length - 1;
             return result;
         }
+        console.log('=================================================start===============================================')
         const arr15 = [1,2,3,4,5];
         const res15 = shift(arr15);
-        console.log('=================================================start====================================')
-        console.log('array: shift', [1,2,3,4,5], arr15, res15, [1,2,3,4,5].shift());
-        console.log('=================================================end======================================')
+        console.log('array: shift => shift([1,2,3,4,5])');
+        console.log('源数组', arr15);
+        console.log('处理后返回', res15);
+        console.log('Array.prototype.shift');
+        const arr15x = [1,2,3,4,5];
+        const res15x = arr15x.shift('a', 'b');
+        console.log('源数组', arr15x);
+        console.log('处理后返回', res15x);
+        console.log('=================================================end=================================================')
+        console.log('')
 
-        // unshift
+        // unshift - 将一个或多个元素添加到数组的开头，并返回该数组的新长度(该方法修改原有数组)。
         // array, ...values
         function unshift (array, ...values) {
             const mergeArray = concat(values, ...array);
@@ -338,16 +368,32 @@
             }
             return array.length;
         }
+        console.log('=================================================start===============================================')
         const arr16 = [1,2,3,4,5];
         const res16 = unshift(arr16, 'a', 'b');
+        console.log('array: unshift => unshift([1,2,3,4,5], "a", "b")');
+        console.log('源数组', arr16);
+        console.log('处理后返回', res16);
+        console.log('Array.prototype.unshift');
         const arr16x = [1,2,3,4,5];
-        const res16x = unshift(arr16x, ['a', 'c'], 'b');
-        console.log('=================================================start====================================')
-        console.log('array: unshift', [1,2,3,4,5], arr16, res16, [1,2,3,4,5].unshift('a', 'b'));
-        console.log('array: unshift', [1,2,3,4,5], arr16x, res16x, [1,2,3,4,5].unshift(['a','c'], 'b'));
-        console.log('=================================================end======================================')
+        const res16x = arr16x.unshift('a', 'b');
+        console.log('源数组', arr16x);
+        console.log('处理后返回', res16x);
+        console.log('')
+        const arr16x1 = [1,2,3,4,5];
+        const res16x1 = unshift(arr16x1, ['a', 'c'], 'b');
+        console.log('array: unshift => unshift([1,2,3,4,5], ["a", "c"], "b")');
+        console.log('源数组', arr16x1);
+        console.log('处理后返回', res16x1);
+        console.log('Array.prototype.unshift');
+        const arr16x2 = [1,2,3,4,5];
+        const res16x2 = arr16x2.unshift(['a', 'c'], 'b');
+        console.log('源数组', arr16x2);
+        console.log('处理后返回', res16x2);
+        console.log('=================================================end=================================================')
+        console.log('')
 
-        // slice
+        // slice - 方法返回一个新的数组对象，这一对象是一个由 begin 和 end 决定的原数组的浅拷贝（包括 begin，不包括end）原始数组不会被改变。
         // begin, end
         function slice (array, begin = 0, end = array.length-1) {
             const { length } = array;
@@ -362,15 +408,27 @@
             }
             return result;
         }
+        console.log('=================================================start===============================================')
         const arr17 = [1,2,3,4,5,6,7,8,9,10];
         const res17 = slice(arr17, 3, 7);
-        const res17x = slice(arr17, -50, -20);
-        console.log('=================================================start====================================')
-        console.log('array: slice from 3 to 7', arr17, res17, arr17.slice(3,7));
-        console.log('array: slice from -50 to -20', arr17, res17x, arr17.slice(-50, -20));
-        console.log('=================================================end======================================')
+        console.log('array: slice => slice([1,2,3,4,5,6,7,8,9,10], 3, 7)');
+        console.log('源数组', arr17);
+        console.log('处理后返回', res17);
+        console.log('Array.prototype.slice');
+        console.log('源数组', arr17);
+        console.log('处理后返回', arr17.slice(3,7));
+        console.log('')
+        const arr17x = [1,2,3,4,5,6,7,8,9,10];
+        console.log('array: slice => slice([1,2,3,4,5,6,7,8,9,10], -50, -20)');
+        console.log('源数组', arr17x);
+        console.log('处理后返回', slice(arr17x, -50, -20));
+        console.log('Array.prototype.slice');
+        console.log('源数组', arr17x);
+        console.log('处理后返回', arr17x.slice(-50, -20));
+        console.log('=================================================end=================================================')
+        console.log('')
 
-        // splice
+        // splice - 通过删除或替换现有元素或者原地添加新的元素来修改数组,并以数组形式返回被修改的内容。此方法会改变原数组。
         // array, start, deleteCount, ...values
         function splice (array, start = 0, deleteCount = array.length-start, ...values) {
             const { length: arrayLength } = array;
@@ -395,24 +453,158 @@
             }
             return result;
         }
-        console.log('=================================================start=================================================')
+        console.log('=================================================start===============================================')
         const arr18 = [1,2,3,4,5,6,7,8,9,10];
         const res18 = splice(arr18, 3, 5, ['a'], 'b');
         console.log('array: splice => splice([1,2,3,4,5,6,7,8,9,10], 3, 5, ["a"], "b")');
         console.log('源数组', arr18);
         console.log('处理后返回', res18);
-
+        console.log('')
         const arr18xx = [1,2,3,4,5,6,7,8,9,10];
         const res18xx = splice(arr18xx, 30, -5, ['a'], 'b');
         console.log('array: splice => splice([1,2,3,4,5,6,7,8,9,10], 30, -5, ["a"], "b")');
         console.log('源数组', arr18xx);
         console.log('处理后返回', res18xx);
-
+        console.log('')
         console.log('Array.prototype.splice');
         const arr18x = [1,2,3,4,5,6,7,8,9,10];
         console.log('源数组', arr18x);
         console.log('处理后返回', arr18x.splice(3,5, ['a'], 'b'));
-        console.log('=================================================end=================================================')
+        console.log('=================================================end=================================================');
+        console.log('')
+
+        // pop - 从数组中删除最后一个元素，并返回该元素的值。此方法更改数组的长度。
+        // array
+        function pop (array) {
+            const { length } = array;
+            const result = array[length - 1]
+            array.length = length - 1;
+            return result;
+        }
+        console.log('=================================================start===============================================')
+        const arr19 = [1,2,3,4,5,6,7,8,9,10];
+        const res19 = pop(arr19);
+        console.log('array: pop => pop([1,2,3,4,5,6,7,8,9,10])');
+        console.log('源数组', arr19);
+        console.log('处理后返回', res19);
+        
+        console.log('Array.prototype.pop');
+        const arr19x = [1,2,3,4,5,6,7,8,9,10];
+        const res19x = arr19x.pop();
+        console.log('源数组', arr19x);
+        console.log('处理后返回', res19x);
+        console.log('=================================================end=================================================');
+        console.log('')
+
+        // push - 方法将一个或多个元素添加到数组的末尾，并返回该数组的新长度。
+        // array, ...values
+        function push (array, ...values) {
+            const { length: arrayLength } = array;
+            const { length: valuesLength } = values;
+            for (let i = 0; i < valuesLength; i++) {
+                const value = values[i];
+                array[arrayLength + i] = value;
+            }
+            return array.length;
+        }
+        console.log('=================================================start===============================================')
+        const arr20 = [1,2,3,4,5,6,7,8,9,10];
+        const res20 = push(arr20, 1, [1,2]);
+        console.log('array: push => push([1,2,3,4,5,6,7,8,9,10], 1, [1,2])');
+        console.log('源数组', arr20);
+        console.log('处理后返回', res20);
+        
+        console.log('Array.prototype.push');
+        const arr20x = [1,2,3,4,5,6,7,8,9,10];
+        const res20x = arr20x.push(1, [1,2]);
+        console.log('源数组', arr20x);
+        console.log('处理后返回', res20x);
+        console.log('=================================================end=================================================');
+        console.log('')
+
+        // fill - 用一个固定值填充一个数组中从起始索引到终止索引内的全部元素。不包括终止索引。
+        // array, value, start, end
+        function fill (array, value, start = 0, end = array.length) {
+            const { length } = array;
+            start = start < 0 ? length + start : start;
+            end = end < 0 ? length + end : end;
+            for (let i = start; i < end; i++) {
+               array[i] = value;
+            }
+            return array;
+        }
+        console.log('=================================================start===============================================')
+        const arr21 = [1,2,3,4,5,6,7,8,9,10];
+        const res21 = fill(arr21, 's', -5, -1);
+        console.log('array: fill => fill([1,2,3,4,5,6,7,8,9,10], "s", -5, -1)');
+        console.log('源数组', arr21);
+        console.log('处理后返回', res21);
+        
+        console.log('Array.prototype.fill');
+        const arr21x = [1,2,3,4,5,6,7,8,9,10];
+        const res21x = arr21x.fill('s', -5, -1);
+        console.log('源数组', arr21x);
+        console.log('处理后返回', res21x);
+        console.log('=================================================end=================================================');
+        console.log('')
+
+        // 扁平类
+        // flat - 按照一个可指定的深度递归遍历数组，并将所有元素与遍历到的子数组中的元素合并为一个新数组返回。
+        // array, depth
+        function flat (array, depth = 1) {
+            if (depth < 1) {
+                return array;
+            }
+            const { length } = array;
+            let result = [];
+            function fn (arr) {
+                for (let index = 0; index < arr.length; index++) {
+                    const value = arr[index];
+                    if (Array.isArray(value) && depth > 0) {
+                        depth--;
+                        fn(value);
+                    } else {
+                        result.push(value);
+                    }
+                }
+            }
+            fn(array);
+            return result;
+        }
+        function flat2 (array, depth = 1) {
+            if (depth < 1 || !Array.isArray(array)) {
+                return array;
+            }
+            return reduce(
+                array,
+                (result, current) => {
+                    return concat(result, flat2(current, depth -1))
+                },
+                []
+            )
+        }
+        console.log('=================================================start===============================================')
+        const arr22 = [1, 2, [3, 4, [5, [6]]]];
+        const res22 = flat(arr22, 2);
+        const res22s = flat2(arr22, 2);
+        console.log('array: flat => flat([1, 2, [3, 4, [5, [6]]]], 2)');
+        console.log('源数组', arr22);
+        console.log('处理后返回', res22);
+        console.log('处理后返回', res22s);
+        
+        console.log('Array.prototype.flat');
+        const arr22x = [1, 2, [3, 4, [5, [6]]]];
+        const res22x = arr22x.flat(2);
+        console.log('源数组', arr22x);
+        console.log('处理后返回', res22x);
+        console.log('=================================================end=================================================');
+        console.log('')
+
+        // flatMap - 首先使用映射函数映射每个元素，然后将结果压缩成一个新数组。它与 map 和 深度值1的 flat 几乎相同，但 flatMap 通常在合并成一种方法的效率稍微高一些。
+        // array, callback[value, index, array]
+        function flatMap (array, callback) {
+            // TODO
+        }
     </script>
 </body>
 </html>
