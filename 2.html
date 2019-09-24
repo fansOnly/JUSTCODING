@@ -331,17 +331,88 @@
         function unshift (array, ...values) {
             const mergeArray = concat(values, ...array);
             const { length: mergeArrayLength } = mergeArray;
+            // array.length = mergeArrayLength;
             for (let index = 0; index < mergeArrayLength; index++) {
-                const value = mergeArrayLength[index];
+                const value = mergeArray[index];
                 array[index] = value;
             }
             return array.length;
         }
         const arr16 = [1,2,3,4,5];
         const res16 = unshift(arr16, 'a', 'b');
+        const arr16x = [1,2,3,4,5];
+        const res16x = unshift(arr16x, ['a', 'c'], 'b');
         console.log('=================================================start====================================')
-        console.log('array: unshift', [1,2,3,4,5], arr16, res16, [1,2,3,4,5].unshift());
+        console.log('array: unshift', [1,2,3,4,5], arr16, res16, [1,2,3,4,5].unshift('a', 'b'));
+        console.log('array: unshift', [1,2,3,4,5], arr16x, res16x, [1,2,3,4,5].unshift(['a','c'], 'b'));
         console.log('=================================================end======================================')
+
+        // slice
+        // begin, end
+        function slice (array, begin = 0, end = array.length-1) {
+            const { length } = array;
+            let result = [];
+            begin = begin > 0 ? begin : length + begin;
+            end = end > 0 ? end : length + end;
+            for (let index = begin; index < end; index++) {
+                const value = array[index];
+                if (index >= 0 && index < length) {
+                    result.push(value);
+                }
+            }
+            return result;
+        }
+        const arr17 = [1,2,3,4,5,6,7,8,9,10];
+        const res17 = slice(arr17, 3, 7);
+        const res17x = slice(arr17, -50, -20);
+        console.log('=================================================start====================================')
+        console.log('array: slice from 3 to 7', arr17, res17, arr17.slice(3,7));
+        console.log('array: slice from -50 to -20', arr17, res17x, arr17.slice(-50, -20));
+        console.log('=================================================end======================================')
+
+        // splice
+        // array, start, deleteCount, ...values
+        function splice (array, start = 0, deleteCount = array.length-start, ...values) {
+            const { length: arrayLength } = array;
+            let before = [], after = [];  // 记录删除前、后的数组元素
+            let result = [];
+            start = start < 0 ? Math.abs(start) > arrayLength ? 0 : arrayLength + start : start;
+            for (let index = 0; index < arrayLength; index++) {
+                const value = array[index];
+                if (index < start) {
+                    before.push(value);
+                } else if (index >= start && index < start + deleteCount) {
+                    result.push(value);
+                } else {
+                    after.push(value);
+                }
+            }
+            let tmp = concat(before, values);
+            tmp = concat(tmp, after);
+            array.length = tmp.length;
+            for (let i = 0; i < tmp.length; i++) {
+                array[i] = tmp[i];
+            }
+            return result;
+        }
+        console.log('=================================================start=================================================')
+        const arr18 = [1,2,3,4,5,6,7,8,9,10];
+        const res18 = splice(arr18, 3, 5, ['a'], 'b');
+        console.log('array: splice => splice([1,2,3,4,5,6,7,8,9,10], 3, 5, ["a"], "b")');
+        console.log('源数组', arr18);
+        console.log('处理后返回', res18);
+
+        const arr18xx = [1,2,3,4,5,6,7,8,9,10];
+        const res18xx = splice(arr18xx, 30, -5, ['a'], 'b');
+        console.log('array: splice => splice([1,2,3,4,5,6,7,8,9,10], 30, -5, ["a"], "b")');
+        console.log('源数组', arr18xx);
+        console.log('处理后返回', res18xx);
+
+        console.log('Array.prototype.splice');
+        const arr18x = [1,2,3,4,5,6,7,8,9,10];
+        console.log('源数组', arr18x);
+        console.log('处理后返回', arr18x.splice(3,5, ['a'], 'b'));
+        console.log('=================================================end=================================================')
     </script>
 </body>
 </html>
