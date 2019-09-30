@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>节流和防抖</title>
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+<body>
+    <div style="height: 3000px;"></div>
+    <script>
+        // 第一次执行为准
+        function throtte (fn, interval = 1000) {
+            let last = 0;
+            return function () {
+                let context = this;
+                let args = arguments;
+                let now = +new Date();
+                if (now - last >= interval) {
+                    last = now;
+                    fn.apply(context, args);
+                }
+            }
+        }
+        const throtte_scroll = throtte(() => { console.log('throtte scroll...') }, 1000);
+        // document.addEventListener('scroll', throtte_scroll);
+
+        // 最后一次执行为准
+        function debunce (fn, delay = 1000) {
+            let timer = null;
+            return function () {
+                let context = this;
+                let args = arguments;
+                if (timer) {
+                    clearTimeout(timer);
+                }
+                timer = setTimeout(() => {
+                    fn.apply(context, args);
+                }, delay);
+            }
+        }
+        const debunce_scroll = debunce(() => { console.log('debunce scroll...') }, 1000);
+        // document.addEventListener('scroll', debunce_scroll);
+
+        // throtte and debunce toggether
+        function throtte2 (fn, delay = 1000) {
+            let last = 0, timer = null;
+            return function () {
+                let context = this;
+                let args = arguments;
+                let now = +new Date();
+                if (now - last < delay) {
+                    clearTimeout(timer);
+                    timer = setTimeout(() => {
+                        last = now;
+                        fn.apply(context, args);
+                    }, delay);
+                } else {
+                    last = now;
+                    fn.apply(fn, args);
+                }
+            }
+        }
+        const throtte2_scroll = throtte2(() => { console.log('throtte2 scroll...') }, 1000);
+        document.addEventListener('scroll', throtte2_scroll);
+    </script>
+</body>
+</html>

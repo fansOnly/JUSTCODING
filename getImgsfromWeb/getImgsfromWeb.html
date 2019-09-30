@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>从网页获取图片并在控制台输出</title>
+    <link rel="stylesheet" href="./index.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        .img2 {
+            width: 400px;
+            height: 100px;
+            background: url('http://www.clipboardjs.cn/clipboardjs_files/ie.png') 0 0 no-repeat;
+            background-size: cover;
+        }
+        .img6 {
+            width: 400px;
+            height: 100px;
+            background: url('http://www.clipboardjs.cn/clipboardjs_files/safari.png');
+            background-position: 0 0;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+    </style>
+</head>
+
+<body>
+    <button onclick="out()">控制台打印图片</button>
+    <div style="display: none;">
+        <img class="img4" src="http://www.clipboardjs.cn/clipboardjs_files/chrome.png" alt="">
+        <img class="img5" src="http://www.clipboardjs.cn/clipboardjs_files/edge.png" alt="">
+        <div class="img1"></div>
+        <div class="img2"></div>
+        <div class="img6"></div>
+        <div class="img3" style="background: url('http://www.clipboardjs.cn/clipboardjs_files/firefox.png') 0 0 no-repeat;"></div>
+        <div class="img7" style="background: url('http://www.clipboardjs.cn/clipboardjs_files/opera.png');"></div>
+        <div class="img8" style="background-image: url('https://ss1.baidu.com/6ONXsjip0QIZ8tyhnq/it/u=4135213963,1816457489&fm=58');"></div>
+    </div>
+    <script>
+        // TODO
+        let allImages = [];  // 存储全部图片url
+        let tagImgs = [];  // 获取从img标签获取的src链接
+        let cssImgs = [];  // 获取从内联css里提取的背景图url链接
+        let styleImgs = [];  // 获取从style行内样式提取的背景图url链接
+
+        function getTageImgs() {
+            const imgList = [].slice.call(document.querySelectorAll('img')).map(item => item.src);
+            return imgList;
+        }
+        tagImgs = getTageImgs();
+        console.log('tagImgs:', tagImgs);
+
+        function getCssImgs() {
+            const cssEles = document.querySelectorAll('style');
+            // console.log('cssEles', cssEles);
+            return [].slice.call(cssEles).map(cssItem => {
+                // console.log('cssItem:', cssItem, cssItem.textContent);
+                const css = cssItem.textContent;
+                const images = css.match(/url\((.*)\)/g);
+                // console.log('css-images', images);
+                return images && images.map(item => item.replace(/url\(['"]?([^'"]*)['"]?\)/g, '$1')) || [];
+            })
+        }
+        cssImgs = getCssImgs();
+        console.log('cssImgs:', cssImgs);
+
+        function getStyleImgs () {
+            const styleEles = [].slice.call(document.querySelectorAll('*[style]'));
+            // console.log('styleEles', styleEles);
+            let imgList = [];
+            styleEles && styleEles.map(styleItem => {
+                const styleStr = Object.entries(styleItem.style).filter(item => item[1]).map(item => `${item[0]}:${item[1]}`).join(';');
+                // console.log('styleStr:', styleStr);
+                let images = styleStr.match(/url\(['"]*([^'"]*)['"]*\)/g);
+                images = images && images.map(item => item.replace(/url\(['"]*([^'" ]*)['"]*\)/g, '$1'));
+                if (images) {
+                    imgList.push(...images);
+                }
+            })
+            return imgList;
+        }
+        styleImgs = getStyleImgs();
+        console.log('styleImgs:', styleImgs);
+
+        function getImages () {
+            return [].concat(...tagImgs, ...cssImgs, ...styleImgs);
+        }
+        let tmpImages = getImages();
+        // allImages = new Array(...new Set(tmpImages));
+        allImages = Array.from(new Set(tmpImages));
+        console.log('allImages', allImages);
+
+        function fromatConsole (list) {
+            if (window.console) {
+                if (console) {
+                    list.forEach(item => {
+                        console.log("%c ", "font-size:50px;background:url('"+ item+"') no-repeat;background-size:contain;");
+                        // console.log(item);
+                    })
+                }
+            }
+        }
+
+        function out () {
+            fromatConsole(allImages);
+        }
+    </script>
+</body>
+
+</html>

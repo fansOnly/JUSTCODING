@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>test</title>
+</head>
+<body>
+    <script>
+        window.val = 1;
+        var obj = {
+            val: 2,
+            run: function () {
+                console.log('this', this);
+                this.val += 2;
+                val += 2;
+                console.log('val', val);
+                console.log('this.val', this.val);
+            }
+        }
+        // console.log('obj', obj);
+        obj.run();
+        var fn = obj.run;
+        // console.log('fn', fn);
+        fn();
+    </script>
+</body>
+</html>

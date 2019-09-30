@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>js实现文本复制</title>
+</head>
+
+<body>
+    <div id="test">获取从style行内样式提取的背景图url链接</div>
+    <button onclick="copy('test')">点击复制</button>
+    <ul>
+        <li>
+            <span id="li1">白日依山尽</span>&emsp;<button onclick="copy('li1')">点击复制</button>
+        <li>
+            <span id="li2">黄河入海流</span>&emsp;<button onclick="copy('li2')">点击复制</button>
+        </li>
+        <li>
+            <span id="li3">举头望明月</span>&emsp;<button onclick="copy('li3')">点击复制</button>
+        </li>
+        <li>
+            <span id="li4">低头思故乡</span>&emsp;<button onclick="copy('li4')">点击复制</button>
+        </li>
+    </ul>
+
+    <div><input style="width: 100%;" type="text" placeholder="请将复制的文本粘贴在这里验证结果。"></div>
+    <script>
+        function copy(el) {
+            const text = document.getElementById(el).innerText;
+            const textareaEle = document.createElement('textarea');
+            textareaEle.value = text;
+            textareaEle.readOnly = true;
+            textareaEle.style.opacity = 0;
+            document.body.appendChild(textareaEle);
+            textareaEle.select();
+            try {
+                document.execCommand('copy');
+                console.log('复制成功', text);
+            } catch (err) {
+                console.log('复制失败:', err);
+            }
+            document.body.removeChild(textareaEle);
+        }
+    </script>
+</body>
+
+</html>

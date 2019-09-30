@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>刮刮卡</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        .card {
+            width: 375px;
+            height: 140px;
+            margin: 50px auto;
+            background: url(./images/award.png);
+            background-size: cover;
+        }
+        .card canvas {
+            width: 375px;
+            height: 140px;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <canvas id="scratch" width="750" height="280"></canvas>
+    </div>
+    <script src="./scratch.js"></script>
+    <script>
+        new Scratch({
+            canvas: document.getElementById('scratch'),
+            coverImg: './images/scratch.png',
+            awardImg: './images/award.png',
+            pixelratio: 2,
+            doneCallback: function () {
+                console.log('done...');
+            }
+        })
+        window.addEventListener('touchmove', function (e) {
+            e.preventDefault();
+        }, { passive: false });
+    </script>
+</body>
+</html>
