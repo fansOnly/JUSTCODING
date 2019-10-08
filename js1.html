@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>js技巧1</title>
+</head>
+<body>
+    <script>
+        /**
+        * 模拟instanceof
+        * @param object 对象
+        * @param object 类型
+        * @return boolean
+        */
+        function instance_of (L, R) {
+            // 取R的显示原型
+            var R = R.prototype;
+            // 取L的隐式原型
+            var L = L.__proto__;
+            while (true) {
+                if (L === null) return false;
+                if (L === R) {
+                    return true;
+                }
+                L = L.__proto__;
+            }
+        }
+
+        const res1 = instance_of([1,2], Array);
+        console.log('[1,2] is array', res1);
+        const res2 = instance_of({}, Object);
+        console.log('{} is object', res2);
+        const res3 = instance_of(()=>{}, Function);
+        console.log('()=>{} is function', res3);
+        const res4 = instance_of(new Date(), Date);
+        console.log('new Date() is Date', res4);
+        const res5 = instance_of(new Error(), Error);
+        console.log('new Error() is Error', res5);
+        const res6 = instance_of(/^1/, RegExp);
+        console.log('/^1/ is RegExp', res6);
+        console.log('============================================================================================================');
+
+
+        /**
+        *  模拟new  --  bug  运行报错
+        *  1、新建一个对象
+        *  2、执行[[Prototype]]链接
+        *  3、修改this指向新创建的对象
+        *  4、将prototype链接到新创建的对象
+        *  5、如果函数没有返回对象类型，那么结果会指向对象引用
+        */
+        // function objectFactory () {
+        //     let obj = new Object();
+        //     const Constructor = [].shift.call(arguments);
+        //     obj.__proto__ = Constructor.prototype;
+        //     const ret = Constructor.apply(obj, arguments);
+        //     return typeof ret === 'object' ? ret : obj;
+        // }
+
+        // const Cat = objectFactory(name, 'age', 18);
+        // console.log(Cat, Cat.age);
+        // console.log('============================================================================================================');
+
+        /**
+        * 模拟 Object.create
+        * @param object
+        * @return object
+        */
+        function createObj (proto) {
+            function F () {}
+            F.prototype = proto;
+            return new F();
+        }
+
+        const animal = {
+            name: 'xiao xiao',
+            age: '2'
+        }
+
+        const Dog = createObj(animal);
+        Dog.name = 'xiao hei';
+        Dog.age = 5;
+        Dog.color = 'black';
+        console.log('animal', animal);
+        console.log('dog', Dog);
+        console.log('============================================================================================================');
+
+        /**
+        * 实现类的继承
+        */
+        function Parent (name, age) {
+            this.parent = name;
+            this.age = age;
+        }
+
+        Parent.prototype.say = function () {
+            console.log(`hello, my name is ${this.parent}, i'm ${this.age} years old.`);
+        }
+
+        function Child (name, age, parent) {
+            Parent.call(this, parent);
+            this.child = name;
+            this.age = age;
+        }
+
+        Child.prototype = Object.create(Parent);
+        Child.prototype.say = function () {
+            console.log(`hello, this is ${this.child}, my father is ${this.parent}, i'm ${this.age} years old.`)
+        }
+        Child.prototype.constructor = Child;
+
+        const father = new Parent('li lei', 40);
+        console.log('father', father);
+        father.say();
+
+        const son = new Child('xiao li', 20, father.parent);
+        console.log('son', son)
+        son.say();
+        console.log('============================================================================================================');
+
+        /**
+        * json 解析器
+        * @param json
+        * @return obj
+        */
+        function jsonParse (json) {
+            return eval("(" + json + ")");
+        }
+        const json1 = "{'a':1, 'b':{'x':1}, 'c': ['1','u']}";
+        console.log(jsonParse(json1));
+        console.log('============================================================================================================');
+
+        /**
+        * 处理url params
+        * @param string
+        * @return object
+        */
+        function parseUrlParams (url) {
+            const params = /.+\?(.+)$/.exec(url)[1];
+            const paramArr = params.split('&');
+            let paramObj = {};
+            paramArr.forEach(param => {
+                if (/=/.test(param)) {
+                    let [key, val] = param.split('=');
+                    val = decodeURIComponent(val);
+                    val = /^\d+$/.test(val) ? parseFloat(val) : val;
+                    if (paramObj.hasOwnProperty(key)) {
+                        paramObj[key] = [].concat(paramObj[key], val);
+                    } else {
+                        paramObj[key] = val;
+                    }
+                } else {
+                    paramObj[param] = true;
+                }
+            })
+            return paramObj;
+        }
+
+        let url = 'http://www.domain.com/?user=anonymous&id=123.5&id=456&city=%E5%8C%97%E4%BA%AC&enabled';
+        const res7 = parseUrlParams(url);
+        console.log('提取url参数', url);
+        console.log('提取url参数', res7);
+        console.log('============================================================================================================');
+
+        /**
+        * 模板引擎
+        * @param string
+        * @param object
+        * @return string
+        */
+        function render (template, data) {
+            const reg = /\{\{(\w+)\}\}/;
+            if (reg.test(template)) {
+                const name = reg.exec(template)[1];
+                template = template.replace(reg, data[name]);
+                return render(template, data);
+            }
+            return template;
+        }
+
+        const temp = '我是{{name}}，年龄{{age}}，性别{{sex}}';
+        const data0 = {
+            name: '李雷',
+            age: 20,
+            sex: '男'
+        }
+        const temp2 = render(temp, data0);
+        console.log('模板输出', temp2);
+        console.log('============================================================================================================');
+
+        /**
+        * 转换驼峰命名
+        * @param string
+        * @return string
+        */
+        function camelCase (str) {
+            return str.replace(/-\w/g, function(letter) {
+                return letter.slice(1).toUpperCase();
+            })
+        }
+
+        const var1 = 'get-element-by-id';
+        const res8 = camelCase(var1);
+        console.log('转换驼峰命名', var1, res8);
+        console.log('============================================================================================================');
+    </script>
+</body>
+</html>
