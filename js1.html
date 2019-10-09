@@ -205,6 +205,44 @@
         const res8 = camelCase(var1);
         console.log('转换驼峰命名', var1, res8);
         console.log('============================================================================================================');
+
+        /**
+        * 千位分隔符
+        * @param number/string
+        * @return string
+        */
+        function parseTomoney (num) {
+            num = parseFloat(num.toFixed(3));
+            let [integer, decimal] = String.prototype.split.call(num, '.');
+            integer = integer.replace(/\d(?=(\d{3})+$)/g, '$&,');
+            return integer + (decimal ?  '.' + decimal : '');
+        }
+        const num1 = 12345.2, num2 = 1234567899, num3 = 1234556777.123223;
+        const res9 = parseTomoney(num1), res10 = parseTomoney(num2), res11 = parseTomoney(num3);
+        console.log('千位分隔符', num1, res9);
+        console.log('千位分隔符', num2, res10);
+        console.log('千位分隔符', num3, res11);
+        console.log('============================================================================================================');
+
+        /**
+        * 正则判断手机号码/邮箱/身份证号
+        * @param string
+        * @return boolean
+        */
+        function isPhone (str) {
+            return /^1[345678]\d{9}$/.test(str);
+        }
+        function isEmail (str) {
+            return /^([a-zA-Z0-9_\-])+@([a-zA-Z0-9_\-])+\.([a-zA-Z]{2,4})+$/.test(str);
+        }
+        function isIDCard (str) {
+            const reg = /(^\d{15}$)|(^\d{18}$)|(^\d{17}(X|x|\d)$)/;
+            return reg.test(str);
+        }
+        console.log('is phone', '15558657633', isPhone('15558657633'));
+        console.log('is email', '22@qq.cc', isEmail('22@qq.cc'));
+        console.log('is phone', '110101199003074717', isIDCard('110101199003074717'));
+        console.log('============================================================================================================');
     </script>
 </body>
 </html>
