@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>【JS 口袋书】第 9 章：使用 JS 操作 HTML 元素</title>
+</head>
+<body>
+    <h1>this is a h-title...</h1>
+    <div>
+        <a href="http://www.baidu.com">click here...</a>
+    </div>
+    <script>
+        const h1 = document.querySelector('h1');
+        console.log(h1.nodeType, h1.nodeName);
+
+        const a = document.querySelector("a");
+        console.log(a.hasAttribute('href'), a.getAttribute('href'));
+        console.log(a.parentNode, a.parentElement);
+
+        console.log(document.children);
+        console.log(document.childNodes);
+
+        document.querySelector('a').addEventListener('click', function(event) {
+            event.preventDefault();
+            console.log('event', event);
+        })
+    </script>
+</body>
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>【JS 口袋书】第 10 章：使用异步 JavaScript</title>
+</head>
+<body>
+    <script>
+        "use strict";
+        window.fetch = fetch;
+
+        function Response(res) {
+            this.response = res.response;
+            this.ok = res.status >= 200 && res.status < 300;
+            this.statusText = res.statusText;
+        }
+
+        Response.prototype.json = function() {
+            return JSON.parse(this.response);
+        }
+
+        function InitConfigOptions(option) {
+            this.method = option.method || 'get';
+            this.body = option.body;
+            this.headers = option.headers;
+        }
+
+        function fetch(url, options) {
+            return new Promise(function(resolve, reject) {
+                const request = new XMLHttpRequest();
+                const config = new InitConfigOptions(options || {});
+                request.open(config.method, url);
+                request.onload = function() {
+                    const response = new Response(this);
+                    resolve(response);
+                }
+                request.onerror = function() {
+                    reject('Network Error!!!');
+                }
+                if (config.headers) {
+                    for (const opt in config.headers) {
+                        request.setRequestHeader(opt, config.headers[opt]);
+                    }
+                }
+                config.body && request.send(config.body);
+                config.body || request.send();
+            })
+        }
+
+        const url = "https://academy.valentinog.com/api/link/";
+        const options = {
+            method: 'get',
+        }
+        fetch(url, options)
+        .then(function(response) {
+            if (!response.ok) {
+                throw new Error(response.statusText);
+            }
+            return response.json();
+        })
+        .then(function(json) {
+            console.log('data', json);
+        })
+        .catch(function(err) {
+            console.log('error', err);
+        })
+    </script>
+</body>
+</html>

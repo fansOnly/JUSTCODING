@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>proxy - mdn</title>
+    <style>
+        li {
+            margin-bottom: 1px;
+            background: #f5f5f5;
+            line-height: 40px;
+            display: flex;
+            align-items: center;
+        }
+        li::before {
+            content: "⭕️";
+            font-size: 14px;
+            margin-right: 5px;
+        }
+        li.on {
+            background: #dedede;
+        }
+        li.on::before {
+            content: "☑️";
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <ul id="radio">
+        <li id="radio-1"><input class="hidden" type="radio" name="sport" value="1"> swimming</li>
+        <li id="radio-2"><input class="hidden" type="radio" name="sport" value="2"> reading</li>
+        <li id="radio-3"><input class="hidden" type="radio" name="sport" value="3"> running</li>
+    </ul>
+    <div style="height: 30px;"></div>
+    <ul id="checkbox">
+        <li id="checkbox-1"><input class="hidden" type="checkbox" name="rest" value="1"> eat</li>
+        <li id="checkbox-2"><input class="hidden" type="checkbox" name="rest" value="2"> drink</li>
+        <li id="checkbox-3"><input class="hidden" type="checkbox" name="rest" value="3"> sleep</li>
+    </ul>
+    <script>
+        let radioView = new Proxy({
+            checked: null
+        },
+        {
+            set: function (obj, prop, newval) {
+                let oldval = obj[prop];
+                if (prop === 'checked') {
+                    if (oldval) {
+                        oldval.setAttribute('checked', 'false');
+                        oldval.setAttribute('class', 'off');
+                        oldval.children[0].removeAttribute('checked');
+                    }
+                    if (newval) {
+                        newval.setAttribute('checked', 'true');
+                        newval.setAttribute('class', 'on');
+                        newval.children[0].setAttribute('checked', 'checked');
+                    }
+                }
+                // The default behavior to store the value
+                obj[prop] = newval;
+            }
+        });
+    
+        document.querySelector('#radio').addEventListener('click', function(event) {
+            // console.log(event);
+            const domId = event.target.id;
+            radioView.checked = document.getElementById(domId);
+            console.log('当前选中项::', document.querySelector('input[name=sport]:checked').value);
+        })
+
+        // let checkboxView = new Proxy({
+        //     checked: null
+        // },
+        // {
+        //     set: function (obj, prop, newval) {
+        //         // console.log(obj, prop, newval);
+        //         let oldval = obj[prop];
+        //         // console.log(oldval)
+        //         if (prop === 'checked') {
+        //             console.log('newval', newval, newval.getAttribute('checked'))
+        //             console.log('oldval', oldval, oldval && oldval.getAttribute('checked'))
+        //             if (newval) {
+        //                 newval.setAttribute('checked', 'true');
+        //                 newval.setAttribute('class', 'on');
+        //                 newval.children[0].setAttribute('checked', 'checked');
+        //             }
+        //             if (newval && newval.getAttribute('checked') === 'true') {
+        //                 newval.setAttribute('checked', 'false');
+        //                 newval.setAttribute('class', 'off');
+        //                 newval.children[0].removeAttribute('checked');
+        //             }
+        //         }
+        //         // The default behavior to store the value
+        //         obj[prop] = newval;
+        //     }
+        // });
+        // document.querySelector('#checkbox').addEventListener('click', function(event) {
+        //     // console.log(event);
+        //     const domId = event.target.id;
+        //     checkboxView.checked = document.getElementById(domId);
+        //     console.log('当前选中项::', document.querySelector('input[name=rest]:checked').value);
+        // })
+    </script>
+</body>
+
+</html>

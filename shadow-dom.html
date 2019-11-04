@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>WebComponents - shadow dom</title>
+</head>
+<body>
+    <!-- shadow dom -->
+    <input type="range" disabled min="20" max="100" defaultValue="30"/>
+
+    <div id="con">
+        我是文字
+        <span slot="text1">我是占位符1</span>
+        <span slot="text2">我是占位符2</span>
+        我还是文字
+    </div>
+    <template id="tpl">
+        我是模板
+        <slot name="text1"></slot>
+        <slot name="text2"></slot>
+        我还是模版
+    </template>
+    <script>
+        // shadow dom 简单示例
+        const host = document.querySelector("#con");
+        const root = host.attachShadow({mode: 'open'});
+        console.log('host.shadowRoot::', host.shadowRoot);
+        let con = document.getElementById("tpl").content.cloneNode(true);
+        root.appendChild(con);
+
+        // 实现一个自定义组件
+        class FlagIcon extends HTMLElement {
+            constructor() {
+                super();
+                this._countryCode = null;
+            }
+            static get observedAttributes() {
+                return ['country'];
+            }
+            attributeChangedCallback(name, oldvalue, newValue) {
+                this._countryCode = newValue;
+                this._updateRendering();
+            }
+            connectedCallback() {
+                console.log('connected');
+                this._updateRendering();
+            }
+            get country() {
+                return this._countryCode;
+            }
+            set country(v) {
+                this.setAttribute('country', v);
+            }
+            disconnectedCallback() {
+                console.log('disconnected');
+            }
+            _updateRendering() {
+                console.log('rendering...');
+            }
+        }
+        customElements.define('flag-icon', FlagIcon);
+        const flag = new FlagIcon();
+        flag.country = 'zh';
+        document.body.appendChild(flag);
+    </script>
+</body>
+</html>

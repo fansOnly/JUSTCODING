@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>eventTaregt from mdn</title>
+</head>
+<body>
+    <script>
+        var EventTaregt = function() {
+            this.listeners = [];
+        }
+        EventTaregt.prototype.listeners = null;
+
+        EventTaregt.prototype.addEventListener = function(type, callback) {
+            if (!(type in this.listeners)) {
+                this.listeners[type] = [];
+            }
+            this.listeners[type].push(callback);
+        }
+
+        EventTaregt.prototype.removeEventListener = function(type, callback) {
+            if (!(type in this.listeners)) {
+                return;
+            }
+            let stack = this.listeners[type];
+            for (let i = 0, len = stack.length; i < len; i ++) {
+                if (stack[i] === callback) {
+                    stack.splice(i, i);
+                    return this.removeEventListener(type, callback);
+                }
+            }
+        }
+
+        EventTaregt.prototype.dispatchEvent = function(event) {
+            if (!(event.type in this.listeners)) {
+                return;
+            }
+            let stack = this.listeners[event.type];
+            event.target = this;
+            for (let i = 0, len = stack.length; i < len; i++) {
+                stack[i].call(this, event);
+            }
+        }
+    </script>
+</body>
+</html>

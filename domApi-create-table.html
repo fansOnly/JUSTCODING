@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>给予dom api的创建表格</title>
+</head>
+
+<body>
+    <script>
+        "use strict";
+
+        const mountains = [
+            { name: "Monte Falco", height: 1658, place: "Parco Foreste Casentinesi" },
+            { name: "Monte Falterona", height: 1654, place: "Parco Foreste Casentinesi" },
+            { name: "Poggio Scali", height: 1520, place: "Parco Foreste Casentinesi" },
+            { name: "Pratomagno", height: 1592, place: "Parco Foreste Casentinesi" },
+            { name: "Monte Amiata", height: 1738, place: "Siena" }
+        ];
+
+
+        function createTableHead(table, data) {
+            const thead = table.createTHead();
+            const row = table.insertRow();
+            const theads = Object.keys(data[0]);
+            theads.map(item => {
+                const th = document.createElement('th');
+                const text = document.createTextNode(item);
+                th.appendChild(text);
+                row.appendChild(th)
+            })
+            thead.appendChild(row);
+            table.appendChild(thead);
+        }
+
+        function createTableBody(table, data) {
+            const tbody = document.querySelector('tbody') || document.createElement('tbody');
+            const theads = Object.keys(data[0]);
+            data.map(tr => {
+                const row = table.insertRow();
+                theads.map(td => {
+                    const cell = row.insertCell();
+                    const text = document.createTextNode(tr[td]);
+                    cell.appendChild(text);
+                    row.appendChild(cell);
+                })
+                tbody.appendChild(row);
+            })
+            table.appendChild(tbody);
+        }
+
+        const table = document.createElement('table');
+        table.style.border = '1px solid #ccc';
+        document.body.appendChild(table);
+        
+        createTableHead(table, mountains);
+        createTableBody(table, mountains);
+    </script>
+</body>
+
+</html>

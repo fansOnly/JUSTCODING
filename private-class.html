@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>【JS 口袋书】第 10 章：使用异步 JavaScript</title>
+</head>
+<body>
+    <script>
+        class List {
+            // 类的私有属性设置
+            #url;
+            #target;
+
+            constructor(url, target) {
+                this.#url = url;
+                this.#target = target;
+            }
+            
+            getData() {
+                const request = new XMLHttpRequest();
+                request.onload = event => {
+                    console.log('http onload...');
+                    const response = JSON.parse(event.target.response);
+                    console.log('response', response);
+                    this.render(response);
+                }
+                request.open('get', this.#url);
+                request.send();
+            }
+
+            render(data) {
+                const ul = document.createElement('ul');
+                for (const ele of data) {
+                    const li = document.createElement('li');
+                    const title = document.createTextNode(ele.title);
+                    li.appendChild(title);
+                    ul.appendChild(li);
+                }
+                this.#target.appendChild(ul);
+            }
+        }
+        const url = "https://academy.valentinog.com/api/link/";
+        const target = document.body;
+        let list = new List(url, target);
+
+        console.log(this.url);
+        console.log(this.target);
+        list.getData();
+    </script>
+</body>
+</html>

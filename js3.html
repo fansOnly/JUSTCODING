@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        .box {
+            width: 50px;
+            height: 50px;
+            background: green;
+            border-radius: 100%;
+            animation: move 2s linear 3 alternate both;
+        }
+
+        @-webkit-keyframes move {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(200px);
+            }
+        }
+        @keyframes move {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(200px);
+            }
+        }
+
+        .clearfix {
+            zoom: 1;
+        }
+
+        .clearfix::after {
+            content: "";
+            display: block;
+            height: 0;
+            clear: both;
+        }
+
+        .wrap {
+            margin-top: 30px;
+        }
+
+        /* 双飞翼布局 */
+        .container {
+            float: left;
+            width: 100%;
+        }
+        .main {
+            margin-left: 110px;
+            margin-right: 210px;
+            height: 80px;
+            background: green;
+        }
+        .left {
+            float: left;
+            width: 100px;
+            height: 80px;
+            margin-left: -100%;
+            background: #ccc;
+        }
+        .right {
+            float: right;
+            width: 200px;
+            height: 80px;
+            margin-left: -200px;
+            background: #f60;
+        }
+        /* 圣杯布局 */
+        .container2 {
+            margin-left: 110px;
+            margin-right: 210px;
+        }
+        .main2 {
+            float: left;
+            width: 100%;
+            height: 80px;
+            background: green;
+        }
+        .left2 {
+            float: left;
+            width: 100px;
+            height: 80px;
+            margin-left: -100%;
+            background: #ccc;
+            position: relative;
+            left: -110px;
+        }
+        .right2 {
+            float: left;
+            width: 200px;
+            height: 80px;
+            margin-left: -200px;
+            background: #f60;
+            position: relative;
+            right: -210px;
+        }
+    </style>
+</head>
+<body>
+    <div class="box"></div>
+    <!-- 双飞翼布局 -->
+    <div class="wrap clearfix">
+        <div class="container">
+            <div class="main"></div>
+        </div>
+        <div class="left"></div>
+        <div class="right"></div>
+    </div>
+    <!-- 圣杯布局 -->
+    <div class="wrap clearfix">
+        <div class="container2">
+            <div class="main2"></div>
+            <div class="left2"></div>
+            <div class="right2"></div>
+        </div>
+    </div>
+    <script>
+        function shuffarray(arr) {
+            for (let i = arr.length - 1; i > 0; i -= 1) {
+                const random = Math.floor(Math.random() * (i + 1));
+                [arr[random], arr[i]] = [arr[i], arr[random]]
+            }
+        }
+        const arr1 = [1,2,3,4,5,6,7,8,9,0];
+        shuffarray(arr1);
+        console.log('随机打乱数组', arr1);
+
+        console.log('Object.is: NaN === NaN', Object.is(NaN, NaN))
+        console.log('Object.is: +0 === -0', Object.is(+0, -0))
+
+        /**
+        * 替换指定数组元素
+        */
+        function replaceIdx (arr, index, newVal) {
+            return [
+                ...arr.slice(0, index),
+                newVal,
+                ...arr.slice(index+1)
+            ]
+        }
+        const arr2 = [1,2,3,4,5,6,7,8];
+        const res2 = replaceIdx(arr2, 4, 0);
+        console.log('replaceIdx::', arr2, res2);
+
+        /**
+        * 实现偏函数
+        */
+        function partial () {
+            const fn = arguments[0];
+            const args = Array.prototype.slice.call(arguments, 1);
+
+            return function() {
+                var remainArgs = Array.prototype.slice.call(arguments);
+                return fn.apply(this, args.concat(remainArgs))
+            }
+        }
+
+        const fn3 = function() {
+            return Array.prototype.reduce.call(arguments, (a, b) => a + b, 0)
+        }
+        const res3 = partial(fn3, 1, 2);
+        console.log('partial', res3());
+
+        /**
+        * 函数柯里化
+        */
+       function curry(func) {
+           return function curried(...args) {
+               if (args.length >= func.length) {
+                   return func.apply(this, args)
+               } else {
+                   return function(...args2) {
+                       return curried.apply(this, args2.concat(args))
+                   }
+               }
+           }
+       }
+
+       function sum(a, b, c) {
+           return a + b + c;
+       }
+
+       const curried_sum = curry(sum);
+       const res4 = curried_sum(1, 2, 3);
+       const res4s = curried_sum(1)(2)(3);
+       console.log('1+2+3', res4, res4s);
+
+       console.log('typeof null::', typeof null)
+
+       /**
+        * 姓名分组
+       */
+       const arr4 = [
+            {
+                name: 'ablis',
+            },
+            {
+                name: 'sari'
+            },
+            {
+                name: 'colle'
+            },
+            {
+                name: 'ahom'
+            },
+            {
+                name: 'ella'
+            }
+        ]
+
+        let rst = [...new Set(arr4.map(item => item.name.split('')[0]))];
+        rst.sort((a, b) => a.toUpperCase() - b.toUpperCase() ? 1: -1);
+        let tmp = new Array(rst.length);
+        tmp.fill([]);
+        rst.map((item, index) => {
+            arr4.map(item2 => {
+                if (item2.name.split('')[0] == item) {
+                    tmp[index] = tmp[index].concat(item2);
+                }
+            })
+        })
+        console.log('数组分类', tmp);
+
+        /**
+         * 测试执行上下文
+        */
+    //    function func() {
+    //        let a = 1;
+    //        function ifunc() {
+    //            console.log(a)
+    //        }
+    //        console.dir(ifunc);
+    //        ifunc();
+    //    }
+    //    func();
+
+       if (false) {
+           let color = 'red';
+           var size = 'big';
+       }
+       console.log('color in window', 'color' in window);
+       console.log('size in window', 'size' in window);
+    </script>
+</body>
+</html>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>js 冒泡事件</title>
+</head>
+
+<body>
+    <div class="outer">
+        this is outer
+        <div class="inner">this is inner</div>
+    </div>
+    <script>
+        document.querySelector('.outer').addEventListener('click', function (event) {
+            console.log('outer', event);
+        })
+        document.querySelector('.inner').addEventListener('click', function (event) {
+            event.stopPropagation();
+            console.log('inner', event);
+        })
+    </script>
+
+    <ul>
+        <li>this is first...</li>
+        <li>this is secondary...</li>
+        <li>this is thirdth...</li>
+        <li>this is fourth...</li>
+        <li>this is fifth...</li>
+    </ul>
+    <script>
+        document.querySelector('ul').addEventListener('click', function(event) {
+            console.log(event);
+            console.log(event.target.innerHTML);
+        })
+    </script>
+</body>
+
+</html>
