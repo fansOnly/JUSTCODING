@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>求多个数组交集</title>
+</head>
+
+<body>
+    <script>
+        const a1 = [1, 2, 3, 4];
+        const a2 = [1, 4, 5, 6, 7];
+        const a3 = [1, 5, 8, 9, 4];
+        const a4 = [3, 7, 9, 4, 11];
+
+        // 递归实现
+        const intersect = (...args) => {
+            if (!args.length) return [];
+            if (args.length == 1) return args[0];
+            const d1 = Array.prototype.slice.call(args)[0];
+            const d2 = Array.prototype.slice.call(args)[1];
+            const res = d1.filter(item => d2.includes(item));
+            let remainArgs = Array.prototype.slice.call(args, 2);
+            return intersect(res, ...remainArgs);
+        }
+
+        const res = intersect(a1, a2, a3, a4);
+        console.log(res);
+
+        // reduce实现
+        const intersect2 = (...args) => {
+            if (!args.length) return [];
+            if (args.length == 1) return args[0];
+            return args.reduce((res, arg) => res.filter(item => arg.includes(item)))
+        }
+        const res2 = intersect2(a1, a2, a3, a4);
+        console.log(res2);
+
+        // every实现
+        const intersect3 = (arr, ...rest) => {
+            if (!arr) return [];
+            return arr.filter(item => rest.every(arg => arg.includes(item)));
+        }
+
+        const res3 = intersect3(a1, a2, a3, a4);
+        console.log(res3)
+    </script>
+</body>
+
+</html>

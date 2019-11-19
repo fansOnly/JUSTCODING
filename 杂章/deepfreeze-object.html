@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>冻结对象</title>
+</head>
+
+<body>
+    <script>
+        // 深冻结
+        function deepFreeze(obj) {
+            let propsNames = Object.getOwnPropertyNames(obj);
+            // console.log(propsNames)
+            for (let name of propsNames) {
+                let value = obj[name];
+                obj[name] = value && typeof value === 'object' ? deepFreeze(value) : value;
+            }
+            return Object.freeze(obj);
+        }
+
+        var obj = {
+            name: 'lily',
+            desc: {
+                weight: 70,
+                height: 180
+            }
+        }
+
+        Object.freeze(obj);
+
+        obj.name = 'haha';
+
+        deepFreeze(obj);
+
+        obj.desc.height = 190;
+        console.log(obj)    
+    </script>
+</body>
+
+</html>

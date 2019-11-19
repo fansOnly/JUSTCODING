@@ -317,7 +317,7 @@ console.log(tmp);
 //         return function(...args2) {
 //             return curried.apply(this, args2.concat(args))
 //         }
-        
+
 //     }
 // }
 
@@ -361,7 +361,7 @@ console.log(tmp);
 // var curried_sm3 = curry3(sum);
 // var r6 = curried_sm3(1, 2, 3);
 // console.log('1+2+3', r6);
-// var r66 = curried_sm2(1)(2)(3);
+// var r66 = curried_sm3(1)(2)(3);
 // console.log('1+2+3', r66);
 
 
@@ -713,9 +713,9 @@ console.log(tmp);
 //     yield 1;
 //     return 2;
 //   }
-  
+
 //   let g = gen();
-  
+
 //   console.log(
 //     g.next().value,
 //     g.next().value,
@@ -723,13 +723,548 @@ console.log(tmp);
 // );
 
 
-var clock = function* () {
-    while (true) {
-      console.log('Tick!');
-      yield;
-      console.log('Tock!');
-      yield;
-    }
-  };
+// var clock = function* () {
+//     while (true) {
+//       console.log('Tick!');
+//       yield;
+//       console.log('Tock!');
+//       yield;
+//     }
+//   };
 
-  clock();
+//   clock();
+
+
+// function throtte(fn, delay = 500) {
+//     let last = 0;
+//     return function() {
+//         let now = +new Date();
+//         if (last >= now + delay) {
+//             last = now;
+//             fn.apply(this, ...arguments);
+//         }
+//     }
+// }
+
+// function foo() {
+//     console.log(this.a);
+// }
+
+// foo();
+
+// var a = 1;
+// var f = {a:2, foo: foo}
+// var s= {a:3}
+
+// f.foo();
+
+// f.foo.call(s)
+
+
+// console.log(f1())
+// console.log(f2())
+
+// function f1() {
+//     return 1;
+// }
+
+// const f2 = function() {
+//     return 2;
+// }
+
+
+// const factorial = function(num) {
+//     if (num <= 1) {
+//         return 1;
+//     } else {
+//         return num * factorial(num - 1);
+//     }
+// }
+
+// console.log(factorial(3));
+
+
+
+
+// function maxTen(nums) {
+//     nums = nums.sort((a, b) => b - a);
+//     console.log(nums);
+//     return nums.splice(0, 10);
+// }
+// const arr = [1,2,55,66,90,450,778,22,445,332,678,432,556,222,5678,222345,78654,9];
+// console.log(maxTen(arr));
+
+
+
+
+// function forEach (array, callback) {
+//     const { length } = array;
+//     for (let index = 0; index < length; index++) {
+//         const value = array[index];
+//         callback(value);
+//     }
+// }
+// forEach([1,2,3], console.log);
+
+
+
+
+// function map(array, callback) {
+//     let result = [];
+//     const { length } = array;
+//     for (let index = 0; index < length; index++) {
+//         const value = array[index];
+//         result[index] = callback(value);
+//     }
+//     return result;
+// }
+// const arr2 = [1,2,3,4,5];
+// const res2 = map(arr2, item => item * item);
+// console.log(res2)
+
+
+
+
+// function reduce (array, callback, initialValue) {
+//     const { length } = array;
+//     let acc = initialValue;
+//     let startIndex = 0;
+//     if (initialValue === undefined) {
+//         acc = array[0];
+//         startIndex = 1;
+//     }
+//     for (let index = startIndex; index < length; index++) {
+//         const value = array[index];
+//         acc = callback(acc, value);
+//     }
+//     return acc;
+// }
+// const sum4 = reduce([1,2,3,4,5], (acc, item) => acc + item, 5);
+// console.log(sum4)
+
+
+
+
+
+// function curry(fn) {
+//     return function curried(...args) {
+//         console.log(args)
+//         console.log(fn.length)
+//         if (args.length >= fn.length) {
+//             return fn.apply(this, args);
+//         }
+//         return function(...args2) {
+//             return curried.apply(this, [...args, ...args2])
+//         }
+//     }
+// }
+
+// const curry2 = (fn, ...args) => (...args2) => (arg => arg.length === fn.length ? fn(...arg) : curry2(fn, ...arg))([...args, ...args2])
+// const curry2 = (fn, ...args) => {
+//     console.log(args)
+//     return (...args2) => {
+//         console.log(args2)
+//         return (
+//             arg => {
+//                 console.log(arg)
+//                 return arg.length === fn.length ? fn(...arg) : curry2(fn, ...arg)
+//             }
+//         )([...args, ...args2])
+//     }
+// }
+
+// function add(a, b, c) {
+//     return a + b + c;
+// }
+
+// console.log(curry2(add)(1,2,3))
+// console.log(curry2(add, 1)(2)(3))
+// console.log(curry2(add)(1)(2)(3))
+
+
+
+
+
+// const t = (a => console.log(a))(1)
+// const t2 = (a => {
+//     console.log(a)
+// })(2)
+
+
+
+// function getType(obj) {
+//     if (obj === null) return String(obj)
+//     return typeof obj === 'object' ? Object.prototype.toString.call(obj).replace('[object ', '').replace(']', '').toLowerCase() : typeof obj;
+// }
+// console.log(getType('sss'));
+// console.log(getType(null));
+// console.log(getType(/1/));
+// console.log(getType(undefined));
+// console.log(getType({}));
+// console.log(getType(new Date()));
+
+
+
+// var arr = ['1','2','3','1a','ss']
+// console.log(arr.map(Number))
+
+
+
+// var obj = {
+//     name: 'test'
+// }
+// Object.freeze(obj);
+// obj.name = 'sii';
+// obj.state = 'sleep'
+// console.log(obj.name, obj.state)
+
+// var obj2 = {
+//     name: 'hehe'
+// }
+// Object.seal(obj2);
+// obj2.name = 'haha'
+// obj2.state = 'sleep'
+// console.log(obj2.name, obj2.state)
+
+
+
+
+// var arr = [
+//     { name: 'anhui', state: 1 },
+//     { name: 'hefei', state: 1 },
+//     { name: 'fuyang', state: 1 },
+//     { name: 'bengbu', state: 1 },
+//     { name: 'wuhu', state: 1 },
+// ]
+// console.log(Array.from(arr, ({ name }) => name))
+
+
+
+
+
+
+// const list = [
+//     { type: 2, age: 10 },
+//     { type: 3, age: 15 },
+//     { type: 4, age: 20 },
+//     { age: 18 }
+// ]
+
+// // list.map(item => {
+// //     item.type = 1;
+// //     item.age++;
+// // })
+
+// list.map(item => ({...item, type: 1, age: item.age++}));
+// console.log(list)
+
+
+// var obj = { age: 1 }
+// console.log(({...obj, age: 5}))
+
+
+
+
+
+// const user = {
+//     name: 'Peter'
+// }
+
+// const say = str => {
+//     console.log(`${str}, ${user.name}`)
+// };
+// const changeName = (user, name) => user.name = name;
+
+// changeName(user, 'lily');
+// console.log(user)
+// say('hello');
+
+
+// const user2 = {
+//     name: 'Peter'
+// }
+
+// const say2 = (user, str) => {
+//     console.log(`${str}, ${user.name}`);
+// }
+// const changeName2 = (user, name) => ({...user, name});
+
+// const newP = changeName2(user2, 'hanhan');
+// console.log(newP);
+// say2(user2, 'hello');
+
+
+
+
+
+// function memoize(fn) {
+//     let cache = [];
+//     return function() {
+//         const key = JSON.stringify(arguments);
+//         let value = cache[key];
+//         if (!value) {
+//             value = [fn.apply(null, arguments)];
+//             cache[key] = value;
+//         }
+//         console.log(value);
+//         return value[0];
+//     }
+// }
+
+// const fibonaci = memoize(n => n < 2 ? n : fibonaci(n - 1) + fibonaci(n - 2));
+// console.log(fibonaci(4))
+
+
+
+
+// var arr = [1,2,3,4, 5, 6];
+// arr.map((item, index, arr) => {
+//     // arr[index+1] = 5;
+//     delete(arr[index+1])
+//     console.log(item);
+// })
+
+// console.log(arr)
+
+
+// var arr = [1,2,3,4,5];
+// var arr2 = new Array(arr.length);
+// let i = 0, j = 0;
+
+// while (j < arr.length) {
+//     let value = arr[j];
+//     // console.log(i++)
+//     arr2[i++] = value;
+//     j++;
+// }
+
+
+// console.log(arr2)
+
+
+
+
+
+
+
+// 简化版
+// const compose = (...fns) => (...args) => fns.reduceRight((val, fn) => fn.apply(null, [].concat(val)), args)
+// const compose = (...fns) => (...args) => fns.reduceRight((val, fn) => {
+//     console.log(val)
+//     return fn.apply(null, [].concat(val))
+// }, args)
+
+// const f1 = x => x + 1;
+// const f2 = x => x * 2;
+// const f3 = (x, y) => x / y;
+// const r = compose(f1, f2, f3)(5, 5);
+// console.log(r);
+
+
+
+// Generator 函数
+// function* say() {
+//     yield 'hello';
+//     yield 'world';
+//     return 'ending';
+// }
+
+// const say2 = say();
+// console.log(say2.next());
+// console.log(say2.next());
+// console.log(say2.next());
+// console.log(say2.next());
+
+
+
+
+// var str = '5.1392312412';
+
+// var a = str.replace(/(\d+)(\.\d{2})(\d+)/g, '$1$2')
+
+// console.log(a)
+// console.log(parseFloat(str).toFixed(2))
+
+
+// var names = 'Harry Trump ;Fred Barney; Helen Rigby ; Bill Abel ;Chris Hand ';  
+// var re = /\s*;\s*/;  
+// var nameList = names.split(re); 
+// console.log(nameList)
+// [ "Harry Trump", "Fred Barney", "Helen Rigby", "Bill Abel", "Chris Hand " ]
+
+
+// function fn(a, ...rest) {
+//     console.log(a)
+//     console.log(rest);
+// }
+
+// fn(1, 1,2,3,45,6);
+
+
+
+// const points = [
+//     [4, 5],
+//     [1, 2],
+//     [3, 6],
+// ];
+
+// let res = points.map(([x, y]) => {
+//     return { x, y };
+// })
+// console.log(res); 
+
+
+// console.log((true).toString(), typeof (true).toString())
+// console.log((Symbol()).toString(), typeof (Symbol()).toString())
+// console.log(parseInt([1,2,3]), parseInt(['a',1]), parseFloat([1,'a']), parseInt([0]), typeof ([1,2,3]+1))
+
+// function d() {}
+
+// console.log(d.toString())
+
+
+// var obj = {
+//     value: 0,
+//     valueOf: function() {
+//         this.value++;
+//         return this.value;
+//     }
+// }
+
+// console.log(obj == 1 && obj == 2 && obj == 3)
+
+
+
+// var arr = [1,2,3,4,5,6,7];
+// arr.forEach(ele => {
+//     try {
+//         if (ele == 5) {
+//             throw new Error('can not be 5...');
+//         }
+//         console.log(ele);
+//     } catch {
+//         console.log('跳出foreach...');
+//     }
+// })
+
+
+// var arr = [1,2,3,5,6,7,8];
+
+// console.log(arr.indexOf(5));
+// console.log(arr.includes(5));
+// console.log(arr.find(item => item == 5));
+// console.log(arr.findIndex(item => item == 5));
+
+
+
+// 将 '10000000000' 形式的字符串，以每 3 位进行分隔展示 '10.000.000.000'
+// const formatNumber = str => {
+//     return str.replace(/\d(?=(\d{3})+$)/g,  '$&.');
+// }
+
+// var str = '123456789000';
+// console.log(formatNumber(str));
+
+
+
+// var arr = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38];
+
+// let k = 5;
+
+// const sortArr = (arr, num) => {
+//     return arr.reduce((res, cur, index, array) => {
+//         const arrSplit = array.splice(index, num);
+//         if (arrSplit.length == num) {
+//             arrSplit.reverse();
+//         }
+//         return [...res, ...arrSplit];
+//     }, [])
+// }
+
+// console.log(sortArr(arr, k));
+
+
+// console.log(['1', '2', '3'].map(parseInt))
+
+
+// let unary = fn => val => fn(val)
+// let parse = unary(parseInt)
+// console.log(['1.1', '2', '0.3'].map(parse))
+
+
+
+// console.log([1,'',3].map(parseInt))
+
+// console.log(parseInt('3', 2))
+
+
+// console.log(Number(undefined))
+
+
+// const m2 = new Map([['bar', 3]]);
+// console.log(m2)
+// const m3 = new Map(m2);
+// console.log(m3);
+
+
+// const obj = {
+//     name: '1',
+//     height: 2
+// }
+
+const objToMap = obj => {
+    let map = new Map();
+    for (let i in obj) {
+        map.set(i, obj[i])
+    }
+    return map;
+}
+
+// console.log(objToMap(obj));
+
+
+// const map1 = new Map();
+// const o = {x:1};
+// map1.set('a', 1).set('b', '2').set(o, '3');
+
+const mapToObj = map => {
+    let obj = {};
+    for (let [k, v] of map) {
+        obj[k] = v;
+    }
+    return obj;
+}
+
+// console.log(mapToObj(map1));
+
+
+// let set = new Set();
+// console.log(set.add('1'))
+// set.add('a').add(2).add([1]);
+// console.log(set)
+
+// console.log(set.delete('1'));
+// console.log(set)
+
+// console.log(set.clear(), set);
+
+// let set = new Set([1, 2, 3]);
+// console.log(set, set.keys(), [...set])
+
+// set.forEach(function(item, key) {
+//     console.log(item + ':' + key)
+// });
+// console.log(set)
+// console.log(new Set([undefined, undefined,]))
+
+// console.log( NaN === NaN, undefined === undefined, null === null, null === undefined,)
+
+// console.log(typeof map1, map1.prototype.constructor)
+
+
+// Set.prototype.clear = () => {
+//     let S = this;
+//     if (typeof S !== 'object') {
+//         throw TypeError('not object')
+//     }
+// }

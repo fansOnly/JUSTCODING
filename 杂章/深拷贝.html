@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>深拷贝</title>
+</head>
+<body>
+    <script>
+        // JSON简化版
+        var o1 = {
+            name: 'lili',
+            desc: {
+                height: 150
+            }
+        }
+        var o2 = JSON.parse(JSON.stringify(o1));
+        o2.desc.height = 180;
+        console.log('o1', o1, 'o2', o2, o1 === o2);
+
+        // 正式版
+        const isObject = obj => (typeof obj === 'object' || typeof obj === 'function') && obj !== null;
+        const getType = obj => Object.prototype.toString.call(obj);
+        // 可遍历对象
+        let traverse = {
+            '[object Map]': true,
+            '[object Set]': true,
+            '[object Array]': true,
+            '[object Object]': true,
+            '[object Arguments]': true,
+        };
+        // 处理正则类型
+        const handleRegExp = target => {
+            const { source, flags } = target;
+            return new target.constructor(source, flags);
+        }
+        // 处理函数类型
+        const handleFunc = target => {
+            if (!target.prototype) {
+                return target;
+            }
+            const bodyReg = /(?<={)(.|\n)+(?=})/m;
+            const paramReg = /(?<=\().+(?=\)\s+{))/;
+            const funcString = target.toString();
+            const param = paramReg.exec(funcString);
+            const body = bodyReg.exec(funcString);
+            if (!body) {
+                return null;
+            }
+            if (param) {
+                const paramArr = param[0].split(',');
+                return new Function(...paramArr, body[0]);
+            } else {
+                return new Function(body[0]);
+            }
+        }
+        const handleNotTraverse = (target, tag) => {
+            const Contor = target.constructor;
+            switch (tag) {
+                case '[object Boolean]':
+                case '[object Number]':
+                case '[object String]':
+                case '[object Error]':
+                case '[object Date]':
+                    return new Contor(target);
+                case '[object Regexp]':
+                    return handleRegExp(target);
+                case '[object Function]':
+                default:
+                    return new Contor(target);
+            }
+        }
+        const deepClone = (target, map = new WeakMap()) => {
+            if (!isObject(target)) {
+                return target;
+            }
+            const type = getType(target);
+            let cloneTarget = null;
+            if (!traverse[type]) {
+                return handleNotTraverse(target);
+            }
+            // 确保目标原型不丢失
+            const Contor = target.constructor;
+            cloneTarget = new Contor();
+
+            if (map.get(target)) {
+                return target;
+            }
+            map.set(target, true);
+
+            if (type == '[object Map]') {
+                target.forEach((item, key) => {
+                    cloneTarget.set(deepClone(key, map), deepClone(target, map));
+                })
+            }
+
+            if (type == '[object Set]') {
+                target.forEach(item => {
+                    cloneTarget.add(deepClone(item, map));
+                })
+            }
+
+            for (let prop in target) {
+                if (target.hasOwnProperty(prop)) {
+                    cloneTarget[prop] = deepClone(target[prop], map);
+                }
+            }
+            return cloneTarget;
+        }
+
+        var obj = {
+            name: 'sari',
+            desc: {
+                height: 180,
+                weight: 120
+            }
+        }
+        var obj2 = deepClone(obj);
+        obj2.desc.weight = 150;
+        console.log('obj', obj, 'obj2', obj2, obj === obj2);
+
+        let obj3 = {
+            value: 100
+        }
+        obj3.target = obj3;
+        let obj4 = deepClone(obj3);
+        console.log('obj4', obj4);
+
+
+        var o = {
+            name: '111',
+            birth: new Date(),
+            look: /1/,
+            // say: function() {
+            //     console.log('hello');
+            // }
+        };
+        var c1 = deepClone(o);
+        console.log('c1', c1, 'o', o, c1 === o);
+    </script>
+</body>
+</html>

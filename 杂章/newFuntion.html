@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>实现一个new funcition</title>
+</head>
+<body>
+    <script>
+        function newFun(fn, ...args) {
+            if (typeof fn !== 'function') {
+                throw TypeError('fn is not a function');
+            }
+            let func = Object.create(fn.prototype);
+            let res = fn.apply(func, args);
+            console.log('func', func);
+            console.log('res', res);
+            let isObject = typeof res === 'object' && res !== null;
+            let isFunction = typeof res === 'function';
+            return isObject || isFunction ? res : func;
+        }
+
+        function add(a, b) {
+            return a + b;
+        }
+        var res = newFun(add, 1, 3);
+        console.log(res);
+    </script>
+</body>
+</html>

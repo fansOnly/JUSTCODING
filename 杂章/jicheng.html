@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>继承</title>
+</head>
+<body>
+    <script>
+        // call
+        // var Parent = function() {
+        //     this.name = 'papa';
+        //     this.money = [1,2,3];
+        //     this.play = function() {
+        //         console.log(this.name + ' is play...');
+        //     }
+        // }
+        // var Child = function(height) {
+        //     Parent.call(this);
+        //     this.height= height;
+        // }
+        // var li = new Child(200);
+        // li.name = 'haizi';
+        // li.money.push(5);
+        // li.play();
+        // var za = new Child(300);
+        // za.name = 'huaihuai';
+        // console.log(li, za);
+
+
+
+        // prototype 组合继承
+        var Parent = function() {
+            this.name = 'papa';
+            this.money = [1,2,3];
+            this.play = function() {
+                console.log(this.name + ' is play...');
+            }
+        }
+        var Child = function(height, weight = '80') {
+            Parent.call(this);
+            this.height= height;
+            this.weight= weight;
+        }
+
+        Child.prototype = Object.create(Parent.prototype);
+        Child.prototype.constructor = Child;
+
+
+        var li = new Child(200);
+        li.name = 'haizi';
+        li.money.push(5);
+        li.play();
+        var za = new Child(300);
+        za.name = 'huaihuai';
+        console.log(li, za);
+
+    </script>
+</body>
+</html>

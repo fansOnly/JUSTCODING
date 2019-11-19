@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>数组扁平化</title>
+</head>
+<body>
+    <script>
+        var arr = [1,2,[1,2,[4,2,[5]],7],8,9,'',null,undefined];
+        var str = JSON.stringify(arr);
+        console.log(str)
+
+        console.log(arr.flat(Infinity));
+
+        console.log(str.replace(/(\[|\])/g, '').split(',').map(Number))
+
+        console.log(arr.join(',').split(','))
+
+
+        function flat(arr, depth = 1) {
+            return arr.reduce((res, cur) => res.concat(depth > 1 && Array.isArray(cur) ? flat(cur, depth - 1) : cur), [])
+        }
+
+        console.log(flat(arr, 10));
+
+        let res = [];
+        function flat2(arr, depth = 1) {
+            for (let i = 0, len = arr.length; i < len; i++) {
+                if (Array.isArray(arr[i]) && depth > 1) {
+                    flat2(arr[i], depth - 1);
+                } else {
+                    res.push(arr[i]);
+                }
+            }
+            return res;
+        }
+        console.log(flat2(arr, 10));
+    </script>
+</body>
+</html>

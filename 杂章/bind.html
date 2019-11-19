@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>实现bind</title>
+</head>
+<body>
+    <script>
+        Function.prototype.bind = function(context, ...args) {
+            if (typeof this !== 'function') {
+                throw TypeError('this is not a function');
+            }
+            console.log('context', context);
+            // 保存this的值，它代表调用 bind 的函数
+            let self = this;
+            let fn = function() {};
+            let res = function() {
+                self.apply(this instanceof self ? this : context, args.concat(Array.prototype.slice.call(arguments)))
+            }
+            // 方案一
+            fn.prototype = this.prototype;
+            res.prototype = new fn();
+            // 方案二
+            // res.prototype = Object.create(self.prototype);
+
+            return res;
+        }
+
+        function say() {
+            console.log('my name is ' + this.name);
+        }
+
+        
+        var obj = {
+            name: 'lili'
+        }
+        var say1 = say.bind(obj);
+        say1();
+        console.log('say1', say1.prototype);
+
+        var obj2 = {
+            name: 'jone'
+        }
+        var say2 = say.bind(obj2);
+        say2();
+        console.log('say2', say2.prototype);
+    </script>
+</body>
+</html>

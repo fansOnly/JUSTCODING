@@ -15,7 +15,7 @@
     <div style="height: 3000px;"></div>
     <script>
         // 第一次执行为准
-        function throtte (fn, interval = 1000) {
+        function throttle (fn, interval = 1000) {
             let last = 0;
             return function () {
                 let context = this;
@@ -27,11 +27,11 @@
                 }
             }
         }
-        const throtte_scroll = throtte(() => { console.log('throtte scroll...') }, 1000);
-        // document.addEventListener('scroll', throtte_scroll);
+        const throttle_scroll = throttle(() => { console.log('throttle scroll...') }, 1000);
+        // document.addEventListener('scroll', throttle_scroll);
 
         // 最后一次执行为准
-        function debunce (fn, delay = 1000) {
+        function debounce (fn, delay = 1000) {
             let timer = null;
             return function () {
                 let context = this;
@@ -44,11 +44,11 @@
                 }, delay);
             }
         }
-        const debunce_scroll = debunce(() => { console.log('debunce scroll...') }, 1000);
-        // document.addEventListener('scroll', debunce_scroll);
+        const debounce_scroll = debounce(() => { console.log('debounce scroll...') }, 1000);
+        // document.addEventListener('scroll', debounce_scroll);
 
-        // throtte and debunce toggether
-        function throtte2 (fn, delay = 1000) {
+        // throttle and debounce toggether
+        function throttle2 (fn, delay = 1000) {
             let last = 0, timer = null;
             return function () {
                 let context = this;
@@ -66,8 +66,8 @@
                 }
             }
         }
-        const throtte2_scroll = throtte2(() => { console.log('throtte2 scroll...') }, 1000);
-        document.addEventListener('scroll', throtte2_scroll);
+        const throttle2_scroll = throttle2(() => { console.log('throttle2 scroll...') }, 1000);
+        document.addEventListener('scroll', throttle2_scroll);
     </script>
 </body>
 </html>

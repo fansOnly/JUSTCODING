@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>函数式编程 - 示例</title>
+</head>
+<body>
+    <script>
+        // 函数式编程
+        const data = [
+            {
+                name: 'Peter',
+                sex: 'M',
+                age: 18,
+                grade: 99
+            },
+            {
+                name: 'Lily',
+                sex: 'F',
+                age: 30,
+                grade: 50
+            }, {
+                name: 'Jot',
+                sex: 'F',
+                age: 58,
+                grade: 35
+            }, {
+                name: 'Sugo',
+                sex: 'M',
+                age: 16,
+                grade: 9
+            },
+        ]
+
+        const compose2 = (...fns) => fns.reduceRight((acc, fn) => (...args) => fn(acc(...args)));
+
+        const compose = (...fns) => {
+            return fns.reduceRight((acc, fn) => {
+                return (...args) => {
+                    return fn(acc(...args));
+                }
+            })
+        }
+
+        // 获取所有年龄小于 18 岁的对象，并返回他们的名称和年龄。
+        const ageFilter = arr => arr.filter(item => item.age <= 18);
+        const naF = (arr) => arr.map(({name, age}) => ({name, age}));
+
+        const r1 = compose(naF, ageFilter)(data);
+        console.log(r1, compose2(naF, ageFilter)(data))
+
+        // 查找所有男性用户。
+        const sexFilter = (arr, sex) => arr.filter(item => item.sex == sex);
+
+        const r2 = sexFilter(data, 'M');
+        console.log(r2)
+
+        // 更新一个指定名称用户的成绩（不影响原数组）。
+        const name = 'Jot';
+        const getUserByName = (arr, name) => arr.filter(item => item.name == name)[0];
+        const updateGrade = (user, grade) => ({...user, grade});
+
+        const Jot = getUserByName(data, 'Jot');
+        const nJot = updateGrade(Jot, 88)
+        console.log(Jot, nJot);
+
+        // 取出成绩最高的 10 名，并返回他们的名称和分数。
+        const gradeSort = arr => arr.sort((a, b) => a.grade < b.grade ? 1 : -1);
+        const subF = arr => arr.splice(0, 10);
+        const ngF = arr => arr.map(({name, grade}) => ({name, grade}));
+
+        const r4 = compose(ngF, subF, gradeSort)(data);
+        console.log(r4);
+    </script>
+</body>
+</html>

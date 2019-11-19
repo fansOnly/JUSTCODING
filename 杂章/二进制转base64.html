@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>二进制图片转换base64或者blob</title>
+</head>
+<body>
+    <img id="base64Img" src="" alt="">
+    <img id="blobImg" src="" alt="">
+    <script>
+        const url = 'http://wimg.huodongxing.com/logo/201911/8518648189311/313601726231863_v2.jpg@!wmlogo';
+
+        const binaryUrl = strToBinary(url);
+        const buffer = binaryUrl.split(' ');
+        console.log('buffer => ', buffer);
+
+
+        console.log('xxx', new Uint8Array(buffer));
+
+        const base64 = btoa(String.fromCharCode(...new Uint8Array(buffer)));
+
+        console.log('base64', base64);
+
+        const base64Url = 'data:image/jpeg;base64,' + base64;
+        console.log('base64Url', base64Url);
+
+        document.getElementById('base64Img').src = base64Url;
+        console.log('')
+
+
+        const blob = new Blob([buffer], { type: 'image/jpeg' });
+        console.log('blob', blob);
+        const blobUrl = URL.createObjectURL(blob);
+        console.log('blobUrl', blobUrl);
+        document.getElementById('base64Img').src = blobUrl;
+
+        function strToBinary(str) {
+            let res = [];
+            let list = str.split('');
+            for (let i = 0, len = list.length; i < len; i++) {
+                if (i != 0) {
+                    res.push(' ');
+                }
+                const item = list[i];
+                const binaryStr = item.charCodeAt().toString(2);
+                res.push(binaryStr);
+            }
+            return res.join('');
+        }
+    </script>
+</body>
+</html>

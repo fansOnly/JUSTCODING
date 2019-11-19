@@ -9,12 +9,12 @@
 <body>
     <script>
         // forEach - 对数组的每个元素执行一次提供的函数。
-        // array, callback[value, index, array]
+        // array, callback[value]
         function forEach (array, callback) {
             const { length } = array;
             for (let index = 0; index < length; index++) {
                 const value = array[index];
-                callback(callback[value, index, array]);
+                callback(value);
             }
         }
         const arr1 = [1,2,3,4,5];
@@ -31,7 +31,7 @@
             const { length } = array;
             for (let index = 0; index < length; index++) {
                 const value = array[index];
-                result[index] = callback(callback[value, index, array]);
+                result[index] = callback(value);
             }
             return result;
         }
@@ -49,7 +49,7 @@
             const { length } = array;
             for (let index = 0; index < length; index++) {
                 const value = array[index];
-                if (callback(callback[value, index, array])) {
+                if (callback(value)) {
                     result.push(value);
                 }
             }
@@ -74,7 +74,7 @@
             }
             for (let index = startIndex; index < length; index++) {
                 const value = array[index];
-                acc = callback(acc, callback[value, index, array]);
+                acc = callback(acc, value);
             }
             return acc;
         }
@@ -91,7 +91,7 @@
             const { length } = array;
             for (let index = 0; index < length; index++) {
                 const value = array[index];
-                if (callback(callback[value, index, array])) {
+                if (callback(value)) {
                     return index;
                 }
             }
@@ -112,7 +112,7 @@
             const { length } = array;
             for (let index = 0; index < length; index++) {
                 const value = array[index];
-                if (callback(callback[value, index, array])) {
+                if (callback(value)) {
                     return value;
                 }
             }
@@ -181,7 +181,7 @@
             if (length === 0) return true;
             for (let index = 0; index < length; index++) {
                 const value = array[index];
-                return callback(callback[value, index, array]);
+                return callback(value);
             }
             return false;
         }
@@ -201,7 +201,7 @@
             if (length === 0) return false;
             for (let index = 0; index < length; index++) {
                 const value = array[index];
-                if (callback(callback[value, index, array])) {
+                if (callback(value)) {
                     return true;
                 }
             }

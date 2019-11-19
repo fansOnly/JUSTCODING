@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>es6 Map、WeakMap和Set、WeakSet 解读</title>
+    <link rel="stylesheet" href="./style/reset.css">
+</head>
+<body>
+    <!-- Set -->
+    <h2 class="teal">一、关于Set</h2>
+
+    <h4>1、Set 对象可以存储任意类型的值，Set 中的元素是唯一的。</h4>
+
+    <h4>2、Set 对象内部采用 SameValueZero <sup><a href="#mark1">1⃣️</a></sup> 算法对元素进行比较去重。</h4>
+
+    <h4>3、Set 属性</h4>
+    <p>Set.prototype：Set 构造器的原型。</p>
+    <p>Set.length：Set 对象的长度。</p>
+    <p>Set[@@species]：构造函数用来创建派生对象。</p>
+
+    <h4>4、Set 实例：通过 new Set([iterable]) 创建一个 Set 对象。</h4>
+    <p >如果传入一个可迭代对象，所有元素将无重复的传入 Set 中，如果传入 null 或者不传参数，新的 Set 默认为空。</p>
+
+    <h4>5、Set 实例的属性</h4>
+    <p>Set.prototype.constructor：实例的构造函数，默认指向 Set。</p>
+    <p>Set.prototype.size：返回 Set 对象的值的个数。</p>
+
+    <h4>6、Set 实例的方法：</h4>
+    <p>四种操作方法：</p>
+    <p>A. Set.prototype.add(value)：往 Set 对象尾部添加元素，返回 Set 对象。</p>
+    <pre>
+        <code>let set = new Set();</code>
+        <code>set.add('1').add('a').add([2]);</code>
+        <code class="console">// Set { '1', 'a', [ 2 ] }</code>
+    </pre>
+    <p>B. Set.prototype.delete(value)：移除指定的元素，Set 对象中能找到该元素，返回 true， 否则返回 false。</p>
+    <pre>
+        <code>let set = new Set(['1', 'a', [2]]);</code>
+        <code>set.delete(1);</code>
+        <code class="console">// false Set { '1', 'a', [ 2 ] }</code>
+        <code>set.delete('1');</code>
+        <code class="console">// true Set { 'a', [ 2 ] }</code>
+    </pre>
+    <p>C. Set.prototype.has(value)：判断值是否存在于 Set 对象中，返回布尔值。</p>
+    <pre>
+        <code>let set = new Set(['1', 'a', [2]]);</code>
+        <code>set.has('a');</code>
+        <code class="console">// true</code>
+    </pre>
+    <p>D. Set.prototype.clear()： 移除 Set 对象内的所有元素。</p>
+    <pre>
+        <code>let set = new Set(['1', 'a', [2]]);</code>
+        <code>set.clear();</code>
+        <code class="console">// Set { }</code>
+    </pre>
+
+    <p>四种遍历方法：</p>
+    <p>A. Set.prototype.keys()：返回一个新的迭代器对象，该对象包 Set 对象中按插入顺序排列的所有元素的值。</p>
+    <pre>
+        <code>let set = new Set([1, 'a', [2], {x: 3}]);</code>
+        <code>for (let item of set.keys()) {</code>
+        <code class="func">console.log(item);</code>
+        <code class="console func">// 1, 'a', [2], {x: 3}</code>
+        <code>}</code>
+    </pre>
+    <p>B. Set.prototype.values()：同 keys() 方法。</p>
+    <p>C. Set.prototype.entries(): 返回一个新的迭代器对象，该对象包含 Set 对象中按插入顺序排列的所有元素的值的 [value, value] 数组。</p>
+    <pre>
+        <code>let set = new Set([1, 'a', [2], {x: 3}]);</code>
+        <code>for (let item of set.entries()) {</code>
+        <code class="func">console.log(item);</code>
+        <code class="console func">// [1, 1], ['a', 'a'], [[2], [2]], [{x: 3}, {x: 3}]</code>
+        <code>}</code>
+    </pre>
+    <p>D. Set.prototype.forEach(callbackFn[, thisArg])：为 Set 对象中的每个值执行一次 callbackFn()，如果指定了 thisArg，回调中的 this 会是这个值。</p>
+    <p class="green">ps：不能通过 forEach 循环遍历修改 Set 对象。</p>
+    <pre>
+        <code>let set = new Set([1,2]);</code>
+        <code>set.forEach(function(value, key) {</code>
+        <code class="func">console.log(value + ':' + key);</code>
+        <code class="console func">// 1:1, 2:2</code>
+        <code>})</code>
+    </pre>
+
+    <h4>7、Set 应用实战</h4>
+    <p>A. Set 转换数组</p>
+    <pre>
+        <code>let set = new Set([1, 2, 'a']);</code>
+        <code>let arr = [...set];</code>
+        <code>let arr2 = Array.from(set);</code>
+        <code class="console">// [1, 2, 'a']</code>
+    </pre>
+    <p>B. 数组去重(unique)</p>
+    <pre>
+        <code>let arr = [1, 2, 3, 1, 4, 5];</code>
+        <code>let unique = [...new Set(arr)];</code>
+        <code class="console">// [1, 2, 3, 4, 5]</code>
+    </pre>
+    <p>C. 实现并集(union)、交集(intersect)、差集(difference)</p>
+    <pre>
+        <code>let set1 = new Set([1, 2, 3, 4, 5]);</code>
+        <code>let set2 = new Set([3, 6, 7, 8, 5]);</code>
+        <code>let union = new Set([...set1, ...set2]);</code>
+        <code class="console">// Set {1, 2, 3, 4, 5, 6, 7, 8}</code>
+        <code>let intersect = new Set([...set1].filter(x => set2.has(x)));</code>
+        <code class="console">// Set {3, 5}</code>
+        <code>let difference = new Set([...set1].filter(x => !set2.has(x)));</code>
+        <code class="console">// Set {1, 2, 4}</code>
+    </pre>
+    <p>D. 变更 Set 结构：将 Set 变更为数组，对数组进行操作后再转换为 Set 结构</p>
+    <p>例：将 Set 中的值+1</p>
+    <pre>
+        <code>let set = new Set([1, 2, 3, 4, 5]);</code>
+        <code>let res = new Set([...set].map(x => ++x));</code>
+        <code>let res = new Set(Array.from(set, x => ++x));</code>
+        <code class="console">// Set {2, 3, 4, 5, 6}</code>
+    </pre>
+    <!-- WeakSet -->
+    <h2 class="teal">二、WeakSet</h2>
+    <h4>1、WeakSet 定义</h4>
+    <p>WeakSet 对象是一些对象的值的集合，每个对象只能出现一次。</p>
+
+    <h4>2、WeakSet 与 Set 的区别：</h4>
+    <p>A. WeakSet 只能存放对象引用，不能存放值，即成员只能是对象。</p>
+    <p>B. WeakSet 中的值都是弱引用，如果没有其他的对象或者属性引用这个值，它会被垃圾回收机制回收掉。因此，Weakset 无法被枚举。</p>
+
+    <h4>3、WeakSet 属性</h4>
+    <p>WeakSet.prototype： WeakSet 对象的原型</p>
+    <p>WeakSet.length： WeakSet 对象的长度</p>
+    <p>WeakSet.prototype [ @@toStringTag ]：{ [[Writable]]: false, [[Enumerable]]: false, [[Configurable]]: true }</p>
+
+    <h4>4、WeakSet 实例：通过 new WeakSet([iterable]) 创建一个 WeakSet 对象。</h4>
+    <p >如果传入一个可迭代对象，所有元素将无重复的传入 WeakSet 中，如果传入 null 或者不传参数，新的 WeakSet 默认为空。</p>
+
+    <h4>5、WeakSet 实例的属性</h4>
+    <p>WeakSet.prototype.constructor</p>
+
+    <h4>6、WeakSet 实例的方法</h4>
+    <p>A. WeakSet.has(value)：在该 WeakSet 对象中添加一个新元素 value。</p>
+    <pre>
+        <code>let weakset = new WeakSet();</code>
+        <code>weakset.add(window);</code>
+        <code class="console">// WeakSet { window 对象 }</code>
+    </pre>
+    <p>B. WeakSet.delete(value)：删除 WeakSet 对象中的 value 值。</p>
+    <pre>
+        <code>let weakset = new WeakSet([document.body, window]);</code>
+        <code>weakset.delete(document.body);</code>
+        <code class="console">// WeakSet { window 对象 }</code>
+    </pre>
+    <p>C. WeakSet.has(value)：判断 value 是否存在于 WeakSet 对象中。</p>
+    <pre>
+        <code>let weakset = new WeakSet([window]);</code>
+        <code>weakset.has(window);</code>
+        <code class="console">// true</code>
+        <code>weakset.delete(window);</code>
+        <code class="console">// false</code>
+    </pre>
+    <h4>7、WeakSet 应用</h4>
+    <p>A. 存储 DOM 节点，避免内存泄漏。</p>
+
+
+
+
+
+
+
+    <!-- 备注区域 -->
+    <div class="title">文档备注：</div>
+    <div class="marks">
+        <div id="mark1">1⃣️、SameValueZero：+0 与 -0 相等；NaN 与 NaN 相等；其余同 ===；<a href="https://www.ecma-international.org/ecma-262/6.0/#sec-samevaluezero" target="_blank">🔗</a></div>
+    </div>
+    <!-- 参考链接 -->
+    <div class="links">
+        <div class="title">参考文献：</div>
+        <p><a href="https://www.ecma-international.org/ecma-262/6.0/#sec-set-objects" target="_blank">1、ECMAScript 2015 (6th Edition, ECMA-262)</a></p>
+        <p><a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Set" target="_blank">2、Web 开发技术JavaScriptJavaScript 参考JavaScript 标准内置对象Set</a></p>
+        <p><a href="http://es6.ruanyifeng.com/#docs/set-map#Set" target="_blank">3、阮一峰 ECMAScript 6入门 Set 和 Map 数据结构</a></p>
+    </div>
+    <div id="top">TOP</div>
+    <script src="./js/index.js"></script>
+</body>
+</html>

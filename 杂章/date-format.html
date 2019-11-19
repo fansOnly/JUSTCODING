@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>格式化日期</title>
+</head>
+
+<body>
+    <script>
+        const dateFormatter = (formatter, timestamp) => {
+            const date = typeof (timestamp) === 'number' ? new Date(timestamp) : new Date();
+            const Y = date.getFullYear() + '',
+                M = date.getMonth() + 1,
+                D = date.getDate(),
+                H = date.getHours(),
+                m = date.getMinutes(),
+                s = date.getSeconds();
+            return formatter.replace(/YYYY|yyyy/g, Y)
+                .replace(/YY|yy/g, Y.substr(2, 2))
+                .replace(/MM/g, M < 10 ? '0' + M : M)
+                .replace(/DD/g, D < 10 ? '0' + D : D)
+                .replace(/HH|hh/g, H < 10 ? '0' + H : H)
+                .replace(/mm/g, m < 10 ? '0' + m : m)
+                .replace(/ss/g, s < 10 ? '0' + s : s)
+        }
+
+        const date1 = dateFormatter('YYYY-MM-DD HH:mm:ss', 131231123323)
+        console.log(date1)
+        const date2 = dateFormatter('YYYY-MM-DD HH:mm:ss', '')
+        console.log(date2)
+    </script>
+</body>
+
+</html>

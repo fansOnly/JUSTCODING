@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>BFC - 块级格式化上下文</title>
+    <style>
+        html {
+            min-height: 3000px;
+        }
+        .clearfix {
+            zoom: 1;
+        }
+        .clearfix::after {
+            content: "";
+            display: block;
+            height: 0;
+            clear: both;
+        }
+        .box1 {
+            width: 100%;
+            height: 50px;
+            background: olivedrab;
+            margin: 10px 0;
+        }
+
+        .box2 {
+            display: inline-block;
+            width: 100%;
+            height: 50px;
+            background: gray;
+            margin: 20px 0;
+        }
+
+        .box3 {
+            width: 100%;
+            height: 50px;
+            background: orange;
+            margin: 30px 0;
+        }
+
+        .wrap2 {
+            overflow: hidden;
+        }
+
+        .box4 {
+            float: left;
+            width: 30%;
+            height: 50px;
+            background: #999;
+            margin: 10px 0;
+        }
+
+        .box5 {
+            float: left;
+            width: 30%;
+            height: 50px;
+            background: #aaa;
+            margin: 20px 0;
+        }
+
+        .box6 {
+            float: left;
+            width: 30%;
+            height: 50px;
+            background: #bbb;
+            margin: 30px 0;
+        }
+
+        .box7 {
+            width: 100px;
+            height: 50px;
+            background: #ccc;
+            margin: 30px 0;
+        }
+
+        .parent-absolute-margin {
+            width: 520px;
+            height: 260px;
+            background-color: green;
+            position: relative;
+        }
+
+        .child-absolute-margin {
+            background-color: pink;
+            width: 300px;
+            height: 150px;
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            margin: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrap">
+        <div class="box1"></div>
+        <div class="box2"></div>
+        <div class="box3"></div>
+    </div>
+    <div class="wrap2">
+        <div class="box4"></div>
+        <div class="box5"></div>
+        <div class="box6"></div>
+    </div>
+    <div class="box7"></div>
+
+    <div class="parent-absolute-margin">
+        <div class="child-absolute-margin"></div>
+    </div>
+
+    <style>
+        .wrap3 {
+            position: relative;
+            margin-top: 100px;
+        }
+        .left1 {
+            float: left;
+            width: 200px;
+            height: 100px;
+            background: #ccc;
+        }
+        .main1 {
+            width: auto;
+            height: 100px;
+            background: green;
+            margin: 0 210px;
+        }
+        .right1 {
+            float: right;
+            width: 200px;
+            height: 100px;
+            background: #333;
+            margin-top: -100px;
+        }
+    </style>
+    <div class="wrap3 clearfix">
+        <div class="left1"></div>
+        <div class="main1"></div>
+        <div class="right1"></div>
+    </div>
+
+    <style>
+    .wrap4 {
+            position: relative;
+            margin-top: 100px;
+        }
+        .left2 {
+            position: absolute;
+            width: 200px;
+            height: 100px;
+            background: #ccc;
+        }
+        .main2 {
+            width: auto;
+            height: 100px;
+            background: green;
+            margin: 0 210px;
+        }
+        .right2 {
+            float: right;
+            width: 200px;
+            height: 100px;
+            background: #333;
+            margin-top: -100px;
+        }
+        </style>
+    <div class="wrap4">
+        <div class="left2"></div>
+        <div class="main2"></div>
+        <div class="right2"></div>
+    </div>
+
+    <!-- 翘边阴影布局 -->
+    <style>
+    .shadow-box {
+        margin: 50px auto;
+        position: relative;
+        width: 200px;
+        height: 200px;
+        background: green;
+    }
+    .shadow-box::before {
+        content: "";
+    position: absolute;
+    left: 4%;
+    width: 93%;
+    top: 6%;
+    height: 92%;
+    box-shadow: 2px 4px 5px rgba(0, 0, 0, 1);
+    transform: skew(-5deg) rotate(-2deg);
+    z-index: -1;
+    }
+    .shadow-box::after {
+        content: "";
+    position: absolute;
+    right: 4%;
+    width: 93%;
+    top: 6%;
+    height: 92%;
+    box-shadow: -2px 4px 5px rgba(0, 0, 0, 1);
+    transform: skew(5deg) rotate(2deg);
+    z-index: -1;
+    }
+    </style>
+    <div class="shadows">
+        <div class="shadow-box"></div>
+    </div>
+
+    <style>
+        .img-gray {
+            -webkit-filter: grayscale(1);
+        }
+    </style>
+    <div class="img-gray">
+        <img src="https://pics1.baidu.com/feed/5fdf8db1cb1349540889cf148aa0235dd0094a1a.jpeg?token=cff4f2be514c3f9f05cfb75e56b01002&s=9B944E8400434B5F44BE29C4030010AA" width="200" height="200" alt="">
+    </div>
+
+
+    <style>
+        .dot {
+            position: relative;
+            display: inline-block;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #52c41a;
+        vertical-align: middle;
+        margin-right: 3px;
+        }
+        .dot::before {
+            content: "";
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 6px;
+            height: 6px;
+            background: transparent;
+            border: 1px solid #52c41a;
+            border-radius: 100%;
+            transform: translate(-50%, -50%);
+            animation: emit 1.2s linear infinite;
+        }
+        @keyframes emit {
+            0% {
+                width: 6px;
+                height: 6px;
+                opacity: 0;
+            }
+            50% {
+                width: 10px;
+                height: 10px;
+                opacity: 1;
+            }
+            100% {
+                width: 12px;
+                height: 12px;
+                opacity: 0;
+            }
+        }
+    </style>
+    <div class="dot">
+    </div>
+
+    <script>
+        function throttle(fn, delay = 500) {
+            let last = 0;
+            return function() {
+                let now = +new Date();
+                if (last <= now - delay) {
+                    last = now;
+                    fn.apply(this, arguments);
+                }
+            }
+        }
+        const throttle_scroll = throttle(() => { console.log('throttle scroll by 1000ms...') }, 1000)
+        // document.addEventListener('scroll', throttle_scroll);
+
+        function debounce(fn, delay = 500) {
+            let timer = null;
+            return function() {
+                if (timer) {
+                    clearTimeout(timer);
+                }
+                timer = setTimeout(() => {
+                    fn.apply(this, arguments);
+                }, delay);
+            }
+        }
+        const debounce_scroll = debounce(() => { console.log('debounce scroll by 1000ms...') }, 1000)
+        // document.addEventListener('scroll', debounce_scroll);
+
+        function throttle_debounce(fn, delay = 500) {
+            let last = 0, timer = null;
+            return function() {
+                let now = +new Date();
+                if (now - last >= delay) {
+                    last = now;
+                    fn.apply(this, arguments);
+                } else {
+                    if (timer) {
+                        clearTimeout(timer);
+                    }
+                    timer = setTimeout(() => {
+                        fn.apply(this, arguments);
+                    }, delay);
+                }
+            }
+        }
+        const tb_scroll = throttle_debounce(() => { console.log('throttle_debounce scroll by 1000ms...') }, 1000)
+        document.addEventListener('scroll', tb_scroll);
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>计算价格 - 函数</title>
+</head>
+
+<body>
+    <script>
+        const priceMap = (function () {
+            const discountMap = {
+                minus100_30: price => {
+                    return price - Math.floor(price / 100) * 30
+                },
+                percent80: price => {
+                    return price * 0.8
+                }
+            }
+            return {
+                priceCalc: (type, ...rest) => {
+                    return discountMap[type] && discountMap[type](...rest)
+                },
+                addDisFn: (type, fn) => {
+                    if (discountMap[type]) return;
+                    return discountMap[type] = fn
+                }
+            }
+        })()
+
+        const p1 = priceMap.priceCalc('minus100_30', 200)
+        console.log(p1)
+
+        const p2 = priceMap.priceCalc('minus100_50', 100)
+        console.log(p2)
+
+        priceMap.addDisFn('minus100_50', price => {
+            return price - Math.floor(price / 100) * 50
+        })
+
+        const p3 = priceMap.priceCalc('minus100_50', 100)
+        console.log(p3)
+    </script>
+</body>
+
+</html>

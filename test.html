@@ -5,25 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>test</title>
+    <script>
+        window.pageStartTime = Date.now();
+    </script>
 </head>
 <body>
+    <div contenteditable="true">
+        <div>this is editable...</div>
+        <div contenteditable="false"> this is uneditable...</div>
+        <script>
+            window.firstPaint= Date.now();
+            console.log(window.firstPaint - performance.timing.navigationStart);
+        </script>
+        <div>this is editable...</div>
+    </div>
+        <button onclick="addState()">添加栈</button>
     <script>
-        window.val = 1;
-        var obj = {
-            val: 2,
-            run: function () {
-                console.log('this', this);
-                this.val += 2;
-                val += 2;
-                console.log('val', val);
-                console.log('this.val', this.val);
+        let history = window.history;
+        console.log('history', history);
+
+        function addState() {
+            const stateObj = {
+                name: 'lili'
             }
+            history.pushState(stateObj, 'haha', 'proxy.html');
         }
-        // console.log('obj', obj);
-        obj.run();
-        var fn = obj.run;
-        // console.log('fn', fn);
-        fn();
     </script>
 </body>
 </html>

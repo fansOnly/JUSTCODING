@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>判断类型汇总</title>
+</head>
+<body>
+    <script>
+        // 获取类型
+        function getType(obj) {
+            if (obj === null) return String(obj);
+            return typeof obj === 'object' ? Object.prototype.toString.call(obj).replace('[object ', '').replace(']', '').toLowerCase() : typeof obj;
+        }
+        console.log('sss =>', getType('sss'));
+        console.log('null =>', getType(null));
+        console.log('/1/ => ', getType(/1/));
+        console.log('undefined => ', getType(undefined));
+        console.log('{} => ', getType({}));
+        console.log('function => ', getType(function() {}));
+        console.log('new Date() => ', getType(new Date()));
+        console.log('')
+
+        // 判断类型
+        function getType2(obj, type) {
+            return Object.prototype.toString.call(obj) === '[object '+type.replace(/^\w/, x => x.toUpperCase())+']';
+        }
+        console.log('sss => string', getType2('sss', 'string'));
+        console.log('111 => number', getType2(111, 'number'));
+        console.log('/1/ => regexp', getType2('/1/', 'regexp'));
+        console.log('undefined => undefined', getType2(undefined, 'undefined'));
+        console.log('null => null', getType2(null, 'null'));
+        console.log('{} => object', getType2({}, 'object'));
+        console.log('function => function', getType2(function() {}, 'function'));
+        console.log('new Date() => Date', getType2(new Date(), 'date'));
+    </script>
+</body>
+</html>
