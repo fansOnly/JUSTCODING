@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>css in js</title>
+</head>
+
+<body>
+    <div id="el"></div>
+    <script>
+        function createRandomName() {
+            const code = Math.random().toString(36).substring(7);
+            return `css-${code}`;
+        }
+
+        function phraseStyle(style) {
+            const keys = Object.keys(style);
+            const keyValue = keys.map(key => {
+                const kebabCaseKey = key.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase();
+                const value = `${style[key]}${typeof style[key] === "number" ? "px" : ""}`;
+                return `${kebabCaseKey}:${value};`;
+            });
+            return `{${keyValue.join("")}}`;
+        }
+
+        function createClassName(style) {
+            const className = createRandomName();
+            let styleSheet;
+            for (let i = 0; i < document.styleSheets.length; i++) {
+                if (document.styleSheets[i].CSSInJS) {
+                    styleSheet = document.styleSheets[i];
+                    break;
+                }
+            }
+            if (!styleSheet) {
+                const style = document.createElement("style");
+                document.head.appendChild(style);
+                styleSheet = style.sheet;
+                styleSheet.CSSInJS = true;
+            }
+            styleSheet.insertRule(`.${className}${phraseStyle(style)}`);
+            return className;
+        }
+
+        const el = document.getElementById("el");
+
+        const redRect = createClassName({
+            width: 100,
+            height: 100,
+            backgroundColor: "red"
+        });
+
+        el.classList.add(redRect);
+    </script>
+</body>
+
+</html>

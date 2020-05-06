@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        // 实现 call
+        var name ='this is window name'
+        var obj = {
+            name: 'this is obj name snowe'
+        }
+
+        function say() {
+            return this.name
+        }
+
+        console.log('name by default to window =>',say());
+        console.log('name ny call to obj =>',say.call(obj));
+
+        Function.prototype.myCall = function(thisArg, ...args) {
+            if (typeof this !== 'function') {
+                throw new TypeError(this + ' is not a function')
+            }
+            const fn = Symbol('fn');
+            thisArg = thisArg || window;
+            thisArg[fn] = this;
+            const result = thisArg[fn](...args);
+            delete thisArg[fn];
+            return result;
+        }
+
+        console.log('name by myCall to obj =>', say.myCall(obj));
+
+        function Parent(name, age) {
+            this.name = name;
+            this.age = age;
+            this.hobby = 'read';
+        }
+
+        Parent.prototype.hello = function() {
+            return 'This is ' + this.name + ', I’m ' + this.age + 'years old';
+        }
+
+        function Child(name, age, gender) {
+            // Parent.call(this, name, age);
+            Parent.myCall(this, name, age);
+            this.gender = gender;
+        }
+
+        const child1 = new Child('lili', 11, 'male');
+        console.log('child1 instance =>', child1)
+
+        // 手动实现 apply
+        Function.prototype.myApply = function(thisArg, args) {
+            if (typeof this !== 'function') {
+                throw new TypeError(this +' is not a function')
+            }
+            const fn = Symbol('fn');
+            thisArg = thisArg || window;
+            thisArg[fn] = this;
+            const result = thisArg[fn](...args);
+            delete thisArg[fn];
+            return result;
+        }
+
+        console.log(say.myApply(obj, []));
+
+        function Child2() {
+            Parent.myApply(this, ...arguments);
+        }
+        var child2 = new Child2(['john', '20']);
+        console.log('child2 instance =>', child2)
+
+
+        // 手动实现 bind
+        Function.prototype.myBind = function(thisArg) {
+            if (typeof this !== 'function') {
+                throw new TypeError (thisArg + ' is not a function')
+            }
+            var target = this;
+            var args = Array.prototype.slice.call(arguments, 1);
+            var fbound = function() {
+                console.log('this instanceof target', this instanceof target)
+                if (this instanceof target) {
+                    target.apply(this, args.concat(Array.prototype.slice.call(arguments)));
+                } else {
+                    target.apply(thisArg, args.concat(Array.prototype.slice.call(arguments)));
+                }
+            }
+            fbound.prototype = Object.create(target.prototype);
+            return fbound;
+        }
+
+        function foo() {
+            // console.log('arguments =>', arguments)
+            // console.log(this.name)
+            return this.name
+        }
+
+        // console.log('foo by bind to obj =>',foo.bind(obj, 'a', 'b')())
+        // console.log('foo by myBind to obj =>',foo.myBind(obj, 'a', 'b')())
+        // console.log('foo by myBind to null =>', foo.myBind(null, 'a', 'b')())
+
+        function hello() {
+            console.log('hello this =>', this)
+            console.log('This is ' + this.name + ', I’m ' + this.age + ' years old, And I like ' + this.hobby + '.', ...arguments)
+            // return 'This is ' + this.name + ', I’m ' + this.age + 'years old, And I like' + this.hobby;
+        }
+        const parent1 = new Parent('lilei', 20);
+        console.log('parent1 =>', parent1)
+        console.log('hello by myBind to parent1 =>', hello.myBind(parent1, 'today is monday', 'sunning')())
+
+        Parent.prototype.well = function() {
+            return hello.myBind(Parent)()
+        }
+        console.log('', parent1.well())
+    </script>
+</body>
+</html>

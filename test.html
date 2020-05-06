@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,27 +10,17 @@
         window.pageStartTime = Date.now();
     </script>
 </head>
-<body>
-    <div contenteditable="true">
-        <div>this is editable...</div>
-        <div contenteditable="false"> this is uneditable...</div>
-        <script>
-            window.firstPaint= Date.now();
-            console.log(window.firstPaint - performance.timing.navigationStart);
-        </script>
-        <div>this is editable...</div>
-    </div>
-        <button onclick="addState()">添加栈</button>
-    <script>
-        let history = window.history;
-        console.log('history', history);
 
-        function addState() {
-            const stateObj = {
-                name: 'lili'
-            }
-            history.pushState(stateObj, 'haha', 'proxy.html');
-        }
+<body>
+        <object id="CardAccessor" 
+        classid="clsid:03AD53E8-D7E7-485D-A39A-D07B37DEFBC9"     
+        width="0" 
+        height="0">
+    </object>
+    <script>
+        var el = document.getElementById('CardAccessor');
+        console.log(el)
     </script>
 </body>
+
 </html>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .wrap {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            display: flex;
+        }
+        .left {
+            width: 50%;
+        }
+        .right {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 50%;
+        }
+        .scroll-wrap {
+            height: 300px;
+            background-color: #eee;
+            overflow: auto;
+        }
+        .inner {
+            height: 3000px;
+        }
+    </style>
+</head>
+<body>
+    <div class="wrap" style="height: 3000px;">
+        <div class="left">
+            <div class="input"><textarea rows="10" cols="100%"></textarea></div>
+            <div class="input-text">输入的值为：<span></span></div>
+        </div>
+        <div class="right">
+            <div class="scroll-text">滚动的值为：<span>0</span>px</div>
+        </div>
+    </div>
+    <script>
+        // 防抖 - 一定时间内的多次操作只会执行最后一次行为触发, 只执行一次
+        function debounce(fn, wait = 500, immediate = false) {
+            let timeout = null;
+            return function() {
+                let context = this
+                let args = arguments
+                if (timeout) clearTimeout(timeout);
+                if (immediate) return fn.apply(context, args);
+                timeout = setTimeout(() => {
+                    fn.apply(context, args);
+                }, wait)
+            }
+        }
+
+        const inputTextEle = document.querySelector('.input-text>span');
+        document.addEventListener('input', debounce(e => (inputTextEle.innerHTML = e.target.value) && console.log('inputValue =>', e.target.value)))
+        
+        const scrollTextEle = document.querySelector('.scroll-text>span');
+
+        document.onload = function() {
+            scrollTextEle.innerHTML = document.scrollingElement.scrollTop;
+        }
+
+        document.addEventListener('scroll', debounce(() => {
+            scrollTextEle.innerHTML = document.scrollingElement.scrollTop;
+            console.log('debounce scrollTop =>', document.scrollingElement.scrollTop, new Date())
+        }, 1000))
+    </script>
+    <script>
+        // 节流 - 一定的时间内的多次操作只会按照规定的频率执行, 会执行多次
+        function throttle(fn, wait = 500) {
+            let timeout = null;
+            return function() {
+                let context = this;
+                let args = arguments;
+                if (!timeout) {
+                    timeout = setTimeout(() => {
+                        timeout = null;
+                        fn.apply(context, args);
+                    }, wait);
+                }
+            }
+        }
+        // document.addEventListener('scroll', throttle(() => {
+        //     scrollTextEle.innerHTML = document.scrollingElement.scrollTop;
+        //     console.log('throttle scrollTop =>', document.scrollingElement.scrollTop, new Date())
+        // }, 1000))
+    </script>
+</body>
+</html>

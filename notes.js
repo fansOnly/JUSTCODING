@@ -786,16 +786,6 @@ console.log(tmp);
 
 
 
-// function maxTen(nums) {
-//     nums = nums.sort((a, b) => b - a);
-//     console.log(nums);
-//     return nums.splice(0, 10);
-// }
-// const arr = [1,2,55,66,90,450,778,22,445,332,678,432,556,222,5678,222345,78654,9];
-// console.log(maxTen(arr));
-
-
-
 
 // function forEach (array, callback) {
 //     const { length } = array;
@@ -1017,16 +1007,6 @@ console.log(tmp);
 
 
 
-// var arr = [1,2,3,4, 5, 6];
-// arr.map((item, index, arr) => {
-//     // arr[index+1] = 5;
-//     delete(arr[index+1])
-//     console.log(item);
-// })
-
-// console.log(arr)
-
-
 // var arr = [1,2,3,4,5];
 // var arr2 = new Array(arr.length);
 // let i = 0, j = 0;
@@ -1212,28 +1192,28 @@ console.log(tmp);
 //     height: 2
 // }
 
-const objToMap = obj => {
-    let map = new Map();
-    for (let i in obj) {
-        map.set(i, obj[i])
-    }
-    return map;
-}
+// const objToMap = obj => {
+//     let map = new Map();
+//     for (let i in obj) {
+//         map.set(i, obj[i])
+//     }
+//     return map;
+// }
 
-// console.log(objToMap(obj));
+// // console.log(objToMap(obj));
 
 
-// const map1 = new Map();
-// const o = {x:1};
-// map1.set('a', 1).set('b', '2').set(o, '3');
+// // const map1 = new Map();
+// // const o = {x:1};
+// // map1.set('a', 1).set('b', '2').set(o, '3');
 
-const mapToObj = map => {
-    let obj = {};
-    for (let [k, v] of map) {
-        obj[k] = v;
-    }
-    return obj;
-}
+// const mapToObj = map => {
+//     let obj = {};
+//     for (let [k, v] of map) {
+//         obj[k] = v;
+//     }
+//     return obj;
+// }
 
 // console.log(mapToObj(map1));
 
@@ -1268,3 +1248,193 @@ const mapToObj = map => {
 //         throw TypeError('not object')
 //     }
 // }
+
+// class Super {}
+
+// class Sub extends Super {
+//     constructor() {
+//         super();
+//         console.log(this);
+//     }
+// }
+
+// const sub = new Sub();
+
+// console.log(Sub.__proto__ === Super);
+
+
+
+// function Super(){}
+// let Sub = Object.create(Super)
+
+// console.log(Sub.__proto__ === Super)
+
+
+
+// function Super() {}
+// function Sub() {}
+
+// Sub.prototype = new Super();
+// Sub.prototype.constructor = Sub;
+
+// var sub = new Sub();
+
+// console.log(Sub.__proto__)
+// console.log(Sub.__proto__ === Function.prototype)
+
+
+// function Parent(name) {
+//     this.name = name;
+//     this.tags = ['1', '2'];
+// }
+
+// const p = new Parent('f');
+// console.log(p)
+
+// function Children() {
+//     console.log(this);
+//     Parent.apply(this, arguments);
+// }
+
+// const child = new Children('c');
+
+// console.log(child);
+
+
+// setTimeout(() => {
+//     console.log('1', Date.now())
+// }, 5000)
+
+// new Promise(function(resolve) {
+//     setTimeout(() => {
+//         console.log('2', Date.now())
+//     }, 1000)
+// })
+
+
+// let arr = [ [1], [2], [3, [1]] ];
+// arr = Array.prototype.concat.apply([], arr);
+// console.log(arr);// [1, 2, 3]
+
+// let array = [ [1], [2], [3, [1]] ];
+// array = array.flat(2);
+// console.log(array); // [1, 2, 3]
+
+
+// let str = ' sdsds sdasds sd   s   ';
+
+// String.prototype.trim = function() {
+//     return this.replace(/^\s+|\s+$/g, "");
+// }
+
+// console.log(str.trim().length);
+
+
+// const Stack = (function() {
+//     let items = new WeakMap();
+//     class Stack {
+//         constructor() {
+//             items.set(this, []);
+//         }
+//         getItems() {
+//             return items.get(this);
+//         }
+//         push(item) {
+//             this.getItems().push(item);
+//         }
+//         pop() {
+//             return this.getItems().pop();
+//         }
+//         peek() {
+//             return this.getItems()[this.getItems().length - 1]
+//         }
+//         isEmpty() {
+//             return this.getItems().length === 0;
+//         }
+//         size() {
+//             return this.getItems.length;
+//         }
+//         clear() {
+//             this.getItems() = [];
+//         }
+//     }
+//     return Stack;
+// })();
+
+// const s = new Stack();
+
+// console.log(s);
+
+
+// // 检测浏览器栈的上限
+// let i = 0;
+// function testStackMax() {
+//     i++;
+//     return testStackMax();
+// }
+
+// try {
+//     testStackMax();
+// } catch(ex) {
+//     console.log('当前浏览器的栈上限为：'+ i, '错误码：'+ ex);
+// }
+
+
+
+
+// function Fibonacci(n, ac1 = 1, ac2 = 1) {
+//     if (n <= 1) { return ac2 };
+
+//     return Fibonacci(n - 1, ac2, ac1 + ac2);
+// }
+
+// console.log(Fibonacci(5))
+
+
+
+
+
+
+// const fn = function() {}
+// const obj = {}
+
+// console.log(Function.prototype.__proto__.__proto__)
+// console.log(fn.__proto__ === Function.prototype)
+
+// console.log(Function.prototype.constructor === Function)
+
+// console.log(Object.prototype.__proto__)
+// console.log(obj.__proto__ === Object.prototype)
+
+// console.log(Function.__proto__ === Object.__proto__)
+
+
+// console.log(Function.__proto__)
+
+
+
+
+
+
+
+// 兼容多浏览器的事件监听器 -- 简易版
+const eventUtil = {
+    addHandler(ele, type, handler) {
+        if (ele.addEventListener) {
+            ele.addEventListener(type, handler, false);
+        } else if (ele.attachEvent) {
+            ele.attachEvent('on' + type, handler);
+        } else {
+            ele['on' + type] = handler;
+        }
+    },
+    removeHandler(ele, type, handler) {
+        if (ele.removeEventListener) {
+            ele.removeEventListener(type, handler, false);
+        } else if (ele.detachEvent) {
+            ele.detachEvent('on' + type, handler);
+        } else {
+            ele['on' + type] = null;
+        }
+    }
+}

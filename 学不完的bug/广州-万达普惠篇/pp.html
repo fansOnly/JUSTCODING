@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        var first = ()=>(new Promise((resolve,reject)=>{
+        console.log(3);  // 1
+
+        var p = new Promise((resolve,reject)=>{
+
+
+            console.log(7); // 2
+
+            setTimeout(()=>{  // => 宏 1
+ 
+                console.log(5); // 5
+
+                resolve(6); // 6 宏1 - 微1
+
+            },0);
+
+        });
+
+        // resolve(2); // 4  微 1 - 1
+
+            // resolve(1);
+        p.then((arg)=>{
+            console.log(arg);  // 微 1 - 2
+        });
+
+    }));
+
+
+    first().then((arg)=>{
+        console.log('x-1' +arg);  // 4  微 1 - 1
+    });
+
+    console.log(4); // 3
+    </script>
+</body>
+</html>

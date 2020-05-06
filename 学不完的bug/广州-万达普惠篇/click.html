@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #a {
+            position: relative;
+            width: 400px;
+            height: 400px;
+            background: #aaa;
+        }
+        #b {
+            position: absolute;
+            left: 50px;
+            top: 50px;
+            width: 300px;
+            height: 300px;
+            background: green;
+        }
+        #c {
+            position: absolute;
+            left: 50px;
+            top: 50px;
+            width: 200px;
+            height: 200px;
+            background: gray;
+        }
+        #d {
+            position: absolute;
+            left: 50px;
+            top: 50px;
+            width: 100px;
+            height: 100px;
+            background: white;
+        }
+    </style>
+</head>
+<body>
+    <div id="a">a
+        <div id="b">b
+          <div id="c">c
+            <div id="d">d</div>
+          </div>
+        </div>
+    </div>
+    
+    <script>
+        document.getElementById('a').addEventListener('click', function(e) {
+            // console.log(e.defaultPrevented)
+          console.log('a target:' + e.target.id + ' & currentTarget:' + e.currentTarget.id);
+        }, true);    
+        document.getElementById('b').addEventListener('click', function(e) {
+          console.log('b target:' + e.target.id + ' & currentTarget:' + e.currentTarget.id);
+        }, true);    
+        document.getElementById('c').addEventListener('click', function(e) {
+          console.log('c target:' + e.target.id + ' & currentTarget:' + e.currentTarget.id);
+        }, true);    
+        document.getElementById('d').addEventListener('click', function(e) {
+          console.log('d target:' + e.target.id + ' & currentTarget:' + e.currentTarget.id);
+        }, true);
+    </script>
+</body>
+</html>

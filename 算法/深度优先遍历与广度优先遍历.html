@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>深度优先遍历与广度优先遍历</title>
+</head>
+<body>
+    <div class="parent">
+        <div class="child-1">
+            <div class="child-1-1">
+                <div class="child-1-1-1"></div>
+                <div class="child-1-1-2"></div>
+            </div>
+            <div class="child-1-2">
+                <div class="child-1-2-1">
+                    <div class="child-1-2-1-1"></div>
+                </div>
+            </div>
+            <div class="child-1-3"></div>
+        </div>
+        <div class="child-2">
+            <div class="child-2-1">
+                <div class="child-2-1-1"></div>
+            </div>
+            <div class="child-2-2"></div>
+        </div>
+    </div>
+    <script>
+        // 深度优先遍历
+        // 1、从某个顶节点出发，优先访问该顶节点；
+        // 2、然后依次从它的未被访问的邻节点出发进行遍历，直至与该顶节点路径相通的所有节点均被访问完成。
+        // 3、如果尚有未被访问的节点存在，则以该节点作为新的顶节点，重复上述遍历过程。
+        // 4、直到所有的节点均被访问完成结束。
+        const dfs = (node, nodeList = []) => {
+            if (node !== null) {
+                nodeList.push(node);
+                let children = node.children;
+                for (let i = 0, len = children.length; i < len; i++) {
+                    dfs(children[i], nodeList);
+                }
+            }
+            return nodeList;
+        }
+
+        const parent = document.querySelector('.parent');
+        const nodes = dfs(parent);
+        console.log('深度优先遍历::start');
+        for (let item of nodes) {
+            console.log(item);
+        }
+        console.log('深度优先遍历::end');
+
+
+
+        // 广度优先遍历
+        // 1、从某个顶节点出发，优先访问该顶节点；
+        // 2、然后依次访问该顶节点的所有临近的未曾访问的邻节点；
+        // 3、然后分别从这些邻节点出发，依次访问它们的邻节点，先访问的邻节点优先有后访问的邻节点；
+        // 4、如果尚有未被访问的节点存在，则以该节点作为新的顶节点，重复上述遍历过程。
+        // 5、直到所有的节点均被访问完成结束。
+        const bfs = node => {
+            let nodes = [];
+            let queue = [];
+            if (node !== null) {
+                queue.push(node);
+                while (queue.length) {
+                    let item = queue.shift();
+                    let children = item.children;
+                    nodes.push(item);
+                    for (let i = 0, len = children.length; i < len; i++) {
+                        queue.push(children[i]);
+                    }
+                }
+            }
+            return nodes;
+        }
+        const nodes2 = bfs(parent);
+        console.log('广度优先遍历::start');
+        for (let item of nodes2) {
+            console.log(item);
+        }
+        console.log('广度优先遍历::end');
+    </script>
+</body>
+</html>
