@@ -1,68 +1,84 @@
+// 关于柯里化, 你想要的都在这里
 
-
-const sum = (a, b, c, d) => {
-    return a + b + c + d
-}
-
-const sum3 = (...args) => {
-    return args.reduce((a, b) => a + b, 0)
-}
-
-console.log(sum.length, sum3.length)
-
-
-// es5 柯里化
-const curry5 = function(fn, args) {
-    args = args || []
-    return function() {
-        const args2 = Array.prototype.slice.call(arguments)
-        const _args = args.concat(args2)
-        if (_args.length < fn.length) {
-            return curry5.call(this, fn, _args)
+// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// 进阶版
+const curry = function (fn) {
+    const length = fn.length; // 获取参数个数
+    const args = Array.prototype.slice.call(arguments, 1);
+    return function () {
+        const restArgs = Array.prototype.slice.call(arguments);
+        const newArgs = args.concat(restArgs);
+        if (newArgs.length < length) {
+            return curry.call(this, fn, ...newArgs);
+        } else {
+            return fn.apply(this, newArgs);
         }
-        return fn.apply(this, _args)
     }
 }
 
-const curry5Sum = curry5(sum)
+var abc = (a, b, c, ...args) => {
+    return [a, b, c, ...args];
+};
 
-console.log(curry5Sum(1, 2, 3, 4))
+console.log(curry(abc)(3)(4,1))  // [ 3, 4, 1 ]
+console.log(curry(abc, 3)(1)(2,3,4,5,6))  // [ 3, 1, 2, 3, 4, 5, 6 ]
 
-console.log(curry5Sum(1)(2)(3)(4))
 
 
-// es6 柯里化
-const curry = (fn, ...args) => {
+// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// 参数变异版
+const curry2 = function (fn) {
+    const length = fn.length;
+    const args = Array.prototype.slice.call(arguments, 1);
+    return function () {
+        const restArgs = Array.prototype.slice.call(arguments);
+        const newArgs = args.concat(restArgs);
+        if (newArgs.length < length && restArgs.length) {
+            return curry2.call(this, fn, ...newArgs);
+        } else {
+            return fn.apply(this, newArgs);
+        }
+    }
+}
+
+console.log(curry2(abc)(3)())  // [ 3, undefined, undefined ]
+console.log(curry(abc, 3)(1)(2,3,4,5,6))  // [ 3, 1, 2, 3, 4, 5, 6 ]
+
+
+
+// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// 初级简写版
+const curry3 = (fn, ...args) => {
     return (...args2) => {
-        const _args = [...args, ...args2]
-        if (_args.length < fn.length) {
-            return curry(fn, ..._args)
-        }
-        return fn(..._args)
+        return fn.apply(this, [...args, ...args2])
     }
 }
 
-const currySum = curry(sum, 10)
-
-console.log(currySum(1,2,3,4))
-
-console.log(currySum(1)(2)(3))
-
-console.log(currySum(1)(2)(3))
+console.log(curry3(abc, 1, 2, 3)(2))
+console.log(curry3(abc, 1, 2, 3)(2, 5, 6, 7))
 
 
-// 柯里化 变异版
-const sum2 = (a, b, c, d, ...args) => {
-    return [a, b, c, d, ...args].reduce((a, b) => a + b, 0)
+
+// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// 面试版
+const curry4 = function(func) {
+    const args = [].slice.call(arguments, 1);
+    return function _func() {
+        if (arguments.length === 0) {
+            return func.apply(this, args);
+        }
+        // [].push.apply(args, arguments);
+        args.push(...arguments)
+        return _func
+    }
 }
 
-console.log(sum2(1, 2, 3, 4), sum2.length)
+var add = function() {
+    return [].reduce.call(arguments, (a, b) => a + b)
+}
 
-console.log(curry(sum2, 1)(2, 3, 4))
-
-console.log(curry(sum2)(1, 2, 3, 4, 5))
-
-console.log(curry(sum2, 10)(1)(2)(3, 4))
-
-
-console.log(curry5(sum2)(1)(2)(3)(4, 10))
+console.log(curry4(add, 1)(2)(3)(4,5,6,)()) // 21

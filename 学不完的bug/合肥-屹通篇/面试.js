@@ -241,3 +241,14 @@ console.log(getPrefix2(arr3))
 
 
 // *********************************************************************************************************
+// 千分位格式化数字
+const num1 = 1234567890
+
+const toThousandNum = num => {
+    console.log(num)
+    return num.toString().replace(/\d(?=(\d{3})+$)/g, '$&,')
+}
+
+console.log(toThousandNum(num1))
+
+

@@ -24,8 +24,6 @@ function Promise(executor) {
         }
     }
 
-    function all() {}
-
     try {
         executor(resolve, reject);
     } catch (error) {
@@ -33,7 +31,7 @@ function Promise(executor) {
     }
 }
 
-Promise.prototype.then = function(onFulfilled, onRejected) {
+Promise.prototype.then = function (onFulfilled, onRejected) {
     // 对于空的then返回做处理
     onFulfilled = typeof onFulfilled === 'function' ? onFulfilled : val => val;
     onRejected = typeof onRejected === 'function' ? onRejected : err => { throw err };
@@ -88,9 +86,18 @@ Promise.prototype.then = function(onFulfilled, onRejected) {
     return promise2;
 }
 
-Promise.prototype.catch = function(onRejected) {}
+Promise.prototype.catch = function (onRejected) {
+    return this.then(null, onRejected)
+}
 
-Promise.prototype.finally = function(onFinally) {}
+Promise.prototype.finally = function (onFinally) {
+    this.then(() => {
+        onFinally()
+    }, () => {
+        onFinally()
+    })
+    return this;
+}
 
 // 链式调用
 // 1. 每个then方法都返回一个新的Promise对象（原理的核心）
@@ -132,6 +139,68 @@ function resolvePromise(promise2, x, resolve, reject) {
     }
 }
 
+Promise.resolve = function (val) {
+    return new Promise(resolve => {
+        resolve(val);
+    })
+}
+
+Promise.reject = function (val) {
+    return new Promise((resolve, reject) => {
+        reject(val);
+    })
+}
+
+Promise.race = function (promises = []) {
+    return new Promise((resolve, reject) => {
+        for (let i = 0; i < promises.length; i++) {
+            promises[i].then(resolve, reject);
+        }
+    })
+}
+
+Promise.all = function (promises = []) {
+    return new Promise((resolve, reject) => {
+        let result = [];
+        for (let i = 0; i < promises.length; i++) {
+            promises[i].then(data => {
+                result.push(data);
+                if (result.length == promises.length) {
+                    resolve(result);
+                }
+            }, reject);
+        }
+    })
+}
+
+Promise.defer = Promise.defered = function() {
+    let dfd = {}
+    dfd.promise = new Promise((resolve, reject) => {
+        dfd.resolve = resolve;
+        dfd.reject = reject;
+    })
+    return dfd;
+}
+
+
+Promise.all = function(promises){
+    let arr = [];
+    let i = 0;
+    function processData(index,data){
+      arr[index] = data;
+      i++;
+      if(i == promises.length){
+        resolve(arr);
+      };
+    };
+    return new Promise((resolve,reject)=>{
+      for(let i=0;i<promises.length;i++){
+        promises[i].then(data=>{
+          processData(i,data);
+        },reject);
+      };
+    });
+  }
 
 const prom1 = new Promise((resolve, reject) => {
     setTimeout(() => {
@@ -142,17 +211,72 @@ const prom1 = new Promise((resolve, reject) => {
 console.log(prom1)
 
 prom1.then(res => {
-    console.log(res)
+    console.log(res)  // 1
     return new Promise(resolve => resolve(3))
 })
-.then()
-.then(res2 =>{
-    console.log(res2)
+    .then()
+    .then(res2 => {
+        console.log(res2) // 3
+    })
+    .then(res3 => {
+        console.log(res3) // undefined
+        return prom1
+    })
+    .then(res4 => {
+        console.log(res4) // 1
+    })
+
+// promise.resolve
+Promise.resolve(11)
+    .then(res => {
+        console.log(res)  // 11
+    })
+
+// promise.reject
+Promise.reject(22)
+    .then(res => {
+        console.log(res)
+    }, reason => {
+        console.log(reason) // 22
+    })
+
+// promise.race
+const ps1 = new Promise(resolve => {
+    setTimeout(resolve, 500, 'ps1')
 })
-.then(res3 => {
-    console.log(res3)
-    return prom1
+
+const ps2 = new Promise((resolve, reject) => {
+    setTimeout(resolve, 100, 'ps2')
 })
-.then(res4 => {
-    console.log(res4)
+
+const ps3 = new Promise((resolve, reject) => {
+    reject('reject ps3');
 })
+
+Promise.race([ps1, ps2]).then(res => {
+    console.log(res) // ps2
+})
+
+Promise.race([ps3, ps2, ps1]).then(res => {
+    console.log(res)
+}, reason => {
+    console.log(reason) // reject ps3
+})
+
+// promise.all
+const pp1 = Promise.resolve('pp1');
+const pp2 = 'pp2';
+const pp3 = new Promise((resolve, reject) => {
+    setTimeout(resolve, 500, 'pp3')
+})
+const pp4 = Promise.reject(new Error('pp4'));
+
+Promise.all([pp1, pp2, pp3]).then(res => {
+    console.log(res)
+}, reason => {
+    console.log(reason)
+})
+
+
+
+module.exports = Promise;

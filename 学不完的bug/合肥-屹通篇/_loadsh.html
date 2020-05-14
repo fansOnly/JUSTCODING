@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.15/lodash.js"></script>
+    <script>
+        var curry = function(fn, ...args){
+    var length = fn.length; // 获取参数个数
+    var args = args || [];
+       return function(){
+            var newArgs = args.concat(Array.prototype.slice.call(arguments));
+            if(newArgs.length < length){
+                return curry.call(this, fn, ...newArgs);
+            }else{
+                return fn.apply(this, newArgs);
+            }
+        }
+}
+
+
+        var abc = function (a, b, c, ...args) {
+            return [a, b, c, ...args];
+        };
+
+        var curried = curry(abc, 3);
+        var res = curried(1)(2,4);
+        console.log(res)
+    </script>
+</body>
+
+</html>

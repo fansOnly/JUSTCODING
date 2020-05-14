@@ -83,7 +83,7 @@ function sum(a, b, c) {
 
 
 // 函数柯里化
-function curry(fn) {
+function curry1(fn) {
     return function curried(...args) {
         if (args.length >= fn.length) {
             return fn.apply(this, args)
@@ -95,9 +95,27 @@ function curry(fn) {
     }
 }
 
+var currySum1 = curry1(sum);
+console.log(currySum1(1, 2)(3))
+
+// 进阶版
+function curry(fn) {
+    var length = fn.length; // 获取参数个数
+    var args = Array.prototype.slice.call(arguments, 1);
+    return function () {
+        var restArgs = Array.prototype.slice.call(arguments);
+        var newArgs = args.concat(restArgs);
+        if (newArgs.length < length) {
+            return curry.call(this, fn, ...newArgs);
+        } else {
+            return fn.apply(this, newArgs);
+        }
+    }
+}
+
 let currySum = curry(sum)
 
-console.log(currySum(1, 2, 3))
+console.log(currySum(1, 2)(3))
 console.log(currySum(1)(2)(3))
 
 
