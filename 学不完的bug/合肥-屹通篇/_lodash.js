@@ -587,18 +587,32 @@ console.log(curry(abc, 3)(1)(2,3,4,5,6))  // [ 3, 1, 2, 3, 4, 5, 6 ]
 // ================================================================================================================
 // _.debounce(func, [wait=0], [options={}])
 // 创建一个 debounced（防抖动）函数，该函数会从上一次被调用后，延迟 wait 毫秒后调用 func 方法。
+// 一个周期内只会执行一次
 
-const debounce = (fn, wait = 500) => {
+const debounce = (fn, wait = 500, immediate = false) => {
     let timeout = null;
     return function() {
-        const context = this;
-        const args = [].slice.call(arguments);
         if (timeout) clearTimeout(timeout);
+        if (immediate) fn.apply(this, arguments);
         timeout = setTimeout(() => {
-            timeout = null;
-            fn.apply(context, args);
+            fn.apply(this, arguments);
         }, wait)
     }
 }
 
-debounce(console.log);
+
+
+// _.throtte(func, [wait=0], [options={}])
+// 一个周期内规律性执行多次
+
+const throtte = (fn, wait = 500) => {
+    let timeout = null;
+    return function() {
+        if (!timeout) {
+            timeout = setTimeout(() => {
+                timeout = null;
+                fn.apply(this. arguments);
+            }, wait);
+        }
+    }
+}

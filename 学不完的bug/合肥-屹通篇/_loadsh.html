@@ -8,29 +8,33 @@
 </head>
 
 <body>
+    <button onclick="out()">清楚计时器</button>
+    <button onclick="print()">打印</button>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.15/lodash.js"></script>
     <script>
-        var curry = function(fn, ...args){
-    var length = fn.length; // 获取参数个数
-    var args = args || [];
-       return function(){
-            var newArgs = args.concat(Array.prototype.slice.call(arguments));
-            if(newArgs.length < length){
-                return curry.call(this, fn, ...newArgs);
-            }else{
-                return fn.apply(this, newArgs);
-            }
+        // var timeout = null;
+        // timeout = setTimeout(() => {
+        //     console.log('timeout 1111');
+        // }, 1000)
+
+        // console.log('timeout 2222', timeout)
+        // clearTimeout(timeout)
+        // console.log('timeout 333', timeout)
+
+            var timeout = null;
+        timeout = setInterval(() => {
+            console.log('timeout 1111', timeout);
+        }, 1000)
+
+        console.log('timeout 2222', timeout)
+
+
+        function out() {
+            clearInterval(timeout)
         }
-}
-
-
-        var abc = function (a, b, c, ...args) {
-            return [a, b, c, ...args];
-        };
-
-        var curried = curry(abc, 3);
-        var res = curried(1)(2,4);
-        console.log(res)
+        function print() {
+            console.log('timeout 333', timeout)
+        }
     </script>
 </body>
 

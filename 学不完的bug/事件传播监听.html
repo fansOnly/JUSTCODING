@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .box1 {
+            position: relative;
+            width: 500px;
+            height: 500px;
+            background: #ccc;
+        }
+        .box2 {
+            position: absolute;
+            left: 50px;
+            top: 50px;
+            width: 400px;
+            height: 400px;
+            background: #333;
+        }
+        .box3 {
+            position: absolute;
+            left: 50px;
+            top: 50px;
+            width: 300px;
+            height: 100px;
+            background: #ddd;
+        }
+        .box4 {
+            position: absolute;
+            left: 50px;
+            top: 200px;
+            width: 300px;
+            height: 100px;
+            background: green;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="box1">box1
+        <div class="box2">box2
+            <div class="box3">box3</div>
+            <div class="box4">box4</div>
+        </div>
+    </div>
+    <script>
+        var box1 = document.querySelector('.box1')
+        var box2 = document.querySelector('.box2')
+        var box3 = document.querySelector('.box3')
+        var box4 = document.querySelector('.box4')
+        box1.addEventListener('click', function (e) {
+            console.log('box1 target', e.target)
+            console.log('box1 currentTarget', e.currentTarget)
+        }, false)
+        box2.addEventListener('click', function (e) {
+            console.log('box2 target', e.target)
+            console.log('box2 currentTarget', e.currentTarget)
+        }, true)
+        box3.addEventListener('click', function (e) {
+            console.log('box3 target', e.target)
+            console.log('box3 currentTarget', e.currentTarget)
+        }, false)
+        box4.addEventListener('click', function (e) {
+            console.log('box4 target', e.target)
+            console.log('box4 currentTarget', e.currentTarget)
+        }, false)
+    </script>
+</body>
+
+</html>
