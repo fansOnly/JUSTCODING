@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .c1 {
+            color: #f60;
+        }
+
+        .c2 {
+            font-size: 20px;
+        }
+
+        .c3 {
+            font-weight: 700;
+        }
+
+        .c4 {
+            font-family: 'impact';
+        }
+    </style>
+</head>
+
+<body>
+    <script>
+        const p = document.createElement('p')
+        p.innerText = 'this is a test'
+        document.body.appendChild(p)
+        const button1 = document.createElement('button')
+        const button2 = document.createElement('button')
+        const button = document.createElement('button')
+        button1.innerText = '添加样式'
+        button2.innerText = '移除样式'
+        button.innerText = 'toggle'
+        document.body.appendChild(button1)
+        document.body.appendChild(button2)
+        document.body.appendChild(button)
+        button1.onclick = () => {
+            p.classList.add('c1', 'c2', 'c3')
+            console.log([...p.classList])
+        }
+        button2.onclick = () => {
+            p.classList.remove('c1', 'c2', 'c3')
+            console.log([...p.classList])
+        }
+
+        button.onclick = () => {
+            p.classList.toggle('c4')
+            console.log([...p.classList])
+        }
+    </script>
+</body>
+
+</html>

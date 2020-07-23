@@ -56,24 +56,24 @@ const bigIntAdd2 = (str1, str2) => {
     return res.replace(/^0+/, '');
 }
 
-console.log(bigIntAdd('123456789', '123045070')) // 246501859
-console.log(bigIntAdd2('123456789', '123045070')) // 246501859
+console.log(bigIntAdd('123456789', '1230470')) // 246501859
+console.log(bigIntAdd2('123456789', '1230470')) // 246501859
 
 // TODO
-const bigIntMulti = (str1, str2) => {
-    let res = '', temp = 0;
-    const list1 = str1.split('');
-    const list2 = str2.split('');
-    while(list1.length || list2.length || temp) {
-        // 按位运算符
-        temp += ~~list1.pop() * ~~list2.pop();
-        res = temp % 10 + res;
-        temp = temp > 9;
-    }
-    return res.replace(/^0+/, '');
-}
+// const bigIntMulti = (str1, str2) => {
+//     let res = '', temp = 0;
+//     const list1 = str1.split('');
+//     const list2 = str2.split('');
+//     while(list1.length || list2.length || temp) {
+//         // 按位运算符
+//         temp += ~~list1.pop() * ~~list2.pop();
+//         res = temp % 10 + res;
+//         temp = temp > 9;
+//     }
+//     return res.replace(/^0+/, '');
+// }
 
-console.log(bigIntMulti('11', '11')) 
+// console.log(bigIntMulti('11', '11')) 
 
 
 // *********************************************************************************************************
@@ -95,21 +95,17 @@ function myNew(Con, ...args) {
 // *********************************************************************************************************
 // 打印九九乘法表
 
-const printLine = (len = 9)  => {
-    const arr = new Array();
-    for (let i = 1; i <= len; i++) {
-        arr.push(i);
-    }
+const print99 = (len = 9)  => {
+    // const arr = Array.from({length: 10}).map((v, i) => i)
+    const arr = new Array(10).fill().map((v, i) => i)
     let res = '';
     for (let i = 1; i <= len; i++) {
-        let n = 1;
-        while(n <= i) {
-            res += `${n} * ${i} = ${n * i} `;
-            n++;
+        for (let j = 1; j <= i; j++) {
+            res += `${j} * ${i} = ${j * i} `;
         }
         res += '\n';
     }
-    console.log(res)
+    return res;
 }
 
-printLine();
+console.log(print99());

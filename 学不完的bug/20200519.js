@@ -33,16 +33,31 @@ console.log(obj.b == 1 && obj.b == 2 && obj.b == 3)
 
 const parseUrlParams = url => {
     const params = url.split('?')[1];
-    console.log(params);
-    var reg = /([^?&=]+)=([^?&=]*)/g;
-    params.replace(reg, function(match, prop, val) {
-        console.log(match)
-        console.log(prop)
-        console.log(val)
+    var reg = /([^?&=]+)(=*)([^?&=]*)/g;
+    let res = {};
+    params.replace(reg, function(match, prop, sym, val) {
+        // console.log(match)
+        // console.log(prop)
+        // console.log(val)
+        if (val == "") {
+            val = true;
+        } else if (val == '""') {
+            val = "";
+        } else if (/^\{.+\}$/.test(val)) {
+            val = JSON.parse(val);
+        } else if (/^\[.+\]$/.test(val)) {
+            val = JSON.parse(val);
+        }
+        if (res[prop]) {
+            res[prop] += ',' + val;
+        } else {
+            res[prop] = val;
+        }
     })
+    return res;
 }
 
-const url = 'http://www.baidu.com/search?name=1&gae=10&age=20&male';
+const url = 'http://www.baidu.com/search?name=1&age=10&age=20&male&hobby={"x":1}&z=&x=""&ss=[1,2,3]';
 console.log(parseUrlParams(url))
 
 

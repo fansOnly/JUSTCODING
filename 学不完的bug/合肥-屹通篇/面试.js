@@ -28,7 +28,8 @@ var myBike = new Ofo()
 
 Ofo.prototype = new Bike()
 
-console.log(Ofo)
+console.log(Ofo) // [F: Ofo]
+console.log(myBike) // Ofo {}
 
 console.log(myBike.name) // undefined
 
@@ -220,12 +221,12 @@ const getPrefix = arr => {
 console.log(getPrefix(arr3))
 
 const getPrefix2 = arr => {
-    let len = arr[0].length;
+    // let len = arr[0].length;
     let prefix = arr[0];
     arr.map(item => {
         if(!item) return '';
-        prefix = item.length < len ? item : prefix;
-        len = Math.min(item.length, len);
+        prefix = item.length < prefix.length ? item : prefix;
+        // len = Math.min(item.length, len);
     })
     for (let i = 0; i < arr.length; i++) {
         while(arr[i].indexOf(prefix) != 0) {
@@ -245,7 +246,6 @@ console.log(getPrefix2(arr3))
 const num1 = 1234567890
 
 const toThousandNum = num => {
-    console.log(num)
     return num.toString().replace(/\d(?=(\d{3})+$)/g, '$&,')
 }
 

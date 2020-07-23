@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .wrap {
+            width: 0;
+            height: 0;
+            border-width: 50px;
+            border-style: solid;
+            border-color: transparent;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrap"></div>
+    <button onclick="setUp()">向上</button>
+    <button onclick="setRight()">向右</button>
+    <button onclick="setDown()">向下</button>
+    <button onclick="setLeft()">向左</button>
+    <script>
+        const wrap = document.querySelector('.wrap')
+        function setUp() {
+            wrap.style.borderColor = '#f00 transparent transparent transparent'
+        }
+        function setRight() {
+                wrap.style.borderColor = 'transparent #f00 transparent transparent'
+        }
+        function setDown() {
+                wrap.style.borderColor = 'transparent transparent #f00 transparent'
+        }
+        function setLeft() {
+                wrap.style.borderColor = 'transparent transparent transparent #f00'
+        }
+    </script>
+</body>
+
+</html>
