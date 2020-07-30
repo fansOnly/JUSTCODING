@@ -21,3 +21,11 @@
 // 6 安全性相对get高
 // 7 编码类型 application/x-www-form-urlencoded multipart/form-data
 // ⭐️ post请求会先发送header, 服务器相应100 continue, 浏览器在发送data, 服务器相应200
+
+
+
+
+
+
+// 
+// get产生一个TCp数据包, post产生两个TCP数据包(firefox只发一次)

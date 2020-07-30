@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        const fn = () => {
+            for (let i = 0; i < 4; i++) {
+                return function() {
+                    let x = { name: i }
+                    console.log('x', x)
+                }
+            }
+            for (var i = 0; i < 4; i++) {
+                return function() {
+                    let y = new Object({ name: i })
+                    console.log('y', y)
+                }
+            }
+        }
+        fn()
+    </script>
+</body>
+</html>

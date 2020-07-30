@@ -1,11 +1,17 @@
-// 实现 new1
+// 实现一个new
+// 1 创建一个新对象
+// 2 将this指向构造函数
+// 3 如果构造函数有返回, 则替换new出来的对象并返回
+// 4 如果构造函数没有返回, 则返回new出来的对象
+
+// new1
 function newFn(fn, args) {
     const obj = Object.create(fn.prototype)
     const res = fn.apply(obj, args)
     return typeof res === 'object' && res !== null ? res : obj
 }
 
-// 实现 new2
+// new2
 function newFn2() {
     const Constructor = Array.prototype.shift.call(arguments)
     const obj = Object.create(null)
