@@ -61,3 +61,9 @@
 // 路由复用 key
 // 使用key值, 相同的组件跳转也会执行 created 和 mounted
 {/* <router-view :key="key"></router-view> */}
+
+
+
+// 路由分组打包 chunk name
+// const Foo = () => import(/* webpackChunkName: "group-foo" */ './Foo.vue')
+// Webpack 会将任何一个异步模块与相同的块名称组合到相同的异步块中。
