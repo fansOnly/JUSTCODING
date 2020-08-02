@@ -145,50 +145,13 @@ console.log(p3.name) // P3
 
 
 // *********************************************************************************************************
-// import 和 require 导入的区别
 
-// import: 对值的引用  编译时输出接口
-
-// require: 对值的拷贝  运行时即加载
 
 
 
 
 
 // *********************************************************************************************************
-// flex - 容器属性
-
-// 1 flex-direction: row(默认) row-reverse column column-reverse
-
-// 2 flex-wrap: nowrap(默认) wrap wrap-reverse
-
-// 3 flex-flow: <flex-direction> || <flex-wrap>
-
-// 4 justify-content: flex-start(默认) flex-end center space-between space-around
-
-// 5 align-items: flex-start flex-end center baseline(项目第一行文字的基线) stretch(默认, 占满整个容器高度)
-
-// 6 align-content: flex-start flex-end center space-between space-around stretch(默认, 占满整个交叉轴)
-// 存在多个交叉轴时起作用
-
-
-// 项目属性
-
-// 1 order: <integer> 默认0, 越小越靠前
-
-// 2 flex-grow: <number> 放大比例, 默认为 0, 空间剩余时, 默认不放大
-
-// 3 flex-shrink: <number> 缩小比例, 默认为 1, 空间不足时, 默认全部缩小
-
-// 4 flex-basis: <length> || 'auto', 默认 auto, 项目占据的主轴空间
-
-// 5 flex: none | [ <flex-grow> | <flex-shrink>? || <flex-basis> ], 默认 0 1 auto, 后两个属性可选
-// flex: none => 0 0 auto;
-// flex: auto => 1 1 auto;
-
-// 6 align-self: auto flex-start flex-end center baseline stretch, 默认 auto, 继承父元素 alien-items 的值, 不存在父元素时, 等同于 stretch
-
-
 
 
 

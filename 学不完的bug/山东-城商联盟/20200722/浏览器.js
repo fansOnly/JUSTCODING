@@ -1,14 +1,4 @@
-// 缓存
-// 浏览器会把一份请求过的资源拷贝一份存储起来，当下次需要使用该资源时, 根据浏览器的缓存机制决定是使用存储的资源还是发起新的请求
 
-// from memory cache
-// from disk cache
-
-// 优先级
-// 强制缓存 > 协商缓存
-// cache-control > Expires > Etag > last-modified
-// Etag 比对文件内容
-// last-modified 比对文件修改时间
 
 
 // 为什么操作 dom 慢

@@ -44,20 +44,7 @@ function _obeserve(obj) {
 }
 
 
-// vue 组件通信
-// 1 props $emit
-// 2 EventBus
-// 3 vuex
-// 4 $refs
-// 5 provide inject
-// 6 v-slot
-// 7 $attrs $listeners
-// 8 $parent $children
-// 9 $root $children
-// 10 .sync $emit
-// 11 路由传参
-// 12 Vue.observable
-// 13 broadcast dispatch - 1.x
+
 
 
 
@@ -79,24 +66,11 @@ function _obeserve(obj) {
 // 组件在模板在递归的调用自己, 必须设置name
 // 需要设置一个条件结束递归调用
 
-
-
-
-
-
-
 // 函数式组件
 // 无状态 无法实例化 内部没有任何生命周期处理方法
 
-
-
 // vue异步组件
 // Vue.component('async-com', () => import('./async-com'))
-
-
-
-
-
 
 
 
@@ -105,14 +79,8 @@ function _obeserve(obj) {
 // Object.keys(filters).forEach(key => VTTCue.filter(key, filters[key]))
 
 
-
-
-
 // 混入 minixs 数组参数 全局 / 局部
 // 扩展 extends 单个参数 全局 / 局部
-
-
-
 
 
 // Vue.component  全局注册组件

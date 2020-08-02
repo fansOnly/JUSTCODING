@@ -157,48 +157,6 @@ var a = 42;
 
 
 
-// 事件传播
-
-// 1 捕获阶段：事件从 window 开始向下触发，直至到达目标元素
-// 2 目标阶段：事件达到目标元素
-// 3 冒泡阶段：事件从目标元素开始向上冒泡，直至达到 window
-
-
-// event.target: 触发事件的元素
-// event.currentTarget: 绑定事件的目标元素
-
-
-// 元素比较
-// [] == ![]
-// ![]  = false  => [] == false
-// false = 0 => [] == 0
-// ToPrimitive([]) => [].toString() => '' == 0
-// toNumber('') => 0 == 0
-// return true
-
-// {} == !{}
-// !{} = false => {} == false
-// false = 0 > {} == 0
-// ToPrimitive({}) => {}.toString() => error
-// return false
-
-
-
-
-// 变量提升：   将函数或者变量提升到作用域顶部的术语
-// 执行上下文：
-// 1、编译   定义变量和函数
-// 2、执行  执行函数、变量赋值等
-
-
-
-
-// 作用域
-// 1、全局作用域  window.xx
-// 2、函数作用域  function() {...}
-// 3、块级作用域  {...}
-
-// 作用域链: 内部作用域 => 外部作用域 => 全局作用域
 
 
 // 虚值: 转换为 boolean 类型时值为 fasle，['', 0, false, undefined, null, NaN]

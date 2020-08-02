@@ -20,35 +20,6 @@
 // function fn() {} 定义的函数
 
 
-// js对象 - 引用类型 [object Object]
-// 对象属性 - obj[prop]
-// 对象方法 - obj.fn()
-// var obj = {} - 对象字面量
-// var obj = new Object() - 实例化
-// var obj = Object.create(null) - 原型继承
-// var obj = new Fn() - 构造函数
-// function Fn(prop){ Fn.prototype.prop = prop } var obj = new Fn(prop) - 原型声明
-
-
-
-// js函数 - 引用类型 - [object Function]
-// 本质上是一段可以被调用任意次数的js代码
-// 函数传参
-// 形参 - 定义函数时的参数
-// 实参 - 调用函数时的参数
-// 函数调用
-// function fn() {} - 函数声明 - 函数提升
-// var fn = function() {} - 函数表达式1.无函数名
-// var fn = function f() {} - 函数表达式2.有函数名 - 函数名 f 只能在函数内部访问
-// var obj = {fn: function(){}} obj.fn() - 对象方法
-// var fn = new Function() - 函数构造器
-// var fn = (function() {})() - 匿名自执行函数1
-// var fn = (function() {}()) - 匿名自执行函数2
-// var fn = (function f() {})() - 具名自执行函数1
-// var fn = (function f() {}()) - 具名自执行函数2
-// var fn = () => {} - 箭头函数
-
-
 
 // 纯函数
 // 输入相同, 输出相同
