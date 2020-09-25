@@ -5,8 +5,8 @@ function Scratch (config) {
         coverImg: null,
         coverColor: null,
         radius: 5, // 橡皮擦半径
-        pixelratio: 1,  // 屏幕倍数
-        fadeOut: 2000, // 全部淡出时间,
+        pixelRatio: 1,  // 屏幕倍数
+        fadeDuration: 2000, // 全部淡出时间,
         doneCallback: null,
     }
     Object.assign(this.config, config);
@@ -69,7 +69,7 @@ Scratch.prototype = {
             const y = (e.clientY + document.body.scrollTop || e.pageY) - this.offsetY || 0;
             with(this.ctx) {
                 beginPath();
-                arc(x * that.config.pixelratio, y * that.config.pixelratio, that.config.radius * that.config.pixelratio, 0, Math.PI * 2);
+                arc(x * that.config.pixelRatio, y * that.config.pixelRatio, that.config.radius * that.config.pixelRatio, 0, Math.PI * 2);
                 fill();
             }
             if (this._getScratchPercent() > this.config.showAllPercent) {
@@ -80,12 +80,12 @@ Scratch.prototype = {
     _scratchAll: function () {
         let that = this;
         this.done = true;
-        if (this.config.fadeOut) {
-            this.canvas.transition = `all ${this.config.fadeOut / 1000}s linear`;
+        if (this.config.fadeDuration) {
+            this.canvas.transition = `all ${this.config.fadeDuration / 1000}s linear`;
             this.canvas.style.opacity = 0;
             setTimeout(() => {
                 this._clear();
-            }, this.config.fadeOut)
+            }, this.config.fadeDuration)
         } else {
             this._clear();
         }

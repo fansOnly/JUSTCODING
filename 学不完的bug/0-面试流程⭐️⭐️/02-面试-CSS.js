@@ -1,18 +1,20 @@
 
-// BFC 块级格式化上下文 BLOCK FORMATTING CONTEXT⭐️
-// 根元素 html
-// float left right
-// position absolute fixed
-// display inline-block table-cell table-caption table inline-table flex grid inline-flex inline-grid
-// overflow auto scroll hidden
+// *************************************************** BFC 块级格式化上下文 ⭐️********************************************
+// BLOCK FORMATTING CONTEXT
+// 触发方式
+// 1 float: left right
+// 2 position: absolute fixed
+// 3 display: inline-block table-cell table-caption table inline-table flex grid inline-flex inline-grid
+// 3.1 table会生成匿名的table-cell, table-cell生成BFC
+// 4 overflow: auto scroll hidden
 
-// ps table会生成匿名的table-cell, table-cell生成BFC
+// 1 边界塌陷 margin collapse
+// 2 实现自适应两栏布局
+// 3 清除浮动
 
 // IFC 行内格式上下文 INLINE FORMATTING CONTEXT
 
-// ************************************************************************************************************************
-
-// 盒模型⭐️
+// ***************************************************** 盒模型⭐️ ****************************************************
 // IE怪异盒模型 box-sizing: border-box
 // inner = content + padding + border
 // outer = inner + margin
@@ -29,9 +31,10 @@
 // 边界塌陷 margin collapse
 // 普通文档流中元素的垂直外边距会合并
 
-// ************************************************************************************************************************
+// 获取元素宽高
+// dom.getBoundingClientRect()
 
-// flex布局⭐️⭐️
+// ***************************************************** flex布局⭐️⭐️ *************************************************
 
 // flex - 容器属性
 // 1 flex-direction: row(默认) row-reverse column column-reverse
@@ -52,9 +55,26 @@
 // flex: auto => 1 1 auto;
 // 6 align-self: auto flex-start flex-end center baseline stretch, 默认 auto, 继承父元素 alien-items 的值, 不存在父元素时, 等同于 stretch
 
-// ************************************************************************************************************************
 
-// css 选择器类型⭐️
+// ***************************************************** 布局⭐️ *********************************************************
+// 1 水平布局
+// inline-block+text-align
+// absolute+transform (CSS3)
+// flex+justify-content
+
+// 2 垂直布局
+// table-cell+vertical-align
+// absolute+transform
+// flex+align-items
+
+// 3 水平垂直布局
+// absolute+transform
+// inline-block+text-align+table-cell+vertical-align
+// flex + justify - content + align - items
+
+
+// ***************************************************** css 选择器类型⭐️ *********************************************************
+
 // id选择器
 // 类选择器-class
 // 标签选择器
