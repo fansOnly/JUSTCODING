@@ -20,7 +20,7 @@
 // 原型的constructor指向构造函数，构造函数的prototype指向原型
 // 实例的__proto__指向原型
 // new 构造函数创建实例
-// 原型的__proto__指向原型对象->->-null
+// 原型的__proto__指向原型对象 -> 原型链的尽头是null
 
 // 1 javascript中的继承是通过原型链来体现的
 // 2 每个对象都有一个__proto__属性，指向构造函数的prototype
@@ -29,18 +29,18 @@
 
 
 // es5继承
-// 1 原型继承: 父构造 + 子构造 + 子原型 = new 父构造 - 子实例属性引用相同，相互影响
+// 1 原型继承: 父构造 + 子构造 + (子原型 = new 父构造) - 子实例属性引用相同，相互影响
 // 2 构造函数继承: 父构造 + 子构造 + 父构造.call - 只继承显式属性，不继承原型链
-// 3 组合继承: 父构造 + 子构造 + 父构造.call + 子原型 = new 父构造 - 两次父构造
-// 3.1 组合继承优化： 父构造 + 子构造 + 父构造.call + 子原型 = Object.create(父原型) + 子构造 = 自身
-// 4 寄生继承: 父构造 + 继承方法(Object.create)
+// 3 组合继承: 父构造 + 子构造 + 父构造.call + (子原型 = new 父构造) - 两次父构造
+// 3.1 组合继承优化： 父构造 + 子构造 + 父构造.call + (子原型 = Object.create(父原型)) + 子构造 = 自身
+// 4 寄生继承: 父构造 + 继承方法(Object.create(父原型))
 // 4.1 创建一个仅用于封装继承过程的函数，该函数在内部以某种方式来增强对象，最后再像真地是它做了所有工作一样返回对象
-// 5 组合寄生继承: - 父构造 + 子构造 + 继承方法(Object.create) + 子原型 = new 父构造
+// 5 组合寄生继承: - 父构造 + 子构造 + 继承方法(Object.create(父原型)) + (子原型 = new 父构造)
 // 5.1 通过借用构造函数来继承属性，通过原型链的混成形式来继承方法
 
 
 // es6继承
-// class
+// class extend super
 
 
 // call/apply: 改变对象的上下文，立即执行
@@ -157,6 +157,7 @@ function myInstanceof(L, R) {
 
 // 函数内部访问父级函数作用域变量的一种实现方式
 // 常用于返回一个函数
+// 闭包可能导致内存泄漏
 
 // 柯里化 - 收集剩余参数
 // 偏函数
@@ -182,8 +183,10 @@ function myInstanceof(L, R) {
 // ************************************************************************************************************************
 
 // js对象 - 引用类型 [object Object]
+
 // 对象属性 - obj[prop]
 // 对象方法 - obj.fn()
+
 // var obj = {} - 对象字面量
 // var obj = new Object() - 实例化
 // var obj = Object.create(null) - 原型继承
@@ -191,11 +194,14 @@ function myInstanceof(L, R) {
 // function Fn(prop){ Fn.prototype.prop = prop } var obj = new Fn(prop) - 原型声明
 
 
+
 // js函数 - 引用类型 - [object Function]
 // 本质上是一段可以被调用任意次数的js代码
+
 // 函数传参
 // 形参 - 定义函数时的参数
 // 实参 - 调用函数时的参数
+
 // 函数调用
 // function fn() {} - 函数声明 - 函数提升
 // var fn = function() {} - 函数表达式1.无函数名
@@ -210,9 +216,9 @@ function myInstanceof(L, R) {
 
 // ************************************************ 浏览器存储⭐️⭐️ ***********************************************************
 
-// localStorage sessionStorage Cookie
+// localStorage sessionStorage
 // 保存在浏览器端, 同源
-// localStorage sessionStorage 保存在浏览器, 不参与服务端通信 大小 5M
+// localStorage sessionStorage 不参与服务端通信 大小 5M
 // 生命周期：localStorage 永久保存, sessionStorage 保存在当前回话， 均可手动清除
 // 作用域：不同浏览器不共享localStorage 和 sessionStorage, 不同会话不共享 sessionStorage
 
@@ -256,13 +262,26 @@ function myInstanceof(L, R) {
 // 2 优缺点
 // 2.1.1 解决回调地狱
 // 2.1.2 链式调用
+
 // 2.2.1 pedding 不能取消
 // 2.2.2 状态确定后不能改变
 // 2.2.3 需要手动捕捉异常 .catch
 
 // 手写Promise⭐️⭐️⭐️⭐️⭐️ - 请移步面试题库
+// promise.then
+// promise.catch
+// promise.all
+// promise.race
 
 // ************************************************************************************************************************
+
+// AMD   vs   CMD
+// AMD: 依赖前置，先引入，在使用   RequireJS   define(id,dependencies,factory)
+// CMD: 依赖就近，用的时候在引入   SeaJS       define(function(require, exports, module){})
+
+// CommonJS: 同步加载模块
+// 1.1 module.exports
+// 1.2 exports.xx
 
 // import 和 require 导入的区别
 // import: 对值的引用  编译时输出接口
@@ -270,15 +289,36 @@ function myInstanceof(L, R) {
 
 // ************************************************************************************************************************
 
-// 数组方法
+// 数组方法 ⭐️⭐️
+// push  pop
+// shift unshift
+// splice
+// reverse
+// sort
+// reduce reduceRight
+// every some
+// find  findIndex indexOf
+// filter
+// slice
+// map
+// forEach
+// concat
+// flat
+// includes
 
 // ************************************************************************************************************************
 
 // for  vs  for ... in  vs  forEach ⭐️⭐️
 // for in遍历数组会遍历到数组原型上的属性和方法，更适合遍历对象。遍历到myObject的原型方法method，如果不想遍历原型方法和属性的话，可以在循环内部判断一下hasOwnProperty方法可以判断某属性是否是该对象的实例属性。
 // forEach不支持break，continue，return等
+
 // for of可以成功遍历数组的值，而不是索引，不会遍历原型。
 // ps 遍历对象自身原型  hasOwnProperty
+// for of 主要遍历可迭代对象  [Symbol.iterator] Array  Map  Set  String arguments 等
+
+
+// for...in 语句以任意顺序迭代对象的可枚举属性。
+// for...of 语句遍历可迭代对象定义要迭代的数据。
 
 // ************************************************************************************************************************
 
