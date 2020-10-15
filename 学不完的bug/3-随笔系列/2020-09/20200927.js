@@ -3,7 +3,8 @@
  */
 
 class Subject {
-    constructor() {
+    constructor(name) {
+        this.name = name
         this.state = 'init'
         this.observers = []
     }
@@ -24,7 +25,7 @@ class Observer {
     }
 
     update(student) {
-        console.log(this.name + '被通知了, 学生的状态是' + student.state)
+        console.log(`${student.name}${student.state}, 已经通知了${this.name}`)
     }
 }
 

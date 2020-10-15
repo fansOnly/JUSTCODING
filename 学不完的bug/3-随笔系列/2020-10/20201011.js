@@ -18,7 +18,7 @@ function toRawtype(value) {
  */
 function makeMap(str) {
     let map = Object.create(null)
-    var list = str.split('')
+    var list = str.split(',')
     for (let i = 0; i < list.length; i++) {
         map[list[i]] = true
     }
@@ -26,6 +26,9 @@ function makeMap(str) {
         return map[val]
     }
 }
+
+const domElements = makeMap('html,body,head,div')
+console.log(domElements('div')) // true
 
 /**
  * 二维数组扁平化
@@ -66,7 +69,7 @@ function once(fn) {
 }
 
 /**
- * 浅拷贝
+ * 浅拷贝比较
  * @param {any} a 
  * @param {any} b 
  */

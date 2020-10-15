@@ -27,14 +27,14 @@ console.log(data)
 
 
 
-console.log(undefined == undefined)
-console.log(undefined === undefined)
+console.log(undefined == undefined) // true
+console.log(undefined === undefined) // true
 
-console.log(NaN === NaN)
+console.log(NaN === NaN) // false
 
-console.log(Object.is(NaN, NaN))
+console.log(Object.is(NaN, NaN)) // true
 
-console.log(Object.is(-0, +0))
+console.log(Object.is(-0, +0)) // true
 
 
 
