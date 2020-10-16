@@ -484,7 +484,7 @@ var Watcher = function Watcher(vm, expOrFn, cb, options, isRenderWatcher) {
     this.cb = cb
     this.uid = ++uid$2 // uid fro betching
     this.active = true
-    this.dirty = this.lazy // fro lazy watchers
+    this.dirty = this.lazy // for lazy watchers
     this.deps = []
     this.newDeps = []
     this.depIds = new _Set()
@@ -708,6 +708,21 @@ Vue.prototype._init = function (options) {
     }
 }
 
+/**
+ * 初始化事件
+ */
+function initEvents(vm) {
+    vm._events = Object.create(null)
+    vm._hasHookEvent = false
+    var listeners = vm.$options._parentListeners
+    if (listeners) {
+        updateComponentListeners(vm, listeners)
+    }
+}
+
+/**
+ * 初始化数据
+ */
 function initState(vm) {
     vm._watchers = []
     var opts = vm.$options
