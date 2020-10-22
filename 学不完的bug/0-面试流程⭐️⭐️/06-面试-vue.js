@@ -20,7 +20,7 @@
 // push  pop shift unshift sort reverse splice
 
 
-// v-if 的优先级高于 v-for
+// v-for 的优先级高于 v-if
 
 // assets 和 static的区别
 // 1 assets 会打包处理
@@ -60,9 +60,13 @@
 
 // ************************************************** vue-router⭐️⭐️⭐️ ****************************************************
 
-// 两种路由模式
-// hash #
-// history - 服务器配置转发index.html, 避免404
+// 三种路由模式
+// hash
+// 1 hash + hashChange 不重载页面
+// history
+// 1 historyApi + popState
+// 2 服务器配置转发index.html, 避免404
+// abstract
 
 // 路由方法 Vue.$router
 // this.$router.push()

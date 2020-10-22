@@ -1,31 +1,39 @@
 // ************************************************************************************************************************
 // a == 1 && a == 2 && a == 3
-// 通过隐式转换
+/**
+ * 1 通过隐式转换
+ */
 const a = {
     i: 1,
     toString: function () {
         return a.i++;
     },
-    //   valueOf: function () {
-    //     return a.i++;
-    //   }
 }
+console.log(a == 1 && a == 2 && a == 3) // true
 
-console.log(a == 1 && a == 2 && a == 3)
-
-
-
-// 通过劫持对象的 getter
+/**
+ * 2 通过劫持对象的 getter
+ */
 var obj = {}
 var val = 0;
-
+// 可以将 b 直接挂在全局 window 上
 Object.defineProperty(obj, 'b', {
     get: function () {
         return ++val
     }
 })
+console.log(obj.b == 1 && obj.b == 2 && obj.b == 3) // true
 
-console.log(obj.b == 1 && obj.b == 2 && obj.b == 3)
+
+/**
+ * 3 通过重写数组的 join() 方法
+ * 数组的 tostring() 默认调用数组的 join() 方法
+ */
+var arr = [1, 2, 3]
+arr.join = arr.shift
+
+console.log(arr) // [ 1, 2, 3, join: [λ: shift] ]
+console.log(arr == 1 && arr == 2 && arr == 3) // true
 
 
 // ************************************************************************************************************************

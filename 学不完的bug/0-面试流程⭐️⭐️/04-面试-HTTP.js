@@ -25,11 +25,11 @@
 // 2 3xx
 // a 301 - Moved Permanently: 永久重定向：请求的网页永久移动到新位置，自动将请求者转到新位置
 // b 302 - Found: 临时重定向：请求的网页临时移动到新位置，后续的请求仍然从原来的位置发起
-// c 304 - Not Modified: 请求的内容未修改，此时不会返回内容
+// c 304 - Not Modified: 请求的内容未修改，此时不会返回内容，命中协商缓存
 
 // 3 4xx - 前端请求错误
 // a 400 - Bad Request: 错误请求：客户端传参不对等
-// b 401 - Unauthorized: 未授权：客户端未登录
+// b 401 - Unauthorized: 需要HTTP认证信息
 // c 403 - Forbidden: 客户端权限不足
 // d 404 - Not Found: 请求的地址不存在
 
@@ -80,14 +80,15 @@
 // 2 GET 请求参数有限制， POST 请求参数可以很长
 // 3 GET 请求参数在 URL 上，有历史记录，相对而言 POST 更安全
 // 4 GET 请求可以缓存， POST 不能
-// 5 GET 请求时幂等性的，POST 不是 ⭐
+// 5 GET 请求是幂等性的，POST 不是 ⭐
+// 5.1 幂等性：用户对统一操作发起的一次请求或者多次请求的结果是一致的
 // ps 在网络不好的环境，GET 请求会重复尝试，会有重复操作数据的风险
 
 // ========================================== 请求报文的组成 ============================================
 
 // 1 请求行 - request line: GET /index.html HTTP/1.1
-// 2 请求头 - Header: User-Agent / Accept / Host / Content-Type
-// 2.1 application/x-www-form-urlencoded / application/json / multipart/form-data / text/xml
+// 2 请求头 - Header: User-Agent 、 Accept 、 Host 、 Content-Type
+// 2.1 application/x-www-form-urlencoded 、 application/json 、 multipart/form-data 、 text/xml
 // 3 空行 - 告诉浏览器请求头到此结束
 // 4 请求数据 - body
 
