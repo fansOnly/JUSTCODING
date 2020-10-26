@@ -702,6 +702,7 @@ Vue.prototype._init = function (options) {
     initState(vm)
     initInjections(vm)
     callHook(vm, 'created')
+    initProvide(vm) // resolve provide after data/props
 
     if (vm.$options.el) {
         vm.$mount(vm.$options.el)
