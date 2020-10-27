@@ -47,7 +47,7 @@ class Dep {
 
     notify() {
         const subs = this.subs.slice()
-        if (process.env === 'production' && !config.async) {
+        if (process.env.NODE_ENV === 'production' && !config.async) {
             subs.sort((a, b) => a.id - b.id)
         }
         for (let i = 0, len = subs.length; i < len; i++) {
