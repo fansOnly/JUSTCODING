@@ -8,7 +8,7 @@
 
 + dep：调度实例
 
-+ vmCount：根实例睡昂
++ vmCount：根实例数量
 
 ##### 二、方法
 
@@ -26,6 +26,7 @@ class Observe {
         this.value = value
         this.dep = new Dep()
         this.vmCount = 0
+        // 为当前的属性绑定 __ob__ 原型属性
         def(value, '__ob__', this)
         if (Array.isArray(value)) {
             if (hasProto(value)) {
@@ -89,9 +90,11 @@ function observe(value: any, asRootData: ?boolean): Observe | void {
         return
     }
     let ob: Observer | void
+    // 对象吐如果包含 __ob__ 属性，则为已经被初始化过的可观察属性
     if (hasOwn(value, '__ob__') && value.__ob__ instanceof Observer) {
         ob = value.__ob__
     } else if (shouldObserve && !isServerRendering() && (Array.isArray(value) || isPlainObject(value)) && Object.isExtensible(value) && !value._isVue) {
+        // 初始化属性为可观察属性
         ob = new Observer(value)
     }
     if (asRootData && ob) {
@@ -113,13 +116,14 @@ function defienReactive(obj: Object, key: string, val: any, customSetter?: ?Func
     if ((!getter || setter) && arguments.length === 2) {
         obj[key] = val
     }
-
+    // 判断属性的值是否需要深层响应
     let childOb = !shallow && observe(val)
     Object.defineProperty(obj, key, {
         configurable: true,
         enumerable: true,
         get: function reactiveGetter() {
             const value = getter ? getter.call(obj) : val
+            // 当前目标属性已经包含一个 dep 实例
             if (Dep.target) {
                 dep.depend()
                 if (childOb) {

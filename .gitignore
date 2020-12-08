@@ -1,3 +1,4 @@
-/blogs/*.md
 # 避免提交未完成的文件
 *.undo.*
+/node_modules/
+.vscode
