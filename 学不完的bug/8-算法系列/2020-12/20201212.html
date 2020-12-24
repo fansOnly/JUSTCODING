@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        button {
+            display: block;
+        }
+        #div1 {
+            height: 1000px;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <button onclick="fn1()">innerHTML</button>
+        <button onclick="fn2()">outerHTML</button>
+        <button onclick="fn3()">innerText</button>
+        <button onclick="fn4()">outerText</button>
+        <button onclick="fn5()">innerText = innerText</button>
+        <button onclick="fn6()">scrollIntoView</button>
+    </div>
+    <div id="div1">
+        <div class="c1">1111111</div>
+        <ul>
+            <li>aaaaa</li>
+            <li>bbbbbb</li>
+            <li>ccccc</li>
+            <li>dddddd</li>
+        </ul>
+    </div>
+    <div id="div2">
+        <p>div222222</p>
+    </div>
+    <script>
+        function fn1() {
+            const div1 = document.getElementById('div1')
+            div1.innerHTML = '<h1>innerHTML</h1>'
+        }
+        function fn2() {
+            const div1 = document.getElementById('div1')
+            div1.outerHTML = '<h1>outerHTML</h1>'
+        }
+        function fn3() {
+            const div1 = document.getElementById('div1')
+            div1.innerText = '<h1>innerText</h1>'
+        }
+        function fn4() {
+            const div1 = document.getElementById('div1')
+            div1.outerText = '<h1>outerText</h1>'
+        }
+        function fn5() {
+            const div1 = document.getElementById('div1')
+            div1.innerText = div1.innerText
+        }
+            const div2 = document.getElementById('div2')
+        function fn6() {
+            div2.scrollIntoView({behavior: "smooth"})
+        }
+        setTimeout(() => {
+            div2.focus()
+            console.log("document.activeElement", document.activeElement)
+        }, 3000);
+    </script>
+</body>
+</html>

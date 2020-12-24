@@ -19,9 +19,9 @@
         // window.addEventListener('scroll', debunce(() => {
         //     console.log('scroll end.....')
         // }))
-        window.addEventListener('scroll', throtte(() => {
-            console.log('scroll throtte')
-        }))
+        window.addEventListener('scroll', throtte2(() => {
+            console.log('scroll throtte', new Date())
+        }, 3000))
         const inputTyping = debunce(() => {
             const input = document.querySelector('input');
             const value = input.value;
@@ -38,6 +38,17 @@
                 timeout = setTimeout(() => {
                     fn.apply(this, arguments);
                 }, intval)
+            }
+        }
+        function throtte2(fn, delay) {
+            let timer = null
+            return function() {
+                if (!timer) {
+                    timer = setTimeout(() => {
+                        fn.apply(this, arguments)
+                        timer = null
+                    }, delay);
+                }
             }
         }
         function throtte (fn, intval=500) {

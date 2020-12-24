@@ -1,8 +1,6 @@
-# 避免提交未完成的文件
-*.undo.*
 .DS_Store
 node_modules
-dist
+/dist
 
 
 # local env files
