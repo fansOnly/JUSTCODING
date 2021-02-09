@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        .header {
+            height: 100px;
+        }
+        .main {
+            height: 400px;
+            background: #aaa;
+        }
+        .bottom {
+            height: 100px;
+            background: #ccc;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <button onclick="fn1()">main</button>
+        <button onclick="fn2()">bottom</button>
+        <div class="">offsettop：<span class="val"></span></div>
+    </div>
+    <div class="main"></div>
+    <div class="bottom"></div>
+    <script>
+        const getVerticalOffset = el => {
+            let top = el.offsetTop, _el = el
+            while (_el.offsetParent) {
+                _el = _el.offsetParent
+                top += _el.offsetTop
+            }
+            return top
+        }
+        const ele = document.querySelector('.val')
+        const mainEle = document.querySelector('.main')
+        const bottomEle = document.querySelector('.bottom')
+        function fn1() {
+            const val = getVerticalOffset(mainEle)
+            console.log('val: ', val);
+            ele.innerHTML = val
+        }
+        function fn2() {
+            const val = getVerticalOffset(bottomEle)
+            console.log('val: ', val);
+            ele.innerHTML = val
+        }
+    </script>
+</body>
+</html>
