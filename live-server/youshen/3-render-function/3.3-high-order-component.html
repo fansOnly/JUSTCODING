@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script src="../vue.js"></script>
+    
+    <div id="app">
+        <smart-avatar username="vuejs"></smart-avatar>
+    </div>
+
+    <script>
+        function fetchURL(username, cb) {
+            setTimeout(() => {
+                cb('remote.jpg')
+            }, 500);
+        }
+
+        const Avatar = {
+            props: ['src'],
+            template: `<img :src="src" />`
+        }
+
+        // 包装子组件，增强子组件
+        // 避免污染子组件及其父组件
+        function withAvatarURL(InnerComponent) {
+            return {
+                props: ['username'],
+                data() {
+                    return {
+                        url: 'default.jpg'
+                    }
+                },
+                created() {
+                    fetchURL(this.username, url => {
+                        this.url = url
+                    })
+                },
+                render(h) {
+                    return h(InnerComponent, {
+                        props: {
+                            src: this.url
+                        }
+                    })
+                }
+            }
+        }
+
+        const SmartAvatar = withAvatarURL(Avatar)
+
+        new Vue({
+            el: '#app',
+            components: {
+                SmartAvatar
+            }
+        })
+    </script>
+</body>
+</html>

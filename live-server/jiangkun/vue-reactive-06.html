@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>响应式原理</title>
+</head>
+<body>
+    <script>
+        var o = {
+            name: 'zhangsan',
+            age: 20,
+            course: [
+                { name: '语文' },
+                { name: '数学' },
+                { name: '英语' },
+            ]
+        }
+
+        // 对于数组的 push pop shift unshift reverse sort splice 等方法，需要单独处理实现响应式 
+        // arr -> Array.prototype -> Object.prototype -> null
+        // arr -> 改写方法 -> Array.prototype -> Object.prototype -> null
+        const methodsToPatch = [
+            'push',
+            // 'pop',
+            'shift',
+            'unshift',
+            'reverse',
+            'sort',
+            'splice'
+        ]
+        
+        let arr_methods = Object.create(Array.prototype)
+        methodsToPatch.forEach(method => {
+            arr_methods[method] = function() {
+                // 将数据响应式化
+                for (let i = 0; i < arguments.length; i++) {
+                    reactify(arguments[i])
+                }
+                const result = Array.prototype[method].apply(this, arguments)
+                return result
+            }
+        })
+
+        const isObject = value => typeof value === 'object' && value !== null
+
+        // 通过闭包实现中间变量
+        function defineReactive(target, key, value, enumerable) {
+            if (isObject(value)) {
+                reactify(value)
+            }
+            Object.defineProperty(target, key, {
+                configurable: true,
+                enumerable: !!enumerable,
+                get() {
+                    return value
+                },
+                set(newVal) {
+                    value = newVal
+                    if (isObject(value)) {
+                        reactify(value)
+                    }
+                }
+            })
+        }
+
+        // 响应式化深度嵌套的对象
+        function reactify(target) {
+            const keys = Object.keys(target)
+            for (let i = 0; i < keys.length; i++) {
+                let key = keys[i]
+                let value = target[key]
+                // 引用类型 - 递归响应式
+                // 数组 - 循环数组，对元素执行响应式化
+                // 基本类型 - 直接响应式
+                if (Array.isArray(value)) { // 数组
+                    value.__proto__ = arr_methods
+                    for (let j = 0; j < value.length; j++) {
+                        reactify(value[j])
+                    }
+                } else { // 对象，基本类型
+                    defineReactive(target, key, value, true)
+                }
+            }
+        }
+
+        reactify(o)
+    </script>
+</body>
+</html>

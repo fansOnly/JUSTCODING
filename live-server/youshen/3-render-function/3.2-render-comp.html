@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script src="../vue.js"></script>
+
+    <div id="app">
+        <example :ok="ok"></example>
+        <button @click="ok = !ok">toggle</button>
+    </div>
+
+    <script>
+        const Foo = {
+            render: h => h('div', 'foo')
+        }
+        const Bar = {
+            render: h => h('div', 'bar')
+        }
+        Vue.component('example', {
+            props: ['ok'],
+            render(h) {
+                return h(this.ok ? Foo : Bar)
+            }
+        })
+        new Vue({
+            el: '#app',
+            data: {
+                ok: true
+            }
+        })
+    </script>
+</body>
+</html>

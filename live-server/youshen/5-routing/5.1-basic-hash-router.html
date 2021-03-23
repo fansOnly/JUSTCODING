@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script src="../vue.js"></script>
+
+    <div id="app">
+        <component :is="url"></component>
+        <a href="#foo">foo</a>
+        <a href="#bar">bar</a>
+    </div>
+
+    <script>
+        window.addEventListener('hashchange', () => {
+            app.url = window.location.hash.slice(1)
+        })
+
+        const app = new Vue({
+            el: '#app',
+            data: {
+                url: window.location.hash.slice(1)
+            },
+            components: {
+                Foo: { template: `<div>this is foo page</div>` },
+                Bar: { template: `<div>this is bar page</div>` }
+            }
+        })
+    </script>
+</body>
+</html>

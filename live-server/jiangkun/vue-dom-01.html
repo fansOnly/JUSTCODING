@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>通过替换dom实现模板渲染</title>
+</head>
+<body>
+    <div id="app">
+        <p>{{name}}-{{message}}</p>
+        <p>{{message}}</p>
+    </div>
+    <script>
+        console.log('origin app', app)
+        // 步骤拆解
+        // 1. 获取模板
+        let tmpNode = document.getElementById('app')
+        // 2. 获取data
+        let data = {
+            name: '张三',
+            message: '你好啊'
+        }
+        // 3. 将数据与模板结合
+        // 递归 / 遍历 / AST
+        // 此处为 DOM 元素
+        // Vue 的源码中 DOM -> AST -> VNode -> 真实 DOM
+        let regExp = /\{\{(.+?)\}\}/g
+        function compiler(template, data) {
+            let childNodes = template.childNodes // 获取子节点
+            for (let i = 0; i < childNodes.length; i++) {
+                let type = childNodes[i].nodeType // 节点类型 1-元素 3-文本
+                if (type === 3) { // 文本节点 - nodeValue
+                    let txt = childNodes[i].nodeValue
+                    txt = txt.replace(regExp, function(match, p1) {
+                        // match-匹配的字符串，p1-捕获的正则组内容(第1至第n组)
+                        const key = p1.trim()
+                        const val = data[key]
+                        return val
+                    })
+                    childNodes[i].nodeValue = txt
+                } else if (type === 1) { // 元素节点，递归处理
+                    compiler(childNodes[i], data)
+                }
+            }
+        }
+        let generatrNode = tmpNode.cloneNode(true) // 复制一个全新的dom节点
+        compiler(generatrNode, data)
+        // 4. 放置到页面中
+        app.parentNode.replaceChild(generatrNode, app)
+        console.log('new app', app)
+    </script>
+</body>
+</html>

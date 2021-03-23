@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script src="../vue.js"></script>
+
+    <div id="app">
+        <counter></counter>
+        <counter></counter>
+        <counter></counter>
+        <button @click="inc">increase</button>
+    </div>
+
+    <script>
+        const state = {
+            count: 0
+        }
+        const Counter = {
+            data() {
+                return state
+            },
+            render(h) {
+                return h('div', this.count)
+            }
+        }
+
+        new Vue({
+            el: '#app',
+            components: {
+                Counter
+            },
+            methods: {
+                inc() {
+                    state.count++
+                }
+            }
+        })
+    </script>
+</body>
+</html>

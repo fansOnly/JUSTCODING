@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        .box {
+            height: 0;
+            margin: 0 auto;
+            padding-top: 50%;
+            background: #ccc;
+        }
+        .line2 {
+            width: 100px;
+            margin: 50px 0;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            text-overflow: hidden;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+    <div id="box" class="box"></div>
+    <div class="line2">313133331313333313133331313333</div>
+    <ul class="inline-ul">
+        <li>文档流中的空白符合并??????</li>
+        <li>文档流中的空白符合并</li>
+        <li>文档流中的空白符合并</li>
+        <li>文档流中的空白符合并</li>
+        <li>文档流中的空白符合并</li>
+    </ul>
+    <style>
+        .inline-ul {
+            letter-spacing: 0;
+        }
+        .inline-ul li {
+            display: inline-block;
+             background: #ccc;
+        }
+    </style>
+    <script>
+        function getSize() {
+            const box = document.getElementById('box')
+            const { width, height } = box.getBoundingClientRect()
+            box.innerHTML = `${width}px * ${height}px`
+        }
+        getSize()
+        window.addEventListener("resize", getSize, false);
+    </script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .box3 {
+            width: 100px;
+            height: 100px;
+      background: linear-gradient(0deg, transparent 6px, #e60a0a 6px) repeat-y,
+        linear-gradient(0deg, transparent 50%, #0f0ae8 0) repeat-y,
+        linear-gradient(90deg, transparent 50%, #09f32f 0) repeat-x,
+        linear-gradient(90deg, transparent 50%, #fad648 0) repeat-x;
+      background-size: 1px 12px, 1px 12px, 12px 1px, 12px 1px;
+      background-position: 0 0, 100% 0, 0 0, 0 100%;
+      animation: move2 1s infinite linear;
+    }
+    .box3>p {
+      margin: 1px;
+    }
+
+    @keyframes move2 {
+      from {
+      }
+      to {
+        background-position: 0 -12px, 100% 12px, 12px 0, -12px 100%;
+      }
+    }
+    </style>
+</head>
+<body>
+    <div class="box3">
+        <p></p>
+    </div>
+</body>
+</html>

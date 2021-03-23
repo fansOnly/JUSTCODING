@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script src="../vue.js"></script>
+
+    <div id="app"></div>
+
+    <script>
+        // Redux in React
+        // const state = {
+        //     count: 0
+        // }
+
+        // const reducer = (prevState, action) => {
+        //     switch (action) {
+        //         case 'inc':
+        //             return { count: prevState.count + 1 }
+        //         case 'dec':
+        //             return { count: prevState.count - 1 }
+        //         default:
+        //             return prevState
+        //     }
+        // }
+
+        // what we do in vue
+        function app ({ el, model, view, actions }) {
+            const wrappedActions = {}
+
+            Object.keys(actions).forEach(key => {
+                const originalAction = actions[key]
+                wrappedActions[key] = () => {
+                    const nextModel = originalAction(vm.model)
+                    vm.model = nextModel
+                }
+            })
+
+            const vm = new Vue({
+                el,
+                data: {
+                    model
+                },
+                render(h) {
+                    return view(h, this.model, wrappedActions)
+                }
+            })
+        }
+
+        app({
+            el: '#app',
+            model: {
+                count: 0
+            },
+            actions: {
+                inc: ({ count }) => ({ count: count + 1 }),
+                dec: ({ count }) => ({ count: count - 1 })
+            },
+            view: (h, model, actions) => h('div', { attrs: { id: 'app' } }, [
+                model.count, ' ',
+                h('button', { on: { click: actions.inc }}, '+'),
+                h('button', { on: { click: actions.dec }}, '-')
+            ])
+        })
+    </script>
+</body>
+</html>

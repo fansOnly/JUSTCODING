@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+	background-color:#333333;
+}
+#box,#content {
+	width:200px;
+	height:200px;
+	position:relative;
+	background-color:#333;
+	overflow:hidden;
+}
+#box:before {
+	content:"";
+	position:absolute;
+	width:200%;
+	height:1px;
+	top:0;
+	transform:translateX(-100%);
+	z-index:3;
+	background:-webkit-repeating-linear-gradient(0deg,yellow 0,yellow 3px,rgba(0,0,0,0) 3px,rgba(0,0,0,0) 6px);
+	animation:out-right linear 16s infinite;
+}
+#box:after {
+	content:"";
+	position:absolute;
+	width:200%;
+	height:1px;
+	bottom:0;
+	z-index:3;
+	background:-webkit-repeating-linear-gradient(0deg,yellow 0,yellow 3px,rgba(0,0,0,0) 3px,rgba(0,0,0,0) 6px);
+	animation:out-left linear 16s infinite;
+}
+@-webkit-keyframes out-right {
+	from {
+	transform:translateX(-50%);
+}
+to {
+	transform:translateX(0);
+}
+}@-webkit-keyframes out-left {
+	from {
+	transform:translateX(0);
+}
+to {
+	transform:translateX(-50%);
+}
+}#content:before {
+	content:"";
+	position:absolute;
+	height:200%;
+	width:1px;
+	right:0;
+	top:0;
+	transform:translateY(-50%);
+	z-index:3;
+	background:-webkit-repeating-linear-gradient(90deg,yellow 0,yellow 3px,rgba(0,0,0,0) 3px,rgba(0,0,0,0) 6px);
+	animation:out-down linear 16s infinite;
+}
+#content:after {
+	content:"";
+	position:absolute;
+	height:200%;
+	width:1px;
+	left:0;
+	z-index:3;
+	background:-webkit-repeating-linear-gradient(90deg,yellow 0,yellow 3px,rgba(0,0,0,0) 3px,rgba(0,0,0,0) 6px);
+	animation:out-up linear 16s infinite;
+}
+@-webkit-keyframes out-down {
+	from {
+	transform:translateY(-50%);
+}
+to {
+	transform:translateY(0);
+}
+}@-webkit-keyframes out-up {
+	from {
+	transform:translateY(0);
+}
+to {
+	transform:translateY(-50%);
+}
+}
+    </style>
+</head>
+<body>
+    <div id="box">
+        <div id="content"></div>
+    </div>
+</body>
+</html>

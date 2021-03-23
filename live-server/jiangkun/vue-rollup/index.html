@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>vue 2.0</title>
+    <style>
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="root">
+        <p>{{name}}-{{message.wel}}</p>
+        <p>{{message.eat}}</p>
+        <p>{{age}}</p>
+        <button id='btn'>切换显示</button>
+    </div>
+
+    <script src="./utils/util.js"></script>
+    <script src="./src/Dep.js"></script>
+    <script src="./src/watcher.js"></script>
+    <script src="./src/vnode.js"></script>
+    <script src="./src/compiler.js"></script>
+    <script src="./src/myvue.js"></script>
+    <script src="./src/render.js"></script>
+    <script src="./src/array.js"></script>
+    <script src="./src/initData.js"></script>
+
+    <script>
+        const app = new MyVue({
+            el: '#root',
+            data: {
+                name: '张三',
+                message: {
+                    wel: '你好呀',
+                    eat: '吃的啥'
+                },
+                age: 20,
+                course: [
+                    { name: '语文' },
+                    { name: '数学' },
+                    { name: '英语' },
+                ]
+            }
+        })
+        console.log('vue 实例', app)
+    </script>
+</body>
+</html>

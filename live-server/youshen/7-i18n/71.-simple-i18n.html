@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <script src="../vue.js"></script>
+
+  <div id="app">
+    <h1>{{ $t('welcome-message') }}</h1>
+    <button @click="changeLang('cn')">中文</button>
+    <button @click="changeLang('en')">英文</button>
+    <button @click="changeLang('nl')">Dutch</button>
+  </div>
+
+  <script>
+    const i18nPlugin = {
+      install(Vue, locales) {
+        // Vue.mixin({
+        //   methods: {
+        //     $t () {}
+        //   }
+        // })
+        // 直接挂载在 Vue 原型上，可以避免查找、设置 mehtods 的开销
+        Vue.prototype.$t = function (id) {
+          return locales[this.$root.lang][id]
+        }
+      }
+    }
+
+    Vue.use(i18nPlugin, /** options */ {
+      cn: { 'welcome-message': '你好' },
+      en: { 'welcome-message': 'hello' },
+      nl: { 'welcome-message': 'Hallo' },
+    })
+
+    new Vue({
+      el: '#app',
+      data: {
+        lang: 'cn'
+      },
+      methods: {
+        changeLang(lang) {
+          this.lang = lang
+        }
+      }
+    })
+  </script>
+</body>
+</html>

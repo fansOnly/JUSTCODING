@@ -30,7 +30,8 @@ export default class Watcher {
     }
 
     /**
-     * 评估getter，重新收集依赖
+     * 进行计算或执行处理函数
+     * 触发 getter
      */
     get() {
         pushTarget(this)
@@ -125,7 +126,7 @@ export default class Watcher {
     }
 
     /**
-     * 移除依赖想的所有订阅
+     * 移除依赖的所有订阅
      */
     teardown() {
         if (this.active) {

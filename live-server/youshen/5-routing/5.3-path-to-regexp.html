@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script src="../vue.js"></script>
+    <script src="./path-to-regexp.js"></script>
+
+    <div id="app"></div>
+
+    <script>
+        const Foo = {
+            props: ['id'],
+            template: `<div>foo with id: {{id}}</div>`
+        }
+        const Bar = { template: `<div>this is bar.</div>` }
+        const NotFound = { template: `<div>sorry, the page is not found.</div>` }
+
+        const routeTable = {
+            '/foo/:id': Foo,
+            '/bar': Bar
+        }
+
+        const compiledRoutes = []
+        Object.keys(routeTable).forEach(path => {
+            const dynamicSegments = []
+            const regex = pathToRegexp(path, dynamicSegments)
+            const component = routeTable[path]
+            compiledRoutes.push({
+                component,
+                regex,
+                dynamicSegments
+            })
+        })
+
+        window.addEventListener('hashchange', () => {
+            app.url = window.location.hash.slice(1)
+        })
+
+        const app = new Vue({
+            el: '#app',
+            data: {
+                url: window.location.hash.slice(1)
+            },
+            render(h) {
+                const path = '/' + this.url
+
+                let componentToRender
+                let props = {}
+
+                compiledRoutes.some(route => {
+                    const match = route.regex.exec(path)
+                    if (match) {
+                        componentToRender = route.component
+                        route.dynamicSegments.forEach((segment, index) => {
+                            props[segment.name] = match[index + 1]
+                        })
+                    }
+                })
+
+                return h('div', [
+                    h(componentToRender || NotFound, { props }),
+                    h('a', { attrs: { href: '#foo/123' } }, 'foo 123'),
+                    ' | ',
+                    h('a', { attrs: { href: '#foo/456' } }, 'foo 456'),
+                    ' | ',
+                    h('a', { attrs: { href: '#bar' } }, 'bar'),
+                ])
+            }
+        })
+    </script>
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>实现 vue 的构造函数</title>
+</head>
+<body>
+    <div id="app">
+        <p>{{name}}-{{message}}</p>
+        <p>{{message}}</p>
+    </div>
+    <script>
+        console.log('origin app', app)
+        // 步骤拆解
+        function MyVue(options) {
+            // 内部数据使用 _ 开头，只读数据使用 $ 开头
+            this._data = options.data
+            this._el = options.el
+            // 获取模板
+            this._tempalteDOM = document.querySelector(this._el)
+            this._parent = this._tempalteDOM.parentNode
+            // 渲染 dom
+            this.render()
+        }
+        // 渲染函数
+        MyVue.prototype.render = function() {
+            this.compiler()
+        }
+        // 编译函数
+        MyVue.prototype.compiler = function(tmpNode) {
+            let realHTMLDOM = this._tempalteDOM.cloneNode(true)
+            compiler(realHTMLDOM, this._data)
+            this.update(realHTMLDOM)
+        }
+        // 更新函数
+        MyVue.prototype.update = function(realDOM) {
+            this._parent.replaceChild(realDOM, this._tempalteDOM)
+        }
+
+        let regExp = /\{\{(.+?)\}\}/g
+        function compiler(template, data) {
+            let childNodes = template.childNodes // 获取子节点
+            for (let i = 0; i < childNodes.length; i++) {
+                let type = childNodes[i].nodeType // 节点类型 1-元素 3-文本
+                if (type === 3) { // 文本节点 - nodeValue
+                    let txt = childNodes[i].nodeValue
+                    txt = txt.replace(regExp, function(match, p1) {
+                        // match-匹配的字符串，p1-捕获的正则组内容(第1至第n组)
+                        const key = p1.trim()
+                        const val = data[key]
+                        return val
+                    })
+                    childNodes[i].nodeValue = txt
+                } else if (type === 1) { // 元素节点，递归处理
+                    compiler(childNodes[i], data)
+                }
+            }
+        }
+
+        const appx = new MyVue({
+            el: '#app',
+            data: {
+                name: '张三',
+                message: '你好呀'
+            }
+        })
+        console.log('vue 实例', appx)
+        console.log('new app', app)
+    </script>
+</body>
+</html>

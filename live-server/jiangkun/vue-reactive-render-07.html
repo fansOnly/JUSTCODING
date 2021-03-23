@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>实现数据的响应式刷新</title>
+</head>
+<body>
+    <div id="root">
+        <p>{{name}}-{{message.wel}}</p>
+        <p>{{message.eat}}</p>
+        <p>{{age}}</p>
+    </div>
+    <script>
+        // 虚拟 DOM 辅助类
+        class VNode {
+            constructor(tag, data, value, type) {
+                this.tag = tag && tag.toLowerCase()
+                this.data = data
+                this.value = value
+                this.type = type
+                this.children = []
+            }
+
+            appendChild(vnode) {
+                this.children.push(vnode)
+            }
+        }
+
+        // 递归DOM节点生成虚拟DOM
+        function createVNode(node)  {
+            const nodeType = node.nodeType
+            let _vnode = null
+            if (nodeType === 1) { // 元素节点
+                let nodeName = node.nodeName
+                let attrs = node.attributes
+                let _attrObj = {}
+                for (let i = 0; i < attrs.length; i++) {
+                    _attrObj[attrs[i].nodeName] = attrs[i].nodeValue
+                }
+                _vnode = new VNode(nodeName, _attrObj, undefined, nodeType)
+                // 子节点
+                let childNodes = node.childNodes
+                for (let i = 0; i < childNodes.length; i++) {
+                    _vnode.appendChild(createVNode(childNodes[i]))
+                }
+            } else if (nodeType === 3) { // 文本节点
+                _vnode = new VNode(undefined, undefined, node.nodeValue, nodeType)
+            }
+            return _vnode
+        }
+
+        function parseVNode(vnode) { // 解析虚拟 DOM 为真实 DOM
+            const nodeType = vnode.type
+            let _node = null
+            if (nodeType === 1) { // 元素节点
+                _node = document.createElement(vnode.tag)
+                let _data = vnode.data
+                // 节点属性
+                Object.keys(_data).forEach(key => {
+                    _node.setAttribute(key, _data[key])
+                })
+                // 子节点
+                let _children = vnode.children
+                _children.forEach(subvnode => {
+                    _node.appendChild(parseVNode(subvnode))
+                })
+                return _node
+            } else if (nodeType === 3) { // 文本节点
+                return document.createTextNode(vnode.value,)
+            }
+        }
+
+        let tmpReg = /\{\{(.+?)\}\}/g
+        
+        function getValByPropPath(target, path) {
+            let props = path.split('.')
+            let res = target
+            while (props.length) {
+                res = res[props.shift()]
+            }
+            return res
+        }
+        
+         // 对于数组的 push pop shift unshift reverse sort splice 等方法，需要单独处理实现响应式 
+        // arr -> Array.prototype -> Object.prototype -> null
+        // arr -> 改写方法 -> Array.prototype -> Object.prototype -> null
+        const methodsToPatch = [
+            'push',
+            'pop',
+            'shift',
+            'unshift',
+            'reverse',
+            'sort',
+            'splice'
+        ]
+        
+        let arr_methods = Object.create(Array.prototype)
+        methodsToPatch.forEach(method => {
+            arr_methods[method] = function() {
+                // 将数据响应式化
+                for (let i = 0; i < arguments.length; i++) {
+                    reactify(arguments[i])
+                }
+                const result = Array.prototype[method].apply(this, arguments)
+                return result
+            }
+        })
+
+        const isObject = value => typeof value === 'object' && value !== null
+
+        // 通过闭包实现中间变量
+        function defineReactive(target, key, value, enumerable) {
+            if (isObject(value)) {
+                reactify(value, this)
+            }
+            let that = this
+            Object.defineProperty(target, key, {
+                configurable: true,
+                enumerable: !!enumerable,
+                get() {
+                    return value
+                },
+                set(newVal) {
+                    value = newVal
+                    // 对于直接赋值的引用类型，响应式新值
+                    // 由于数组不能添加响应式，对数组直接赋值不会触发响应式
+                    if (isObject(value)) {
+                        reactify(value)
+                    }
+                    // Vue：watcher
+                    // 此处通过将 Vue 示例传入调用挂载方法
+                    that.mountComponent()
+                }
+            })
+        }
+
+        // 响应式化深度嵌套的对象
+        function reactify(target, vm) {
+            const keys = Object.keys(target)
+            for (let i = 0; i < keys.length; i++) {
+                let key = keys[i]
+                let value = target[key]
+                // 引用类型 - 递归响应式
+                // 数组 - 循环数组，对元素执行响应式化
+                // 基本类型 - 直接响应式
+                if (Array.isArray(value)) { // 数组
+                    value.__proto__ = arr_methods
+                    for (let j = 0; j < value.length; j++) {
+                        reactify(value[j], vm)
+                    }
+                } else { // 对象，基本类型
+                    defineReactive.call(vm, target, key, value, true)
+                }
+            }
+        }
+
+
+        // 将虚拟 DOM 填充数据后返回
+        function combine(vnode, data) {
+            let _type = vnode.type
+            let _tag = vnode.tag
+            let _data = vnode.data
+            let _value = vnode.value
+            let _children = vnode.children
+
+            let _vnode = null
+
+            if (_type === 1) { // 元素节点
+                _vnode = new VNode(_tag, _data, _value, _type)
+
+                _children.forEach(subvnode => {
+                    _vnode.appendChild(combine(subvnode, data))
+                })
+            } else if (_type === 3) { // 文本节点
+                // 对文本进行处理
+                _value = _value.replace(tmpReg, (_, p1) => {
+                    return getValByPropPath(data, p1.trim())
+                })
+                _vnode = new VNode(_tag, _data, _value, _type)
+            }
+            return _vnode
+        }
+
+        // 步骤拆解
+        function MyVue(options) {
+            // 内部数据使用 _ 开头，只读数据使用 $ 开头
+            this._options = options
+            this._data = options.data
+            reactify(this._data, this) // 响应式化数据
+            let elm = document.querySelector('#root')
+            this._template = elm
+            this._parent = elm.parentNode
+            this._el = options.el
+
+            this.mount() // 挂载
+        }
+
+        MyVue.prototype.mount = function() { // 节点挂载
+            if (typeof this._options.render === 'function') { // 自定义渲染
+                return
+            }
+            this.render = this.createRenderFn()
+            this.mountComponent()
+        }
+
+        MyVue.prototype.mountComponent = function() { // 仿 watcher
+            let mount = () => {
+                this.update(this.render())
+            }
+            mount.call(this)
+        }
+
+        /** 
+         * Vue 中使用了二次提交的设计结构
+         * 1. 数据变化后，结合被缓存的 AST，生成新的 VNode - render
+         * 2. 新的 VNode 通过 diff 算法与原来的 VNode 对比，更新 - update
+         * 3. 比较完后渲染真实 DOM - VNode 与真实 DOM 一一对应
+        */
+        MyVue.prototype.createRenderFn = function() {
+            // 缓存抽象语法树，此处使用虚拟 DOM 替代
+            const ast = createVNode(this._template)
+            // Vue: AST + data -> VNode
+            // 无数据的 VNode + data -> 有数据的 VNode
+            return function render() {
+                return combine(ast, this._data)
+            }
+        }
+
+        MyVue.prototype.update = function(vnode) { // 渲染页面
+            // Vue: diff算法的实现
+            // 简单的替换全部子节点
+            const realNode = parseVNode(vnode)
+            this._parent.replaceChild(realNode, document.querySelector('#root'))
+        }
+
+        const app = new MyVue({
+            el: '#root',
+            data: {
+                name: '张三',
+                message: {
+                    wel: '你好呀',
+                    eat: '吃的啥'
+                },
+                age: 20,
+                course: [
+                    { name: '语文' },
+                    { name: '数学' },
+                    { name: '英语' },
+                ]
+            }
+        })
+        console.log('vue 实例', app)
+    </script>
+</body>
+</html>

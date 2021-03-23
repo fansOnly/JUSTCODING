@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script src="../vue.js"></script>
+
+    <div id="app"></div>
+
+    <script>
+        const Foo = { template: `<div>this is foo page.</div>` }
+        const Bar = { template: `<div>this is bar page.</div>` }
+        const NotFound = { template: `<div>this is 404 page.</div>` }
+
+        const routeTable = {
+            'foo': Foo,
+            'bar': Bar
+        }
+        
+        window.addEventListener('hashchange', () => {
+            app.url = window.location.hash.slice(1)
+        })
+
+        const app = new Vue({
+            el: '#app',
+            data: {
+                url: window.location.hash.slice(1)
+            }, 
+            render(h) {
+                return h('div', [
+                    h(routeTable[this.url] || NotFound),
+                    h('a', { attrs: { href: '#foo' } }, 'foo'),
+                    ' ',
+                    h('a', { attrs: { href: '#bar' } }, 'bar'),
+                ])
+            }
+        })
+    </script>
+</body>
+</html>
