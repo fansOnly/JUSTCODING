@@ -1,0 +1,11 @@
+function test () {
+
+}
+test.prototype.then = function () {
+  console.log('test => then')
+}
+Function.prototype.mythen = function () {
+  console.log('Function => mythen')
+}
+test.mythen();
+test.then();
