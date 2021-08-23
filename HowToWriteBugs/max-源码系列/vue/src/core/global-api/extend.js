@@ -2,7 +2,7 @@
 
 import { ASSET_TYPES } from 'shared/constants'
 import { defineComputed, proxy } from '../instance/state'
-import { extend, mergeOptions, validateComponentName } from '../util/index'
+import { extend, mergeOptions, tip, validateComponentName } from '../util/index'
 
 export function initExtend (Vue: GlobalAPI) {
   /**
@@ -30,9 +30,11 @@ export function initExtend (Vue: GlobalAPI) {
       validateComponentName(name)
     }
 
+    // @note 创建一个 VueComponent 类
     const Sub = function VueComponent (options) {
       this._init(options)
     }
+    // @note 继承 Vue
     Sub.prototype = Object.create(Super.prototype)
     Sub.prototype.constructor = Sub
     Sub.cid = cid++

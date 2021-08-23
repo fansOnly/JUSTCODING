@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>mini vue3</title>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+  const Vue = {
+    createApp(config) {
+      const compiler = template => (content, dom) => {
+        dom.innerText = ''
+
+        let input = document.createElement('input')
+        input.addEventListener('keyup', function() {
+          content.state.message = this.value
+        })
+        input.setAttribute('value', content.state.message)
+        dom.appendChild(input)
+
+        let button = document.createElement('button')
+        button.addEventListener('click', function() {
+          return content.click.apply(content.state)
+        })
+        button.innerText = content.state.message
+        dom.appendChild(button)
+      }
+
+      const render = compiler(config.template)
+
+      return {
+        mount(container) {
+          const dom = dom.querySelector(container)
+          const setupResult = config.setup()
+          // effective = () => render(setupResult, dom)
+          // render(setupResult, dom)
+
+          const render = config.render(setupResult)
+          let isMounted = false
+          let prevSubTree
+          watchEffect(() => {
+            if (!isMounted) {
+              // 挂载
+              dom.innerText = ''
+              isMounted = true
+              const subTree = config.render(setupResult)
+              prevSubTree = subTree
+              mountElement(subTree, dom)
+            } else {
+              // 更新
+              const subTree = config.render(setupResult)
+              diff(prevSubTree, subTree)
+              prevSubTree = subTree
+            }
+          })
+        }
+      }
+    }
+  }
+  let effective
+  const App = {
+    template: `
+        <input v-model="message"/>
+        <button @click='click'>{{message}}</button>
+    `,
+    setup() {
+      const state = new Proxy({
+        message: 'hello world!'
+      }, {
+        get(target, key, value, receiver) {
+          effective()
+          return Reflect.set(target, key, value, receiver)
+        },
+        set() {}
+       })
+
+       const click = () => {
+         state.message = state.message.split('').reverse().join('')
+       }
+       return {state, click}
+    },
+        render(content) {
+          return h('div', null, [
+            h('inupt', null, String(content.state.message)),
+            h('button', {
+              onClick: content.click
+            }, 'click')
+          ])
+        }
+  }
+  const { createApp } = Vue
+  createApp(App).mount('#app')
+
+  // 工具函数
+  function mountElement(vnode, container) {
+    // 渲染真实的 dom 节点
+    const el = (vnode.el = createElement(vnode.type))
+    // 处理 props
+    if (vnode.props) {
+      for (const key in vnode.props) {
+        const val = vnode.props[key]
+        patchProp(vnode.el, key, null, val)
+      }
+    }
+    // 处理 children
+    if (Array.isArray(vnode.children)) {
+      vnode.forEach(v => {
+        mountElement(v, vnode.el)
+      })
+    } else {
+      insert(createText(vnode.children), vnode.el)
+    }
+    // 插入视图
+    insert(el, container)
+  }
+  function patchProp(el, key, prevValue, nextValue) {
+    // 默认以 on 开头的绑定属性为事件
+    if (key.startsWith('on')) {
+      const eventName = key.splice(2).toLowerCase()
+      document.addEventListener(eventName, nextValue)
+    } else {
+      if (nextValue === null) {
+        el.removeAttribute(key)
+      } else {
+        el.setAttribute(key, nextValue)
+      }
+    }
+  }
+  function diff(v1, v2) {
+    // 不同的 tag，直接替换
+    // 相同的 tag，判断 props 是否变化
+    // 相同的 tag，判断 children 是否变化 - 复杂
+    const { props: oldProps, children: oldChildren = [] } = v1
+    const { props: newProps, children: newChildren = [] } = v2
+    if (v1.tag !== v2.tag) {
+      v1.replaceWith(createElement(v2.tag))
+    } else {
+      const el = (v2.el = v1.el)
+      // 1. 对比 props
+      // 1.1 新节点的值不同于旧节点，直接替换
+      // 1.2 新节点没有的值，直接删除
+      if (newProps) {
+        Object.key(newProps).forEach(key => {
+          if (newProps[key] !== oldProps[key]) {
+            patchProp(el, key, oldProps[key], newProps[key])
+          }
+        })
+        Object.keys(oldProps).forEach(key => {
+          if (!newProps(key)) {
+            patchProp(el, key, oldProps[key], null)
+          }
+        })
+      }
+
+      // 2. 对比 chidlren
+      // 2.1 newChildren -> string
+      //     oldChildren -> string   oldChildren -> Array
+      // 2.2 newChildren -> Array
+      //     oldChildren -> string  oldChildren -> string
+      if (typeof newChildren === 'string') {
+        if (typeof oldChildren === 'string') {
+          setText(el, newChildren)
+        } else if (Array.isArray(oldChildren)) {
+          // 把之前的元素都替换掉
+          v1.el.textContent = newChildren
+        } else if (Array.isArray(newChildren)) {
+          if (typeof oldChildren === 'string') {
+            // 清空之前的内容
+            v1.el.innerHtml = ''
+            newChildren.forEach(vnode => {
+              mountElement(vnode, el)
+            })
+          } else if (Array.isArray(oldChildren)) {
+            // 1. 对比新旧节点的子节点差异
+            // 2. 对比新旧节点的子节点个数
+            // 2.1. 新节点的子节点多则把多余的绩点增加
+            // 2.2. 旧的子节点多则把多余的删除
+            const length = Math.min(newChildren.length, oldChildren.length)
+            for (let i = 0; i < length;  i++) {
+              const newVnode = newChildren[i]
+              const oldVnode = oldChildren[i]
+              diff(oldVnode, newVnode)
+            }
+            if (newChildren.length > length) {
+              for (let i = length; i < newChildren.length; i++) {
+                mountElement(newChildren[i], el)
+              }
+            } else if (oldChildren.length > length) {
+              for (let i = length; i < oldChildren.length; i++) {
+                remove(oldChildren[i], el)
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+</script>
+</body>
+</html>

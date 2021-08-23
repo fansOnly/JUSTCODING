@@ -99,7 +99,7 @@ export default class Watcher {
    * Evaluate the getter, and re-collect dependencies.
    */
   get () {
-    pushTarget(this)
+    pushTarget(this) // @note将当前属性对应的 watcher 设为全局 watcher
     let value
     const vm = this.vm
     try {
@@ -113,7 +113,7 @@ export default class Watcher {
     } finally {
       // "touch" every property so they are all tracked as
       // dependencies for deep watching
-      if (this.deep) {
+      if (this.deep) { // @note如果设置了 deep: true，递归遍历，耗性能
         traverse(value)
       }
       popTarget()
@@ -163,7 +163,7 @@ export default class Watcher {
    */
   update () {
     /* istanbul ignore else */
-    if (this.lazy) {
+    if (this.lazy) { // @note计算属性依赖的数据发生更新时，将其对应的 watcher 的 dirty 变成 true，下次获取计算属性时重新求值
       this.dirty = true
     } else if (this.sync) {
       this.run()
@@ -207,7 +207,7 @@ export default class Watcher {
    * Evaluate the value of the watcher.
    * This only gets called for lazy watchers.
    */
-  evaluate () {
+  evaluate () { // @notewatcher 求值
     this.value = this.get()
     this.dirty = false
   }

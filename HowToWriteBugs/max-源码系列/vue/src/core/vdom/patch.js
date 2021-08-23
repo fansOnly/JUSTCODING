@@ -141,10 +141,12 @@ export function createPatchFunction (backend) {
     }
 
     vnode.isRootInsert = !nested // for transition enter check
+    // @note 判断当前要创建的是不是组件，如果是组件则执行组件的初始化逻辑
     if (createComponent(vnode, insertedVnodeQueue, parentElm, refElm)) {
       return
     }
 
+    // @note 原生标签创建
     const data = vnode.data
     const children = vnode.children
     const tag = vnode.tag

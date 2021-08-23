@@ -1,0 +1,25 @@
+{
+  "name": "rollup-vue",
+  "version": "1.0.0",
+  "description": "rollup",
+  "main": "index.js",
+  "scripts": {
+    "build:dev": "rollup -c",
+    "serve": "cross-env ENV=development rollup -c -w",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "rollup",
+    "vue"
+  ],
+  "author": "fansonly",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/core": "^7.13.10",
+    "@babel/preset-env": "^7.13.12",
+    "cross-env": "^7.0.3",
+    "rollup": "^2.42.4",
+    "rollup-plugin-babel": "^4.4.0",
+    "rollup-plugin-serve": "^1.1.0"
+  }
+}

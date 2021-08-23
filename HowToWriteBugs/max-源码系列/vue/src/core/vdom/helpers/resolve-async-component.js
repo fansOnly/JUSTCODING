@@ -72,7 +72,7 @@ export function resolveAsyncComponent (
 
     const forceRender = (renderCompleted: boolean) => {
       for (let i = 0, l = owners.length; i < l; i++) {
-        (owners[i]: any).$forceUpdate()
+        (owners[i]: any).$forceUpdate() // @note 【强制更新】
       }
 
       if (renderCompleted) {

@@ -70,7 +70,7 @@
     + Content-Language：实体资源语言
     + Content-Encoding：实体编码格式
     + Content-length：实体大小
-    + COntent-type：实体媒体类型
+    + Content-type：实体媒体类型
 
 + HTTP 缓存
   + 强缓存

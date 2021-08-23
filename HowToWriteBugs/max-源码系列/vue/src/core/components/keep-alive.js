@@ -81,8 +81,8 @@ export default {
   },
 
   render () {
-    const slot = this.$slots.default
-    const vnode: VNode = getFirstComponentChild(slot)
+    const slot = this.$slots.default // @note取默认插槽
+    const vnode: VNode = getFirstComponentChild(slot) // @tip默认只取第一个组件缓存
     const componentOptions: ?VNodeComponentOptions = vnode && vnode.componentOptions
     if (componentOptions) {
       // check pattern
@@ -104,15 +104,15 @@ export default {
         ? componentOptions.Ctor.cid + (componentOptions.tag ? `::${componentOptions.tag}` : '')
         : vnode.key
       if (cache[key]) {
-        vnode.componentInstance = cache[key].componentInstance
+        vnode.componentInstance = cache[key].componentInstance // @note缓存过的组件直接返回组件实例
         // make current key freshest
-        remove(keys, key)
+        remove(keys, key) // @noteLRU 算法 - 最近最久未使用  [a, b, c] => a => [b, c, a] => c => [b, a, c]
         keys.push(key)
       } else {
-        cache[key] = vnode
+        cache[key] = vnode // @note没有缓存则缓存组件的 vnode
         keys.push(key)
         // prune oldest entry
-        if (this.max && keys.length > parseInt(this.max)) {
+        if (this.max && keys.length > parseInt(this.max)) { // @noteLRU 从第一个开始删除 [a, b, c] => [b, c] => [c] = >[]
           pruneCacheEntry(cache, keys[0], keys, this._vnode)
         }
       }

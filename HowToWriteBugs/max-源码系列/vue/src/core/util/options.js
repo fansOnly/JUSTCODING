@@ -169,6 +169,7 @@ function dedupeHooks (hooks) {
   return res
 }
 
+// 遍历生命周期的 hook
 LIFECYCLE_HOOKS.forEach(hook => {
   strats[hook] = mergeHook
 })
@@ -417,7 +418,7 @@ export function mergeOptions (
     }
   }
 
-  const options = {}
+  const options = {}  // 属性及生命周期的合并
   let key
   for (key in parent) {
     mergeField(key)

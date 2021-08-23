@@ -1,3 +1,9 @@
+/*
+ * @Author: fansonly
+ * @Date: 2021-02-01 20:45:29
+ * @Description:
+ * @LastEditTime: 2021-08-02 11:03:19
+ */
 class Promise {
     constructor(executor) {
         this.state = 'pending'

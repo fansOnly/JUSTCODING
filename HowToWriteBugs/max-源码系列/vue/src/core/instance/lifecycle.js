@@ -187,7 +187,7 @@ export function mountComponent (
     }
   } else {
     updateComponent = () => {
-      // 内部调用 patch 方法，diff 算法
+      // @note 内部调用 patch 方法，diff 算法
       vm._update(vm._render() /** 用于生成虚拟 DOM */, hydrating)
     }
   }
@@ -201,7 +201,7 @@ export function mountComponent (
         callHook(vm, 'beforeUpdate')
       }
     }
-  }, true /* isRenderWatcher - 渲染 Watcher */)
+  }, true /* isRenderWatcher - @note 渲染 Watcher */)
   hydrating = false
 
   // manually mounted instance, call mounted on self

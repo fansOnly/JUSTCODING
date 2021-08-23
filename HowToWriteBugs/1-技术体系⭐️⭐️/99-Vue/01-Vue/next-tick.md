@@ -1,13 +1,16 @@
 #### Vue 中 next-tick 的实现
 
-+ 首先检查是否支持 Promise，则用 Promise - microTask
++ 1. 首先检查是否支持 Promise，则用 Promise - microTask
 
 ```js
 const p = Promise.resolve()
 p.then(callback)
 ```
 
-+ 其次检查是否支持 MutationObserver - microTask
++ 2. 其次检查是否支持
+
+>> 针对2.5之前版本，使用 MessageChannel - 微任务
+>> 针对2.5及之后版本，使用 MutationObserver - 宏任务
 
 ```js
 const observer = new MutationObserver(callback)

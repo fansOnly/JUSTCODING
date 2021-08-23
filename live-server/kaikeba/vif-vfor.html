@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>v-if 和v-for 的优先级</title>
+</head>
+<body>
+  <script src="./vue.js"></script>
+
+  <div id="app">
+    <div>v-if 和 v-for 同时使用</div>
+    <li v-for="(item, index) in list" v-if="checked">{{item.name}}</li>
+    <hr />
+    <div>v-if 在 v-for外面使用</div>
+    <template v-if="checked">
+      <li v-for="(item, index) in list">{{item.name}}</li>
+    </template>
+    <hr>
+    <div>同时使用 computed</div>
+    <li v-for="(item, index) in _list">{{item.name}}</li>
+    <hr>
+    <div>render 函数渲染的结果</div>
+    <div>{{$options.render}}</div>
+  </div>
+
+  <script>
+    const app = new Vue({
+      el: '#app',
+      data: {
+        checked: true,
+        list: [
+          { name: '张三', show: false },
+          { name: '李四', show: true },
+        ]
+      },
+      computed: {
+        _list() {
+          return this.list.filter(v => v.show)
+        }
+      }
+    })
+    console.log(app.$options.render)
+  </script>
+</body>
+</html>

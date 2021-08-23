@@ -70,7 +70,7 @@ function newFn2() {
 // create的流程⭐️
 // 1 创建一个函数
 // 2 将函数的原型指向当前继承的原型
-// 3 返回新的对象
+// 3 返回当前原型继承的实例
 function createFn(proto) {
     function F() { }
     F.prototype = proto

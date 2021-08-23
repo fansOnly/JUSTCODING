@@ -19,6 +19,7 @@ export function initAssetRegisters (Vue: GlobalAPI) {
         if (process.env.NODE_ENV !== 'production' && type === 'component') {
           validateComponentName(id)
         }
+        // @note判断传入的参数是否是对象，如果是对象则当作配置项传入 this.options._base => Vue 构造函数
         if (type === 'component' && isPlainObject(definition)) {
           definition.name = definition.name || id
           definition = this.options._base.extend(definition)
@@ -26,8 +27,9 @@ export function initAssetRegisters (Vue: GlobalAPI) {
         if (type === 'directive' && typeof definition === 'function') {
           definition = { bind: definition, update: definition }
         }
+        // 注册 this.options[components][id] = Ctor
         this.options[type + 's'][id] = definition
-        return definition
+        return definition // @note最终的结果是一个基于 Vue 扩展的构造函数
       }
     }
   })

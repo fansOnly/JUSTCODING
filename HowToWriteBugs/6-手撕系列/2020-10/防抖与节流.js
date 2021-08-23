@@ -1,7 +1,7 @@
 /**
  * 防抖函数
  * 触发后 n 秒内只执行一次，再次触发，会重新计算时间
- * 适用于输入框输入，表单验证，按钮提交，窗口缩放等场景
+ * 适用于输入框输入，表单验证，窗口缩放等场景
  */
 function debounce(fn, wait = 500, immediate = false) {
     let timer = null
@@ -27,7 +27,6 @@ function debounce(fn, wait = 500, immediate = false) {
 function throtte(fn, wait = 500) {
     let timer = null
     return function() {
-        if (timer) clearTimeout(timer)
         if (!timer) {
             timer = setTimeout(() => {
                 fn.apply(this, arguments)

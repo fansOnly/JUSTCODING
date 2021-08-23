@@ -33,6 +33,7 @@ import {
 } from 'weex/runtime/recycle-list/render-component-template'
 
 // inline hooks to be invoked on component VNodes during patch
+// @note 默认组件管理钩子
 const componentVNodeHooks = {
   init (vnode: VNodeWithData, hydrating: boolean): ?boolean {
     if (
@@ -44,10 +45,12 @@ const componentVNodeHooks = {
       const mountedNode: any = vnode // work around flow
       componentVNodeHooks.prepatch(mountedNode, mountedNode)
     } else {
+      // @note 创建组件实例
       const child = vnode.componentInstance = createComponentInstanceForVnode(
         vnode,
         activeInstance
       )
+      // @note 手动挂载组件
       child.$mount(hydrating ? vnode.elm : undefined, hydrating)
     }
   },
@@ -128,13 +131,13 @@ export function createComponent (
   // async component
   let asyncFactory
   if (isUndef(Ctor.cid)) {
-    asyncFactory = Ctor
+    asyncFactory = Ctor // @tip【异步组件一定是一个函数，提供一个返回值】
     Ctor = resolveAsyncComponent(asyncFactory, baseCtor)
     if (Ctor === undefined) {
       // return a placeholder node for async component, which is rendered
       // as a comment node but preserves all the raw information for the node.
       // the information will be used for async server-rendering and hydration.
-      return createAsyncPlaceholder(
+      return createAsyncPlaceholder( // @note  返回一个占位符
         asyncFactory,
         data,
         context,
@@ -248,6 +251,7 @@ function mergeHook (f1: any, f2: any): Function {
 // transform component v-model info (value and callback) into
 // prop and event handler respectively.
 function transformModel (options, data: any) {
+  // 组件的 v-model 默认是 value + input 的语法糖
   const prop = (options.model && options.model.prop) || 'value'
   const event = (options.model && options.model.event) || 'input'
   ;(data.attrs || (data.attrs = {}))[prop] = data.model.value

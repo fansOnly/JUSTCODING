@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <div>
+    <button>123</button>
+   </div>
+   <script>
+     var btn = document.querySelector('button');
+     var div = document.querySelector('div');
+     btn.addEventListener('click', function () {
+       console.log('bubble', 'btn');
+     }, false);
+     btn.addEventListener('click', function () {
+       console.log('capture', 'btn');
+     }, true);
+     div.addEventListener('click', function () {
+       console.log('bubble', 'div');
+     }, false);
+     div.addEventListener('click', function () {
+       console.log('capture', 'div');
+     }, true);
+   </script>
+</body>
+</html>

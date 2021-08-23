@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <div id="app">  hello
+    <p>{{name}}</p>
+    <span>{{school.grade}}</div>
+  </div>
+
+  <script src="/dist/umd/vue.js"></script>
+  <script>
+    let app = new Vue({
+      el: '#app',
+      data() {
+        return {
+          name: '张三',
+          school: {
+            grade: '五年级',
+            course: ['语文', '数学', '英语']
+          },
+          arr: [1, 2]
+        }
+      },
+      computed() {},
+      methods: {}
+    })
+  </script>
+</body>
+</html>
