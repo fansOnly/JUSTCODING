@@ -5,6 +5,7 @@ import lazyLoad from './lazyLoad'
 import permission from './permission'
 import waterMarker from './waterMarker'
 import draggable from './draggable'
+import antiDuplicateClick from './antiDuplicateClick'
 
 const directives = {
     copy,
@@ -13,7 +14,8 @@ const directives = {
     lazyLoad,
     permission,
     waterMarker,
-    draggable
+    draggable,
+    antiDuplicateClick
 }
 
 

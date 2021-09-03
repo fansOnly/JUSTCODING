@@ -33,8 +33,8 @@ console.log(bubbleSort(arr.slice()))
  */
 function selectionSort(arr) {
     const len = arr.length
-    for (let i = 0; i < len; i++) {
-        for (let j = i; j < len; j++) {
+    for (let i = 0; i < len -1; i++) {
+        for (let j = i + 1; j < len; j++) {
             if (arr[j] < arr[i]) {
                 [arr[i], arr[j]] = [arr[j], arr[i]]
             }
@@ -43,7 +43,7 @@ function selectionSort(arr) {
     return arr
 }
 
-console.log(selectionSort(arr.slice()))
+console.log(selectionSort([ 10, 1, 5, 9, 2, 90, 23, 187, 3 ]))
 
 /**
  * 三、插入排序
@@ -64,7 +64,7 @@ function insertionSort(arr) {
     return arr
 }
 
-console.log(insertionSort(arr.slice()))
+console.log(insertionSort([ 10, 1, 5, 9, 2, 90, 23, 187, 3 ]))
 
 
 /**
@@ -88,7 +88,7 @@ function quickSort(arr) {
     return [...quickSort(left), pivot, ...quickSort(right)]
 }
 
-console.log(quickSort(arr.slice()))
+console.log(quickSort([ 10, 1, 5, 3, 9, 2, 90, 23, 187, 3 ]))
 
 
 /**
