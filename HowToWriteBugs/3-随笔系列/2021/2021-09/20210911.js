@@ -2,7 +2,7 @@
  * @Author: fansonly
  * @Date: 2021-09-11 10:39:11
  * @Description:
- * @LastEditTime: 2021-09-11 11:35:02
+ * @LastEditTime: 2021-09-11 15:03:26
  */
 
 /**
@@ -30,3 +30,22 @@
   return res
   }
   console.log(countAndSay(6))
+
+
+  /**
+   *  最长公共前缀
+   */
+  const longestCommonPrefix = function(strs) {
+    for (let i = 0; i < strs[0].length; i++) {
+      const str = strs[0][i]
+      for (let j = 1; j < strs.length; j++) {
+        if (strs[j][i] === str || i == strs[j].length) {
+          continue
+        } else {
+          return strs[0].substr(0, j)
+        }
+      }
+    }
+    return strs[0]
+  }
+  console.log(longestCommonPrefix(["flower","flow","flight"]))
