@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>like vue 2.0</title>
+</head>
+
+<body>
+  <div id="app">
+    <span>hello, </span>{{b.c.d}}
+    <div id="msg">
+      <button onclick="add()">add</button>
+    </div>
+    <input type="text" v-model="b.c.d">
+    <br />
+    <span>input 输入框的值：</span>{{a}}
+    <ul class="ul">
+      <li>a</li>
+      <li>b</li>
+      <li>c</li>
+    </ul>
+  </div>
+  <script type="module">
+    import Vue from './instance/index.js'
+    const vm = new Vue({
+      el: '#app',
+      data: {
+        a: 10,
+        b: {
+          c: {
+            d: 8
+          }
+        }
+      },
+      watch: {
+        a(newVal, oldVal) {
+          console.log('a改变了', oldVal, '=>', newVal)
+        },
+        'b.c.d'(newVal, oldVal) {
+          console.log('b.c.d改变了', oldVal, '=>', newVal)
+        },
+      }
+    })
+    console.log('vm: ', vm);
+    window.vm = vm
+  </script>
+  <script>
+    function add() {
+      vm.b.c.d++
+    }
+  </script>
+</body>
+
+</html>

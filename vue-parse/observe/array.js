@@ -16,12 +16,12 @@ const methodsToPatch = [
 methodsToPatch.forEach(method => {
     const original = arrayMethods[method]
     def(arrayMethods, method, function mutator(...args) {
-        const result = original.call(this, args)
+        const result = original.apply(this, args)
         const ob = this.__ob__
         let inserted
         switch (method) {
             case 'push':
-            case 'ubshift':
+            case 'unshift':
                 inserted = args
                 break
             case 'splice':
