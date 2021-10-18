@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>study mastache</title>
+</head>
+<body>
+  <div id="app"></div>
+  <script src="/xuni/bundle.js"></script>
+
+  <script>
+    const str = '<p>我买了一个{{thing}}，好{{mod}}</p>'
+    const data = {
+      thing: '手机',
+      mod: '开心'
+    }
+    // mastache.render(str, data)
+
+    const str2 = `
+    <div>
+      <a href="{{url}}">{{name}}</a>
+    <ul class="box">
+      {{#students}}
+      <li>
+        学生{{name}}的爱好是
+        <ol>
+          {{#hobbies}}
+          <li>{{.}}</li>
+          {{/hobbies}}
+        </ol>
+      </li>
+      {{/students}}
+    </ul>
+  </div>
+    `
+    const data2 = {
+      name: '百度',
+      url: 'http://www.baidu.com',
+      students: [
+        { name: '张三', hobbies: ['游泳', '打球'] },
+        { name: '王肃', hobbies: ['跑步', '阅读'] },
+      ]
+    }
+
+    const dom = mastache.render(str2, data2)
+    document.getElementById('app').innerHTML = dom
+  </script>
+</body>
+</html>
