@@ -9,7 +9,7 @@ export default function parseTemplateToTokens(template) {
   while (!scanner.end()) {
     str = scanner.scanUntil('{{')
     if (str) {
-      // 去除多余的空格
+      // 去除多余的空格，保留标签内的空格
       str = str.replace(/(?<!\<\w+)\s*/g, '')
       tokens.push(['text', str])
     }
