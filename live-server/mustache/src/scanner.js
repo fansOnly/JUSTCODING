@@ -37,6 +37,6 @@ export default class Scanner {
   }
 
   end() {
-    return this.pos === this.template.length
+    return this.pos >= this.template.length
   }
 }

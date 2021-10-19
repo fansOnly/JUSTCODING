@@ -3,6 +3,7 @@
  */
 
 export default function nestTokens(tokens) {
+  // console.log('tokens: ', tokens);
 
   let nestedTokens = []
   // 定义收集器，默认存储结果数组，遇到 # 存储新的子数组
