@@ -7,7 +7,42 @@
   <title>study axios</title>
 </head>
 <body>
-  <div id="app"></div>
+  <div id="app">
+    <button id="btn1">发送请求</button>
+    <button id="btn2">取消请求</button>
+  </div>
   <script src="/xuni/bundle.js"></script>
+
+  <script type="module">
+
+    const btn1 = document.getElementById('btn1')
+    const btn2 = document.getElementById('btn2')
+      let cancel
+
+    btn1.onclick = function() {
+
+      if (cancel) {
+        cancel()
+      }
+
+      axios({
+        method: 'get',
+        url: '/test',
+        params: {a: 9, b: 2,a:1},
+        cancelToken: new axios.CancelToken(c => {
+          cancel = c
+        })
+      }).then(res => {
+        console.log('请求响应', res)
+      }).catch(err => {
+        cancel = null
+        console.log('请求失败', err)
+      })
+    }
+
+    btn2.onclick = function() {
+      cancel()
+    }
+  </script>
 </body>
 </html>
