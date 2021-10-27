@@ -255,7 +255,7 @@ function myInstanceof(L, R) {
 // *************************************************** Promise⭐️⭐️⭐️ ******************************************************
 
 // 1 三种状态
-// a pedding: 初始状态
+// a pending: 初始状态
 // b fulfilled: 操作成功 resolved / rejected
 // c rejected: 操作失败
 
@@ -263,7 +263,7 @@ function myInstanceof(L, R) {
 // 2.1.1 解决回调地狱
 // 2.1.2 链式调用
 
-// 2.2.1 pedding 不能取消
+// 2.2.1 pending 不能取消
 // 2.2.2 状态确定后不能改变
 // 2.2.3 需要手动捕捉异常 .catch
 

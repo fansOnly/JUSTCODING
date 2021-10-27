@@ -1,7 +1,7 @@
 // 手写 promise
 
 function Promise(executor) {
-    this.state = 'pedding';
+    this.state = 'pending';
     this.value = null;
     this.reason = null;
     this.handled = false;
@@ -9,7 +9,7 @@ function Promise(executor) {
     this.onRejectedFn = [];  // 失败的回调
 
     const resolve = value => {
-        if (this.state === 'pedding') {
+        if (this.state === 'pending') {
             this.value = value;
             this.onFulfilledFn.forEach(fn => fn());
             this.state = 'fulfilled';
@@ -17,7 +17,7 @@ function Promise(executor) {
     }
 
     const reject = reason => {
-        if (this.state === 'pedding') {
+        if (this.state === 'pending') {
             this.reason = reason;
             this.onRejectedFn.forEach(fn => fn());
             this.state = 'rejected';
@@ -56,7 +56,7 @@ Promise.prototype.then = function (onFulfilled, onRejected) {
                 }
             }, 0);
         }
-        if (this.state === 'pedding') {
+        if (this.state === 'pending') {
             if (typeof onFulfilled === 'function') {
                 this.onFulfilledFn.push(() => {
                     setTimeout(() => {

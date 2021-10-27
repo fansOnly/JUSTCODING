@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>promise</title>
+  <script src="./promise.js"></script>
+</head>
+<body>
+<script>
+  const p = new Promise((resolve, reject) => {
+    setTimeout(() => {
+      // resolve('success')
+      reject('error')
+    }, 2000);
+    // reject('error')
+    // throw 'error'
+  })
+
+  // console.log(p)
+
+  const result = p.then(res => {
+    console.log(res)
+    // 返回非 promise 值
+    // return res
+    // 返回成功状态的 promise
+    // return new Promise((resolve, reject) => resolve('yes'))
+    // 返回失败状态的 promise
+    // return new Promise((resolve, reject) => reject('error'))
+    // 抛出异常
+    // throw 'error....'
+  }, err => {
+    console.warn(err)
+  })
+
+  console.log(result)
+
+  // p.then(res => {
+  //   console.log(res)
+  // }, err => {
+  //   console.warn(err)
+  // })
+</script>
+</body>
+</html>
