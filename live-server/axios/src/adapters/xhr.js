@@ -15,7 +15,7 @@ export default function xhrAdapter(config) {
     }
 
     // 创建请求对象
-    const request = new XMLHttpRequest()
+    let request = new XMLHttpRequest()
 
     // 请求路径
     const fullPath = buildFullPath(config.baseURL, config.url)

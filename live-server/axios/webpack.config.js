@@ -11,6 +11,12 @@ module.exports = {
     compress: false,
     open: true,
     port: 8088,
-    publicPath: '/xuni/'
+    publicPath: '/xuni/',
+    proxy: {
+      '/api': {
+        target: 'https://test-api.k6.io/public',
+        pathRewrite: {}
+      }
+    }
   }
 }
