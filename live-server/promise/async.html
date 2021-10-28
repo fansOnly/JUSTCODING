@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>async</title>
+</head>
+<body>
+<script>
+  // async 函数始终返回一个 promise
+  const fn = async function() {
+    // 1. 返回一个普通值 - 返回成功的 promise
+    // return 1
+    // 2. 返回一个成功的 promise - 返回成功的 promise
+    // return Promise.resolve(2)
+    // 3. 返回一个失败的 promise - 返回失败的 promise
+    // return Promise.reject('err')
+    // 4. 抛出错误 - 返回失败的 promise
+    throw 'e...'
+  }
+
+  const result = fn()
+
+  console.log(result)
+</script>
+</body>
+</html>

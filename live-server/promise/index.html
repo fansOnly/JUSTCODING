@@ -5,7 +5,8 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>promise</title>
-  <script src="./promise.js"></script>
+  <!-- <script src="./promise.js"></script> -->
+  <script src="./promiseClass.js"></script>
 </head>
 <body>
 <script>
@@ -13,17 +14,25 @@
     setTimeout(() => {
       // resolve('success')
       reject('error')
+      // console.log(111)
     }, 2000);
-    // reject('error')
     // throw 'error'
   })
 
-  // console.log(p)
+  // then 方法异步执行
+  // p.then(() => {
+  //   console.log(222)
+  // }, err => {
+  //   console.log(444)
+  // })
+  // console.log(333)
 
   const result = p.then(res => {
     console.log(res)
     // 返回非 promise 值
-    // return res
+    return res
+    // 返回 pending 状态的 promise
+    // return new Promise(() => {})
     // 返回成功状态的 promise
     // return new Promise((resolve, reject) => resolve('yes'))
     // 返回失败状态的 promise
@@ -36,11 +45,69 @@
 
   console.log(result)
 
+  // 测试值穿透和异常穿透
+  // const result = p.then()
+  // .then(res => {
+  //   console.log(res)
+  //   // return res
+  // }).catch(e => {
+  //   console.log('catch', e)
+  // })
+
+  // console.log(result)
+
   // p.then(res => {
   //   console.log(res)
   // }, err => {
   //   console.warn(err)
   // })
+
+  // 测试 Promise.resolve()
+  // const p2 = Promise.resolve('success')
+  // const p3 = Promise.resolve(new Promise((resolve, reject) => {
+  //   // reject('err')
+  //   // throw 'eee.......'
+  // }))
+  // const p4 = Promise.resolve(Promise.resolve('ok'))
+
+  // console.log(p3)
+
+  // test promise reject
+  // const p5 = Promise.reject('err')
+  // const p6 = Promise.reject(new Promise((resolve, reject) => {
+  //   resolve(11)
+  //   // reject(22)
+  //   // throw '33'
+  // }))
+
+  // console.log(p6)
+
+
+// test promise all
+// const p10 = Promise.resolve(10)
+// const p11 = new Promise((resolve) => {
+//   setTimeout(() => {
+//     resolve(11)
+//   }, 1000);
+// })
+// const p12 = Promise.resolve(12)
+// const p13 = Promise.reject(13)
+
+// const result = Promise.all([p10, p11, p12, p13])
+// console.log(result)
+
+
+// test promise race
+// const p20 = new Promise(resolve => {
+//   setTimeout(() => {
+//     resolve(20)
+//   }, 1000);
+// })
+// const p21 = Promise.resolve(21)
+// const p22 = Promise.reject(22)
+
+// const result = Promise.race([ p20, p21, p22])
+// console.log(result)
 </script>
 </body>
 </html>
