@@ -1,0 +1,25 @@
+{
+  "name": "webpack",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "node ./script/build.js",
+    "debug": "node --inspect-brk ./script/build.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/core": "^7.16.0",
+    "@babel/parser": "^7.16.2",
+    "@babel/preset-env": "^7.16.0",
+    "@babel/traverse": "^7.16.0",
+    "globby": "^10.0.1",
+    "loader-utils": "^2.0.1",
+    "schema-utils": "^3.1.1",
+    "tapable": "^2.2.1",
+    "webpack": "^5.60.0",
+    "webpack-cli": "^4.9.1"
+  }
+}

@@ -1,0 +1,63 @@
+const path = require('path')
+const Plugin1 = require('./plugins/Plugin1')
+const Plugin2 = require('./plugins/Plugin2')
+const CopyWebpackPlugin = require('./plugins/CopyWebpackPlugin')
+
+module.exports = {
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        /**
+         * 默认解析倒叙: 从下往上，从右往左
+         */
+        use: [
+          // 'loader1',
+          // 'loader2',
+          // {
+          //   loader: 'loader3',
+          //   /**
+          //    * loader 配置项
+          //    */
+          //   options: {
+          //     name: 'jack'
+          //   }
+          // }
+          {
+            loader: 'xbabel-loader',
+            options: {
+              presets: [
+                // '@babel/preset-env',
+              ]
+            }
+          }
+        ]
+      },
+    ]
+  },
+  /**
+   * loader 解析规则
+   */
+  resolveLoader: {
+    modules: [
+      "node_modules",
+      // 添加自定义 loader 解析路径
+      path.resolve(__dirname, 'loaders')
+    ]
+  },
+  /**
+   * plugin
+   */
+  plugins: [
+    /**
+     * 调用写的插件
+     */
+    // new Plugin1(),
+    // new Plugin2(),
+    new CopyWebpackPlugin({
+      from: 'public',
+      to: 'styles',
+      ignore: ['**/index.html']
+    })
+  ]
+}
