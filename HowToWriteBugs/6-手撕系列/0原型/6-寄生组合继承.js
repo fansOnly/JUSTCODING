@@ -32,3 +32,5 @@ c1.say() // c1
 const c2 = new Child('c2', 20)
 console.log(c2.arr)
 c2.say() // c2
+
+console.log(c1.arr === c2.arr)

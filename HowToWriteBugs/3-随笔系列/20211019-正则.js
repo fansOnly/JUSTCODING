@@ -14,6 +14,18 @@ const formatNumber = (num, fixed = 2, sys = ',') => {
   return pn + integer + '.' + decimal
 }
 
+function formatMoney(num, fixed = 2, sys = ',') {
+  if (isNaN(Number(num))) {
+    throw TypeError('num should be a valid num or string.')
+  }
+  num = Number(num).toFixed(fixed)
+  const pn = Number(num) >= 0 ? '' : '-'
+  let [integer, decimal] = String(num).split('.')
+  integer = integer.replace(/^[\-\+]/, '').replace(/(?!^)(?=(\d{3})+$)/g, sys)
+
+  return pn + integer + '.' + decimal
+}
+
 
 let num = 123456789012.345
 console.log(formatNumber(num, 5))
