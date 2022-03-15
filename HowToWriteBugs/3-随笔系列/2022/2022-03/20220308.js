@@ -2,7 +2,7 @@
  * @Author: fansonly
  * @Date: 2022-03-08 19:50:57
  * @Description:
- * @LastEditTime: 2022-03-09 10:31:07
+ * @LastEditTime: 2022-03-15 09:41:15
  */
 const formatMoney = str => {
   return String(str).replace(/(?!^)(?=(\d{3})+$)/g, ',')
@@ -18,8 +18,11 @@ console.log(formatPhone(13344445555))
 
 
 const formatMobile = str => {
-  return String(str).replace(/(?<=\d{3})\d+/g, ($0) => '-' + $0)
-  .replace(/(?<=[\d-]{8})\d+/g, $0 => '-' + $0)
+  if (String(value).length < 8) {
+    return String(value).replace(/(?<=\d{3})\d+/g, $0 => ' ' + $0)
+  } else {
+    return String(value).replace(/(?<=\d{3}\s\d{4})\d+/g, $0 => ' ' + $0)
+  }
 }
 console.log(formatMobile(13))
 console.log(formatMobile(1334))
