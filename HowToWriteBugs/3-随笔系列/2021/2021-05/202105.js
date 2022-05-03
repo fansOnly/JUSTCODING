@@ -154,7 +154,7 @@ const generateAsync = fn => {
 /**
  * 单例模式
  */
-// 通过必闭包
+// 通过闭包
 const singleFn = function(fn) {
   let result
   return function() {
