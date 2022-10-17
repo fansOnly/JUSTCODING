@@ -29,6 +29,7 @@ const p3 = new Promise(() => {
   throw '1111'
 })
 
+console.log('p3: ', p3);
 p3.then(res => {
   console.log(res)
 }).catch(err => {

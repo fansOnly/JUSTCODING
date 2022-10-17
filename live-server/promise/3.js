@@ -18,6 +18,7 @@ p1.then(res => {
 const p2 = new Promise((resolve) => {
   // 异步，等待计时器结束，先执行回调，在改变状态
   setTimeout(() => {
+    console.log('success: ');
     resolve('success')
   }, 1000);
 })
