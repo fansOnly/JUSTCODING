@@ -1,0 +1,14 @@
+<body></body>
+
+<script type="module">
+  import utils from './utils.js'
+
+  utils.registerErrorHandler((e) => {
+    console.error('custom error handler: ', e)
+  })
+
+  utils.foo(() => {
+    const str = 'a'
+    str = 'b'
+  })
+</script>
