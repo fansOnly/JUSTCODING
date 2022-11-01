@@ -1,0 +1,55 @@
+<body></body>
+
+<script>
+  const data = {
+    text: 'hello world'
+  }
+
+  const bucket = new WeakMap()
+
+  // 全局正在激活的副作用函数
+  let activeEffect = null
+  function effect(fn) {
+    activeEffect = fn
+    fn()
+  }
+
+  const obj = new Proxy(data, {
+    get(target, key) {
+      if (!activeEffect) return
+      // 获取 depsMap，key = target
+      let depsMap = bucket.get(target)
+      if (!depsMap) {
+        bucket.set(target, (depsMap = new Map()))
+      }
+      // 获取 deps，key = key -> effect
+      let deps = depsMap.get(key)
+      if (!deps) {
+        depsMap.set(key, (deps = new Set()))
+      }
+      // 将 activeEffect 添加进去
+      deps.add(activeEffect)
+
+      return target[key]
+    },
+    set(target, key, newVal) {
+      target[key] = newVal
+      // 取出当前对象对应的 Map 数据
+      const depsMap = bucket.get(target)
+      if (!depsMap) return
+      // 取出当前 key 对应的所有副作用函数
+      const effects = depsMap.get(key)
+      effects && effects.forEach(fn => fn())
+    }
+  })
+
+  // demo
+  effect(() => {
+    console.log('effect run.')
+    document.body.innerText = obj.text
+  })
+
+  setTimeout(() => {
+    obj.text = 'hello vue3'
+  }, 3000);
+</script>

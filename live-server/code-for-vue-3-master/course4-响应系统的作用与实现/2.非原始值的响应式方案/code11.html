@@ -1,0 +1,175 @@
+<body></body>
+
+<script>
+  const bucket = new WeakMap()
+  const ITERATE_KEY = Symbol()
+  const reactiveMap = new Map()
+
+  function reactive(obj) {
+    const existProxy = reactiveMap.get(obj)
+    if (existProxy) return existProxy
+
+    const proxy = createReactive(obj)
+    reactiveMap.set(obj, proxy)
+    return proxy
+  }
+  function shallowReactive(obj) {
+    return createReactive(obj, true)
+  }
+  function readonly(obj) {
+    return createReactive(obj, false, true)
+  }
+  function shallowReadonly(obj) {
+    return createReactive(obj, true, true)
+  }
+
+  let shouldTrack = true
+  const mutableInstrumentations = {
+    add(key) {
+      const target = this.raw
+      const had = target.has(key)
+      const res = target.add(key)
+      if (!had) {
+        trigger(target, key, 'ADD')
+      }
+      return res
+    },
+    delete(key) {
+      const target = this.raw
+      const had = target.has(key)
+      const res = target.delete(key)
+      if (had) {
+        track(target, key, 'DELETE')
+      }
+      return res
+    },
+    get(key) {
+      const target = this.raw
+      const had = target.has(key)
+      track(target, key)
+      if (had) {
+        const res = target.get(key)
+        // TODO 处理浅响应/只读？
+        return typeof res === 'object' ? reactive(res) : res
+      }
+    },
+    set(key, value) {
+      const target = this.raw
+      const oldVal = target.get(key)
+      const had = target.has(key)
+      // 设置为原始数据而不是响应式数据
+      const rawValue = value.raw || value
+      target.set(key, rawValue)
+      if (!had) {
+        trigger(target, key, 'ADD')
+      } else if (oldVal !== value || (oldVal === oldVal && value === value)) {
+        trigger(target, key, 'SET')
+      }
+    },
+  }
+
+  function createReactive(obj, isShallow = false, isReadonly = false) {
+    return new Proxy(obj, {
+      get(target, key) {
+        if (key === 'raw') return target
+        if (key === 'size') {
+          track(target, ITERATE_KEY)
+          return Reflect.get(target, key, target)
+        }
+        return mutableInstrumentations[key]
+      }
+    })
+  }
+  function track(target, key) {
+    if (!activeEffect || !shouldTrack) return
+    let depsMap = bucket.get(target)
+    if (!depsMap) {
+      bucket.set(target, (depsMap = new Map()))
+    }
+    let deps = depsMap.get(key)
+    if (!deps) {
+      depsMap.set(key, (deps = new Set()))
+    }
+    deps.add(activeEffect)
+    activeEffect.deps.push(deps)
+  }
+  function trigger(target, key, type, newVal) {
+    const depsMap = bucket.get(target)
+    if(!depsMap) return
+    const effectToRun = new Set()
+    const effects = depsMap.get(key)
+    addEffects(effects, effectToRun)
+
+    if (type === 'ADD' || type === 'DELETE') {
+      const iterateEffects = depsMap.get(ITERATE_KEY)
+      addEffects(iterateEffects, effectToRun)
+    }
+
+    if (Array.isArray(target) && type === 'ADD') {
+      const lengthEffects = depsMap.get('length')
+      addEffects(lengthEffects, effectToRun)
+    }
+    if (Array.isArray(target) && key === 'length') {
+      depsMap.forEach((effects, key) => {
+        if (key >= newVal) {
+          addEffects(effects, effectToRun)
+        }
+      })
+    }
+
+    effectToRun.forEach(effectFn => {
+      if (effectFn?.options?.scheduler) {
+        effectFn.options.scheduler(effectFn)
+      } else {
+        effectFn()
+      }
+    })
+  }
+
+  const addEffects = (source, target) => {
+    source && source.forEach(effectFn => {
+      if (effectFn !== activeEffect) {
+        target.add(effectFn)
+      }
+    })
+  }
+
+  let activeEffect = null
+  const effectStack = []
+  function effect(fn, options) {
+    const effectFn = () => {
+      cleanup(effectFn)
+      activeEffect = effectFn
+      effectStack.push(effectFn)
+      const res = fn()
+      effectStack.pop()
+      activeEffect = effectStack[effectStack.length - 1]
+      return res
+    }
+    effectFn.options = options
+    effectFn.deps = []
+    if (!options?.lazy) {
+      effectFn()
+    }
+    return effectFn
+  }
+  function cleanup(effectFn) {
+    for (let i = 0; i < effectFn.deps.length; i++) {
+      const deps = effectFn.deps[i]
+      deps.delete(effectFn)
+    }
+    effectFn.deps.length = 0
+  }
+
+  // demo - 避免数据污染
+  const m = new Map()
+  const p1 = reactive(m)
+  const p2 = reactive(new Map())
+  p1.set('p2', p2)
+
+  effect(() => {
+    console.log('', m.get('p2').size)
+  })
+
+  m.get('p2').set('foo', 1)
+</script>

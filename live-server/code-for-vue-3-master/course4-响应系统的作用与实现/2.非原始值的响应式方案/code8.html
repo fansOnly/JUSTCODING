@@ -1,0 +1,191 @@
+<body></body>
+
+<script>
+  const bucket = new WeakMap()
+  const ITERATE_KEY = Symbol()
+  const reactiveMap = new Map()
+  function reactive(obj) {
+    // 添加原始对象与代理对象的映射
+    const existProxy = reactiveMap.get(obj)
+    if (existProxy) return existProxy
+
+    const proxy = createReactive(obj)
+    reactiveMap.set(obj, proxy)
+    return proxy
+  }
+  function shallowReactive(obj) {
+    return createReactive(obj, true, false)
+  }
+  function readonly(obj) {
+    return createReactive(obj, false, true)
+  }
+  function shallowReadonly(obj) {
+    return createReactive(obj, true, true)
+  }
+
+  let arrayInstrumentations = {}
+  const arrayMethods = ['includes', 'indexOf', 'lastIndexOf']
+  arrayMethods.forEach(method => {
+    const originMethod = Array.prototype[method]
+    arrayInstrumentations[method] = function(...args) {
+      // 在代理对象上查找
+      let res = originMethod.apply(this, args)
+      if (res === false) {
+        // 在原始对象上查找
+        res = originMethod.apply(this.raw, args)
+      }
+      return res
+    }
+  })
+  function createReactive(obj, isShallow = false, isReadonly = false) {
+    return new Proxy(obj, {
+      get(target, key, receiver) {
+        if (key === 'raw') {
+          return target
+        }
+        // 处理数组的查找方法
+        if (Array.isArray(target) && arrayInstrumentations.hasOwnProperty(key)) {
+          return Reflect.get(arrayInstrumentations, key, receiver)
+        }
+        const res = Reflect.get(target, key, receiver)
+        if (!isReadonly && typeof key !== 'symbol') {
+          track(target, key)
+        }
+        if (isShallow) {
+          return res
+        }
+        if (typeof res === 'object' && res !== null) {
+          return isReadonly ? readonly(res) : reactive(res)
+        }
+        return res
+      },
+      set(target, key, newVal, receiver) {
+        if (isReadonly) {
+          console.warn(`${key} is readonly.`)
+          return true
+        }
+        const oldVal = target[key]
+        const type = Array.isArray(target) ?
+        Number(key) < target.length ? 'SET' : 'ADD' :
+        Object.prototype.hasOwnProperty.call(target, key) ? 'SET' : 'ADD'
+        const res = Reflect.set(target, key, newVal, receiver)
+        if (target === receiver.raw) {
+          if (oldVal !== newVal && (oldVal === oldVal || newVal === newVal)) {
+            trigger(target, key, type, newVal)
+          }
+        }
+        return res
+      },
+      has(target, key) {
+        track(target, key)
+        return Reflect.has(target, key)
+      },
+      onwKeys(target) {
+        track(Array.isArray(target) ? 'length' : ITERATE_KEY)
+        return Reflect.onwKeys(target, key)
+      },
+      deleteProperty(target, key) {
+        if (isReadonly) {
+          console.warn(`${key} is readonly.`)
+          return true
+        }
+        const hadKey = Object.prototype.hasOwnProperty.call(target, key)
+        const res = Reflect.deleteProperty(target, key)
+        if (hadKey && res) {
+          trigger(target, key, 'DELETE')
+        }
+        return res
+      }
+    })
+  }
+  function track(target, key) {
+    if (!activeEffect) return
+    let depsMap = bucket.get(target)
+    if (!depsMap) {
+      bucket.set(target, (depsMap = new Map()))
+    }
+    let deps = depsMap.get(key)
+    if (!deps) {
+      depsMap.set(key, (deps = new Set()))
+    }
+    deps.add(activeEffect)
+    activeEffect.deps.push(deps)
+  }
+  function trigger(target, key, type, newVal) {
+    const depsMap = bucket.get(target)
+    if (!depsMap) return
+    const effectsToRun = new Set()
+    const effects = depsMap.get(key)
+    effects && effects.forEach(effectFn => {
+      if (effectFn !== activeEffect) {
+        effectsToRun.add(effectFn)
+      }
+    })
+    if (type === 'ADD' || type === 'DELETE') {
+      const iterateEffects = depsMap.get(ITERATE_KEY)
+      iterateEffects && iterateEffects.forEach(effectFn => {
+        if (effectFn !== activeEffect) {
+          effectsToRun.add(effectFn)
+        }
+      })
+    }
+    if (Array.isArray(target) && type === 'ADD') {
+      const lengthEffects = depsMap.get('length')
+      lengthEffects && lengthEffects.forEach(effectFn => {
+        if (effectFn !== activeEffect) {
+          effectsToRun.add(effectFn)
+        }
+      })
+      }
+    if (Array.isArray(target) && key === 'length') {
+      depsMap.forEach((effects, key) => {
+        if (key >= newVal) {
+          effects.forEach(effectFn => {
+            effectsToRun.add(effectFn)
+          })
+        }
+      })
+    }
+    effectsToRun.forEach(effectFn => {
+      if (effectFn?.options?.scheduler) {
+        effectFn.options.scheduler(effectFn)
+      } else {
+        effectFn()
+      }
+    })
+  }
+
+  let activeEffect = null
+  const effectStack = []
+  function effect(fn, options) {
+    const effectFn = () => {
+      cleanup(effectFn)
+      activeEffect = effectFn
+      effectStack.push(effectFn)
+      const res = fn()
+      effectStack.pop()
+      activeEffect = effectStack[effectStack.length - 1]
+      return res
+    }
+    effectFn.options = options
+    effectFn.deps = []
+    if (!options?.lazy) {
+      effectFn()
+    }
+    return effectFn
+  }
+  function cleanup(effectFn) {
+    for (let i = 0; i < effectFn.deps.length; i++) {
+      const deps = effectFn.deps[i]
+      deps.delete(effectFn)
+    }
+    effectFn.deps.length = 0
+  }
+
+  // demo - 数组查找方法 includes / indexOf / lastIndexOf
+  const obj = {}
+  const arr = reactive([obj])
+
+  console.log(arr.includes(arr[0])) // true
+  console.log(arr.includes(obj)) // true
+</script>

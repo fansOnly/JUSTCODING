@@ -1,0 +1,41 @@
+<body></body>
+
+<script>
+  const bucket = new Set()
+
+  const data = {
+    text: 'hello world'
+  }
+
+  const obj = new Proxy(data, {
+    get(target, key) {
+      if (activeEffect) {
+        bucket.add(activeEffect)
+      }
+      return target[key]
+    },
+    set(target, key, newVal) {
+      target[key] = newVal
+      bucket.forEach(fn => fn())
+    }
+  })
+
+  let activeEffect = null
+  function effect(fn) {
+    // 将副作用函数赋值
+    activeEffect = fn
+    // 执行副作用函数
+    fn()
+  }
+
+  effect(() => {
+    console.log('effect run.') // 打印 ？ 次
+    document.body.innerText = obj.text
+  })
+
+  // 这里操作了另外的属性没也会触发 effect 执行
+  setTimeout(() => {
+    obj.noExist = 'no.'
+  },
+  3000)
+</script>

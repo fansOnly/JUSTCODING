@@ -1,0 +1,84 @@
+<body></body>
+
+<script>
+  const data = {
+    ok: true,
+    text: 'hello world'
+  }
+
+  const bucket = new WeakMap()
+
+  let activeEffect = null
+  function effect(fn) {
+    const effectFn = () => {
+      // 清除原来的副作用函数
+      cleanup(effectFn)
+      activeEffect = effectFn
+      fn()
+    }
+
+    // 存储与当前副作用函数有关的依赖集合
+    effectFn.deps = []
+    effectFn()
+  }
+
+  function cleanup(effectFn) {
+    for (let i = 0; i < effectFn.deps.length; i++) {
+      const deps = effectFn.deps[i]
+      // 将 effectFn 从依赖集合删除
+      deps.delete(effectFn)
+    }
+    // 重置 effectFn.deps 数组
+    effectFn.deps.length = 0
+  }
+
+  const obj = new Proxy(data, {
+    get(target, key) {
+      track(target, key)
+      return target[key]
+    },
+    set(target, key, newVal) {
+      target[key] = newVal
+      trigger(target, key)
+    }
+  })
+
+  function track(target, key) {
+    if (!activeEffect) return
+    let depsMap = bucket.get(target)
+    if (!depsMap) {
+      bucket.set(target, (depsMap = new Map()))
+    }
+    let deps = depsMap.get(key)
+    if (!deps) {
+      depsMap.set(key, (deps = new Set()))
+    }
+
+    deps.add(activeEffect)
+    // 将与当前副作用函数相关的依赖集合 deps 存入 activeEffect.deps
+    activeEffect.deps.push(deps)
+  }
+
+  function trigger(target, key) {
+    const depsMap = bucket.get(target)
+    if (!depsMap) return
+    const effects = depsMap.get(key)
+    // 避免死循环
+    const effectToRun = new Set(effects)
+    effectToRun && effectToRun.forEach(effectFn => effectFn())
+  }
+
+  // demo
+  effect(() => {
+    console.log('effect run.')
+    document.body.innerText = obj.ok ? obj.text : 'none'
+  })
+
+  setTimeout(() => {
+    obj.ok = false
+    setTimeout(() => {
+      // 不会触发副作用函数
+      obj.text = 'hello vue3'
+    }, 1000);
+  }, 3000);
+</script>

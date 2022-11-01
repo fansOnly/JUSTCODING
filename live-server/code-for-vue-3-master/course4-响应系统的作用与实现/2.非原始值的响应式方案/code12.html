@@ -1,0 +1,179 @@
+<body></body>
+
+<script>
+  const bucket = new WeakMap()
+  const ITERATE_KEY = Symbol()
+  const reactiveMap = new Map()
+
+  function reactive(obj) {
+    const existProxy = reactiveMap.get(obj)
+    if (existProxy) return existProxy
+    const proxy = createReactive(obj)
+    reactiveMap.set(obj, proxy)
+    return proxy
+  }
+  function shallowReactive(obj) {
+    return createReactive(obj, true)
+  }
+  function readonly(obj) {
+    return createReactive(obj, false, true)
+  }
+  function shallowReadonly(obj) {
+    return createReactive(obj, true, true)
+  }
+
+  let shouldTack = true
+  const mutableInstrumentations = {
+    add(key) {
+      const target = this.raw
+      const had = target.has(key)
+      const res = target.add(key)
+      if (!had) {
+        trigger(target, key, 'ADD')
+      }
+      return res
+    },
+    delete(key) {
+      const target = this.raw
+      const had = target.has(key)
+      const res = target.delete(key)
+      if (had) {
+        trigger(target, key, 'DELETE')
+      }
+      return res
+    },
+    get(key) {
+      const target = this.raw
+      const had = target.has(key)
+      track(target, key)
+      if (had) {
+        const res = target.get(key)
+        return typeof res === 'object' ? reactive(res) : res
+      }
+    },
+    set(key, value){
+      const target = this.raw
+      const had = target.has(key)
+      const oldVal = target.get(key)
+      const rawValue = value.raw || value
+      target.set(key, rawValue)
+      if (!had) {
+        trigger(target, ket, 'ADD')
+      } else if (oldVal !== value || (oldVal === oldVal && value === value)) {
+        trigger(target, key, 'SET')
+      }
+    },
+    forEach(callback, thisArg) {
+      const wrap = val => typeof val === 'object' ? reactive(val) : val
+      const target = this.raw
+      track(target, ITERATE_KEY)
+      target.forEach((v, k) => {
+        callback.call(thisArg, wrap(v), wrap(k), this)
+      })
+    }
+  }
+
+  function createReactive(obj, isShallow = false, isReadonly = false) {
+    return new Proxy(obj, {
+      get(target, key, receiver) {
+        if (key === 'raw') return target
+        if (key === 'size') {
+          track(target, ITERATE_KEY)
+          return Reflect.get(target, key, target)
+        }
+        return mutableInstrumentations[key]
+      }
+    })
+  }
+  function track(target, key) {
+    if (!activeEffect || !shouldTack) return
+    let depsMap = bucket.get(target)
+    if (!depsMap) {
+      bucket.set(target, (depsMap = new Map()))
+    }
+    let deps = depsMap.get(key)
+    if (!deps) {
+      depsMap.set(key, (deps = new Set()))
+    }
+    deps.add(activeEffect)
+    activeEffect.deps.push(deps)
+  }
+  function trigger(target, key, type, newVal) {
+    const depsMap = bucket.get(target)
+    if (!depsMap) return
+    const effectsToRun = new Set()
+    const effects = depsMap.get(key)
+    addEffects(effects, effectsToRun)
+
+    if (type === 'ADD' || type === 'DELETE' || (type === 'SET' && Object.prototype.toString.call(target) === '[object Map]')) {
+      const iterateEffects = depsMap.get(ITERATE_KEY)
+      addEffects(iterateEffects, effectsToRun)
+    }
+    if (Array.isArray(target) && type === 'ADD') {
+      const lengthEffects = depsMap.get('length')
+      addEffects(lengthEffects, effectsToRun)
+    }
+    if (Array.isArray(target) && key === 'length') {
+      depsMap.forEach((effects, key) => {
+        if (key >= newVal) {
+          addEffects(effects, effectsToRun)
+        }
+      })
+    }
+
+    effectsToRun.forEach(effectFn => {
+      if(effectFn?.options?.scheduler) {
+        effectFn.options.scheduler(effectFn)
+      } else {
+        effectFn()
+      }
+    })
+  }
+  const addEffects = (source, target) => {
+    source && source.forEach(effectFn => {
+      if (effectFn !== activeEffect) {
+        target.add(effectFn)
+      }
+    })
+  }
+
+  let activeEffect = null
+  const effectStack = []
+  function effect(fn, options) {
+    const effectFn = () => {
+      cleanup(effectFn)
+      activeEffect = effectFn
+      effectStack.push(effectFn)
+      const res = fn()
+      effectStack.pop()
+      activeEffect = effectStack[effectStack.length - 1]
+      return res
+    }
+    effectFn.options = options
+    effectFn.deps = []
+    if (!options?.lazy) {
+      effectFn()
+    }
+    return effectFn
+  }
+  function cleanup(effectFn) {
+    for (let i = 0; i < effectFn.deps.length; i++) {
+      const deps = effectFn.deps[i]
+      deps.delete(effectFn)
+    }
+    effectFn.deps.length = 0
+  }
+
+  // demo - forEach 循环
+  const key = { key: 1 }
+  const value = new Set([1, 2, 3])
+  const p = reactive(new Map([
+    [key, value]
+  ]))
+  effect(() => {
+    p.forEach((v, k) => {
+      console.log('value.size', v.size)
+    })
+  })
+  p.get(key).delete(1)
+</script>

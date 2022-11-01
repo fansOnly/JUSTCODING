@@ -1,0 +1,175 @@
+<body></body>
+
+<script>
+  const data = {
+    foo: 1
+  }
+
+  const bucket = new WeakMap()
+
+  let activeEffect = null
+  const effectStack = []
+
+  function effect(fn, options) {
+    const effectFn = () => {
+      cleanup(effectFn)
+      activeEffect = effectFn
+      effectStack.push(effectFn)
+      const res = fn()
+      effectStack.pop()
+      activeEffect = effectStack[effectStack.length - 1]
+      return res
+    }
+    effectFn.options = options
+    effectFn.deps = []
+    if (!options?.lazy) {
+      effectFn()
+    }
+    return effectFn
+  }
+
+  function cleanup(effectFn) {
+    for (let i = 0; i < effectFn.deps.length; i++) {
+      const deps = effectFn.deps[i]
+      deps.delete(effectFn)
+    }
+    effectFn.deps.length = 0
+  }
+
+  const obj = new Proxy(data, {
+    get(target, key) {
+      track(target, key)
+      return target[key]
+    },
+    set(target, key, newVal) {
+      target[key] = newVal
+      trigger(target, key)
+    }
+  })
+
+  function track(target, key) {
+    if (!activeEffect) return
+    let depsMap = bucket.get(target)
+    if (!depsMap) {
+      bucket.set(target, (depsMap = new Map()))
+    }
+    let deps = depsMap.get(key)
+    if (!deps) {
+      depsMap.set(key, (deps = new Set()))
+    }
+    deps.add(activeEffect)
+    activeEffect.deps.push(deps)
+  }
+
+  function trigger(target, key) {
+    const depsMap = bucket.get(target)
+    if (!depsMap) return
+    const effects = depsMap.get(key)
+    const effectsToRun = new Set()
+    effects && effects.forEach(effectFn => {
+      if (effectFn !== activeEffect) {
+        effectsToRun.add(effectFn)
+      }
+    })
+    effectsToRun.forEach(effectFn => {
+      if (effectFn?.options?.scheduler) {
+        effectFn.options.scheduler(effectFn)
+      } else {
+        effectFn()
+      }
+    })
+  }
+
+  function traverse(value, seen = new Set()) {
+    if (typeof value !== 'object' || value === null || seen.has(value)) return
+    seen.add(value)
+    for (const key in value) {
+      traverse(value[key], seen)
+    }
+    return value
+  }
+
+  function watch(source, cb, options = {}) {
+    let getter
+    if (typeof source === 'function') {
+      getter = source
+    } else {
+      getter = () => traverse(source)
+    }
+
+    // 记录过期的副作用函数
+    let cleanup
+
+    function onInvalidate(fn) {
+      cleanup = fn
+    }
+
+    let oldVal, newVal
+    // 副作用函数执行
+    const job = () => {
+      // 在 scheduler 中调用副作用函数得到新值
+      newVal = effectFn()
+      // 执行过期回调
+      if (cleanup) {
+        cleanup()
+      }
+      cb(newVal, oldVal, onInvalidate)
+      oldVal = newVal
+    }
+
+    const effectFn = effect(
+      () => getter(),
+      {
+        lazy: true,
+        scheduler() {
+          if (options?.flush === 'post') {
+            const p = Promise.resolve()
+            p.then(job)
+          } else {
+            job()
+          }
+        }
+      }
+    )
+
+    if (options?.immediate) {
+      job()
+    } else {
+      // 手动调用副作用函数返回旧值
+      oldVal = effectFn()
+    }
+  }
+
+  // demo
+  let count = 0
+  function fetch() {
+    count++
+    const res = count === 1 ? 'A' : 'B'
+    return new Promise(resolve => {
+      setTimeout(() => {
+        resolve(res)
+      }, count === 1 ? 1000 : 100);
+    })
+  }
+
+  let finalData
+
+  watch(() => obj.foo, async (newVal, oldVal, onInvalidate) => {
+    console.log('newVal, oldVal: ', newVal, oldVal);
+    let valid = true
+    onInvalidate(() => {
+      valid = false
+    })
+
+    const res = await fetch()
+
+    if (!valid) return
+    finalData = res
+    console.log('finalData: ', finalData);
+  })
+
+  obj.foo++
+  setTimeout(() => {
+    obj.foo++
+  }, 200);
+</script>

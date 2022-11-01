@@ -1,0 +1,95 @@
+<body></body>
+
+<script>
+  const obj = {
+    foo: 1,
+    get bar() {
+      return this.foo
+    }
+  }
+
+  const bucket = new WeakMap()
+
+  let activeEffect = null
+  const effectStack = []
+
+  function effect(fn, options) {
+    const effectFn = () => {
+      cleanup(effectFn)
+      activeEffect = effectFn
+      effectStack.push(effectFn)
+      const res = fn()
+      effectStack.pop()
+      activeEffect = effectStack[effectStack.length -1]
+      return res
+    }
+    effectFn.options = options
+    effectFn.deps = []
+    if (!options?.lazy) {
+      effectFn()
+    }
+    return effectFn
+  }
+
+  function cleanup(effectFn) {
+    for (let i = 0; i < effectFn.deps.length; i++) {
+      const deps = effectFn.deps[i]
+      deps.delete(effectFn)
+    }
+    effectFn.deps.length = 0
+  }
+
+  const p = new Proxy(obj, {
+    get(target, key, receiver) {
+      track(target, key)
+      return Reflect.get(target, key, receiver)
+      // return target[key]
+    },
+    set(target, key, newVal) {
+      target[key] = newVal
+      trigger(target, key)
+    }
+  })
+
+  function track(target, key) {
+    if (!activeEffect) return
+    let depsMap = bucket.get(target)
+    if (!depsMap) {
+      bucket.set(target, (depsMap = new Map()))
+    }
+    let deps = depsMap.get(key)
+    if (!deps) {
+      depsMap.set(key, (deps = new Set()))
+    }
+
+    deps.add(activeEffect)
+    activeEffect.deps.push(deps)
+  }
+
+  function trigger(target, key) {
+    const depsMap = bucket.get(target)
+    if (!depsMap) return
+    const effects = depsMap.get(key)
+    const effectsToRun = new Set()
+    effects && effects.forEach(effectFn => {
+      if (effectFn !== activeEffect) {
+        effectsToRun.add(effectFn)
+      }
+    })
+
+    effectsToRun.forEach(effectFn => {
+      if (effectFn?.options?.scheduler) {
+        effectFn.options.scheduler(effectFn)
+      } else {
+        effectFn()
+      }
+    })
+  }
+
+  // demo
+  effect(() => {
+    console.log('effect run.', p.bar) // 1 2
+  })
+
+  p.foo++
+</script>

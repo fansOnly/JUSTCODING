@@ -1,0 +1,91 @@
+<body></body>
+
+<script>
+  const data = {
+    foo: true,
+    bar: true
+  }
+
+  const bucket = new WeakMap()
+  let activeEffect = null
+  const effectStack = []
+
+  function effect(fn) {
+    const effectFn = () => {
+      cleanup(effectFn)
+      // 将当前的副作用函数赋值给 activeEffect
+      activeEffect = effectFn
+      // 将当前的副作用函数压入栈顶
+      effectStack.push(effectFn)
+      fn()
+      // 将当前的副作用函数弹出栈
+      effectStack.pop()
+      // 将 activeEffect 还原成之前的值
+      activeEffect = effectStack[effectStack.length - 1]
+    }
+
+    effectFn.deps = []
+    effectFn()
+  }
+
+  function cleanup(effectFn) {
+    for (let i = 0; i < effectFn.deps.length; i++) {
+      const deps = effectFn.deps[i]
+      deps.delete(effectFn)
+    }
+    // 置空与当前副作用函数相关的依赖集合
+    effectFn.deps.length = 0
+  }
+
+  const obj = new Proxy(data, {
+    get(target, key) {
+      track(target, key)
+      return target[key]
+    },
+    set(target, key, newVal) {
+      target[key] = newVal
+      trigger(target, key)
+    }
+  })
+
+  function track(target, key) {
+    if (!activeEffect) return
+    let depsMap = bucket.get(target)
+    if (!depsMap) {
+      bucket.set(target, (depsMap = new Map()))
+    }
+    let deps = depsMap.get(key)
+    if (!deps) {
+      depsMap.set(key, (deps = new Set()))
+    }
+
+    deps.add(activeEffect)
+    // 添加与当前副作用函数相关的依赖集合
+    activeEffect.deps.push(deps)
+  }
+
+  function trigger(target, key) {
+    const depsMap = bucket.get(target)
+    if (!depsMap) return
+    const effects = depsMap.get(key)
+    const effectsToRun = new Set(effects)
+    effectsToRun && effectsToRun.forEach(effectFn => effectFn())
+  }
+
+  // demo
+  let temp1, temp2
+
+  effect(function effectFn1() {
+    console.log('effectFn1 run.')
+    effect(function effectFn2() {
+      console.log('effectFn2 run.')
+      temp2 = obj.bar
+    })
+    temp1 = obj.foo
+  })
+
+  setTimeout(() => {
+    // 期望打印结果包含 effectFn1 run.
+    obj.foo = false
+  }, 2000)
+</script>

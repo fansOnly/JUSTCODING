@@ -1,0 +1,205 @@
+<body></body>
+
+<script>
+  const bucket = new WeakMap()
+  const ITERATE_KEY = Symbol()
+  const reactiveMap = new Map()
+
+  function reactive(obj) {
+    const existProxy = reactiveMap.get(obj)
+    if (existProxy) return existProxy
+    const proxy = createReactive(obj)
+    reactiveMap.set(obj, proxy)
+    return proxy
+  }
+  function shallowReactive(obj) {
+    return createReactive(obj, true)
+  }
+  function readonly(obj) {
+    return createReactive(obj, false, true)
+  }
+  function shallowReadonly(obj) {
+    return createReactive(obj, true, true)
+  }
+
+  function ref(val) {
+    const wrapper = {
+      value: val
+    }
+    Object.defineProperty(wrapper, '__v_isRef', {
+      value: true
+    })
+    return reactive(wrapper)
+  }
+
+  let shouldTrack = true
+  let arrayInstrumentations = {}
+  ;['includes', 'indexOf', 'lastIndexOf'].forEach(method => {
+    const arrayMethod = Array.prototype[method]
+    arrayInstrumentations[method] = function(...args) {
+      let res = arrayMethod.apply(this, args)
+      if (res === false) {
+        // 查找原始数据
+        res = arrayMethod.apply(this.raw, args)
+      }
+      return res
+    }
+  })
+  ;['push', 'pop', 'unshift', 'shift', 'splice'].forEach(method => {
+    const arrayMethod = Array.prototype[method]
+    arrayInstrumentations[method] = function(...args) {
+      shouldTrack = false
+      const res = arrayMethod.apply(this, args)
+      shouldTrack = true
+      return res
+    }
+  })
+
+  function createReactive(obj, isShallow = false, isReadonly = false) {
+    return new Proxy(obj, {
+      get(target, key, receiver) {
+        if (key === 'raw') {
+          return target
+        }
+        if (Array.isArray(target) && arrayInstrumentations.hasOwnProperty(key)) {
+          return Reflect.get(arrayInstrumentations, key)
+        }
+        const res = Reflect.get(target, key)
+        if (!isReadonly && typeof key !== 'symbol') {
+          track(target, key)
+        }
+        if (isShallow) {
+          return res
+        }
+        if (typeof res === 'object' && res !== null) {
+          return isReadonly ? readonly(res) : reactive(res)
+        }
+        return res
+      },
+      set(target, key, newVal, receiver) {
+        if (isReadonly) {
+          console.warn(`${key} is readonly.`)
+          return true
+        }
+        const oldVal = target[key]
+        const type = Array.isArray(target) ?
+          Number(key) < target.length ? 'SET' : 'ADD' :
+          Object.prototype.hasOwnProperty(target, key) ? 'SET' : 'ADD'
+        const res = Reflect.set(target, key, newVal, receiver)
+        if (target === receiver.raw) {
+          if (oldVal !== newVal && (oldVal === oldVal || newVal === newVal)) {
+            trigger(target, key, type)
+          }
+        }
+        return res
+      },
+      has(target, key) {
+        track(target, key)
+        return Reflect.has(target, key)
+      },
+      ownKey(target) {
+        trigger(Array.isArray(target) ? 'length' : ITERATE_KEY)
+        return Reflect.ownKeys(target)
+      },
+      deleteProperty(target, key) {
+        if (isReadonly) {
+          console.warn(`${key} is readonly.`)
+          return true
+        }
+        const had = Object.prototype.hasOwnProperty.call(target, key)
+        const res = Reflect.deleteProperty(target, key)
+        if (had && res) {
+          trigger(target, key, 'DELETE')
+        }
+        return res
+      }
+    })
+  }
+  function track(target, key) {
+    if (!activeEffect || !shouldTrack) return
+    let depsMap = bucket.get(target)
+    if (!depsMap) {
+      bucket.set(target, (depsMap = new Map()))
+    }
+    let deps = depsMap.get(key)
+    if (!deps) {
+      depsMap.set(key, (deps = new Set()))
+    }
+    deps.add(activeEffect)
+    activeEffect.deps.push(deps)
+  }
+  function trigger(target, key, type, newVal) {
+    const depsMap = bucket.get(target)
+    if (!depsMap) return
+    const effectsToRun = new Set()
+
+    const effects = depsMap.get(key)
+    addEffects(effects, effectsToRun)
+    if (type === 'ADD' || type === 'DELETE') {
+      const iterateEffects = depsMap.get(key)
+      addEffects(iterateEffects, effectsToRun)
+    }
+    if (Array.isArray(target) && type === 'ADD') {
+      const lengthEffects = depsMap.get('length')
+      addEffects(lengthEffects, effectsToRun)
+    }
+    if (Array.isArray(target) && key === 'length') {
+      depsMap.forEach((effects, key) => {
+        if (key >= newVal) {
+          addEffects(effects, effectsToRun)
+        }
+      })
+    }
+    effectsToRun.forEach(effectFn => {
+      if (effectFn?.options?.scheduler) {
+        effectFn.options.scheduler(effectFn)
+      } else {
+        effectFn()
+      }
+    })
+  }
+  function addEffects (source, target) {
+    source && source.forEach(effectFn => {
+      if (effectFn !== activeEffect) {
+        target.add(effectFn)
+      }
+    })
+  }
+
+  let activeEffect = null
+  const trackStack = []
+  function effect(fn, options) {
+    const effectFn = () => {
+      cleanupEffect(effectFn)
+      activeEffect = effectFn
+      trackStack.push(effectFn)
+      const res = fn()
+      trackStack.pop()
+      activeEffect = trackStack[trackStack.length - 1]
+      return res
+    }
+    effectFn.options = options
+    effectFn.deps = []
+    if(!options?.lazy) {
+      effectFn()
+    }
+    return effectFn
+  }
+  function cleanupEffect(effect) {
+    const { deps } = effect
+    if (deps.length) {
+      for (let i = 0; i < deps.length; i++) {
+        deps[i].delete(effect)
+      }
+      deps.length = 0
+    }
+  }
+
+  // demo - ref
+  const refVal = ref(0)
+
+  effect(() => {
+    console.log(refVal.value)
+  })
+  refVal.value = 1
+</script>
