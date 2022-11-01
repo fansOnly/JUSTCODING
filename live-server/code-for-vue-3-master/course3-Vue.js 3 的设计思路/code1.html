@@ -1,0 +1,40 @@
+<body></body>
+
+<script>
+  function renderer(vnode, container) {
+    // 获取渲染标签
+    const el = document.createElement(vnode.tag)
+
+    // 处理标签事件
+    for (const key in vnode.props) {
+      if (/^on/.test(key)) {
+        const eventName = key.substring(2).toLowerCase()
+        el.addEventListener(eventName, vnode.props[key])
+      }
+    }
+
+    // 处理标签子节点
+    const children = vnode.children
+    if (typeof children === 'string') {
+      const text = document.createTextNode(children)
+      el.appendChild(text)
+    } else if (Array.isArray(children)) {
+      children.forEach(child => {
+        renderer(child, el)
+      })
+    }
+
+    // 挂载
+    container.appendChild(el)
+  }
+
+  // demo
+  const vnode = {
+    tag: 'div',
+    props: {
+      onClick: () => alert('hello')
+    },
+    children: 'click me'
+  }
+  renderer(vnode, document.body)
+</script>
