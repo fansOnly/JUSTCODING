@@ -1,0 +1,68 @@
+<div id="app"></div>
+
+<script src="https://unpkg.com/@vue/reactivity@3.0.5/dist/reactivity.global.js"></script>
+<script>
+  function createRenderer(options) {
+    const {
+      createElement,
+      setElementText,
+      insert
+    } = options
+
+    function patch(n1, n2, container) {
+      if (!n1) {
+        // 首次挂载
+        mountElement(n2, container)
+      } else {
+        // 打补丁
+      }
+    }
+
+    function mountElement(vnode, container) {
+      const el = createElement(vnode.type)
+      if (typeof vnode.children === 'string') {
+        setElementText(el, vnode.children)
+      }
+      insert(el, container)
+    }
+
+    function render(vnode, container) {
+      if (vnode) {
+        // 当前节点存在执行挂载
+        patch(container._vnode, vnode, container)
+      } else {
+        // 如果当前节点不存在，旧节点存在，执行卸载
+        if (container._vnode) {
+          container.innerHTML = ''
+        }
+      }
+      // 将当前的 vnode 当作下一次渲染的旧 vnode
+      container._vnode = vnode
+    }
+
+    return {
+      render
+    }
+  }
+
+  const vnode = {
+    type: 'h1',
+    children: 'hello'
+  }
+
+  const renderer = createRenderer({
+    createElement(tag) {
+      console.log(`创建元素 ${tag}`)
+      return document.createElement(tag)
+    },
+    setElementText(el, text) {
+      console.log(`设置 ${el.nodeName} 的文本设为 ${text}`)
+      el.textContent = text
+    },
+    insert(el, parent, anchor = null) {
+      console.log(`将 ${el.nodeName} 挂载到 ${parent.nodeName} 上`)
+      parent.insertBefore(el, anchor)
+    }
+  })
+  renderer.render(vnode, document.getElementById('app'))
+</script>

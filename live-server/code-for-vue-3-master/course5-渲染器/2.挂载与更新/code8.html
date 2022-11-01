@@ -1,0 +1,249 @@
+<div id="app"></div>
+
+<script src="https://unpkg.com/@vue/reactivity@3.0.5/dist/reactivity.global.js"></script>
+<script>
+  function shouldSetProps(el, key, value) {
+    if (key === 'form' && el.tagName === 'INPUT') return false
+    return key in el
+  }
+  function normalizeClass(className) {
+    let res = ''
+    if (typeof className === 'string') {
+      res = className
+    } else if (typeof className === 'object' && className !== null) {
+      for (const key in className) {
+        if (className[key]) {
+          res += ' ' + key
+        }
+      }
+    } else if (Array.isArray(className)) {
+      className.forEach(val => {
+        res += ' ' + normalizeClass(val)
+      })
+    }
+    return res.trim()
+  }
+
+  function createRenderer(options) {
+    const {
+      createElement,
+      setElementText,
+      insert,
+      patchProps
+    } = options
+
+    // 打补丁
+    function patch(n1, n2, container) {
+      if (n1 && n1.type !== n2.type) {
+        // 卸载旧节点
+        unmount(n1)
+        n1 = null
+      }
+      const { type } = n2
+      if (typeof type === 'string') {
+        if (!n1) {
+          mountElement(n2, container)
+        } else {
+          patchElement(n1, n2)
+        }
+      } else if (typeof type === 'object') {
+        // mountComponent
+      } else {
+        // ...
+      }
+    }
+    // 更新节点属性
+    function patchElement(n1, n2) {
+      // 将真实 DOM 节点添加到新的虚拟 DOM 上
+      const el = n2.el = n1.el
+      const oldProps = n1.props
+      const newProps = n2.props
+      // 更新属性
+      for (const key in newProps) {
+        if (newProps[key] !== oldProps[key]) {
+          patchProps(el, key, oldProps[key], newProps[key])
+        }
+      }
+      for (const key in oldProps) {
+        if (!(key in newProps)) {
+          patchProps(el, key, oldProps[key], null)
+        }
+      }
+      // 更新子节点
+      patchChildren(n1, n2, el)
+    }
+    // 更新子节点
+    function patchChildren(n1, n2, container) {
+      if (typeof n2.children === 'string') {
+        // 新子节点是文本
+        if (Array.isArray(n1.children)) {
+          n1.children.forEach(c => unmount(c))
+        }
+        setElementText(container, n2.children)
+      } else if (Array.isArray(n2.children)) {
+        // 新子节点是一组子节点
+        if (Array.isArray(n1.children)) {
+          // 核心 Diff 算法
+        } else {
+          n2.children.forEach(c => {
+            patch(null, c, container)
+          })
+        }
+      } else {
+        // 新子节点是空
+        if (Array.isArray(n1.children)) {
+          n1.children.forEach(c => unmount(c))
+        } else if (typeof n1.children === 'string') {
+          setElementText(container, '')
+        }
+      }
+    }
+    // 创建元素
+    function mountElement(vnode, container) {
+      const el = vnode.el = createElement(vnode.type)
+
+      if (typeof vnode.children === 'string') {
+        setElementText(el, vnode.children)
+      } else if (Array.isArray(vnode.children)) {
+        vnode.children.forEach(child => {
+          patch(null, child, el)
+        })
+      } else {
+        // ...
+      }
+
+      if (vnode.props) {
+        for (const key in vnode.props) {
+          patchProps(el, key, null, vnode.props[key])
+        }
+      }
+      insert(el, container)
+    }
+    // 卸载节点
+    function unmount(vnode) {
+      const parent = vnode.el.parentNode
+      if (parent) {
+        parent.removeChild(vnode.el)
+      }
+    }
+    // 渲染函数
+    function render(vnode, container) {
+      if (vnode) {
+        patch(container._vnode, vnode, container)
+      } else {
+        if (container._vnode) {
+          unmount(container._vnode)
+        }
+      }
+      container._vnode = vnode
+    }
+
+    return {
+      render
+    }
+  }
+
+  // demo - 更新子节点
+  const renderer = createRenderer({
+    createElement(tag) {
+      return document.createElement(tag)
+    },
+    setElementText(el, text) {
+      el.textContent = text
+    },
+    insert(el, parent, anchor = null) {
+      parent.insertBefore(el, anchor)
+    },
+    patchProps(el, key, preValue, nextValue) {
+      if (/^on/.test(key)) {
+        // 处理事件绑定
+        const invokers = el._vei || (el._vei = {})
+        let invoker = invokers[key]
+        const eventName = key.slice(2).toLowerCase()
+        if (nextValue) {
+          if (!invoker) {
+            // 初次绑定事件
+            invoker = el._vei[key] = e => {
+              if (e.timeStamp < invoker.attached) return
+              if (Array.isArray(invoker.value)) {
+                invoker.value.forEach(fn => fn(e))
+              } else {
+                invoker.value(e)
+              }
+            }
+            invoker.value = nextValue
+            // 记录事件的绑定时间
+            invoker.attached = performance.now()
+            el.addEventListener(eventName, invoker)
+          } else {
+            // 更新事件
+            invoker.value = nextValue
+          }
+        } else {
+          // 移除事件
+          el.removeEventListener(eventName, invoker)
+        }
+      } else if (key === 'class') {
+        el.className = normalizeClass(nextValue)
+      } else if (shouldSetProps(el, key, nextValue)) {
+        const type = typeof el[key]
+        if (type === 'boolean' && nextValue === '') {
+          el[key] = true
+        } else {
+          el[key] = nextValue
+        }
+      } else {
+        el.setAttribute(key, nextValue)
+      }
+    }
+  })
+
+  const vnode = {
+    type: 'div',
+    children: [
+      {
+        type: 'p',
+        children: 'this is first line.'
+      },
+      {
+        type: 'h3',
+        props: {
+          onClick: () => alert('h3')
+        },
+        children: 'this is a h3 tag'
+      }
+    ]
+  }
+
+  const newVnode1 = null
+
+  const newVnode = {
+    type: 'ul',
+    children: [
+      {
+        type: 'li',
+        children: 'one'
+      },
+      {
+        type: 'li',
+        children: 'two'
+      }
+    ]
+  }
+
+  const newVnode3 = {
+    type: 'div',
+    children: 'this is a text node'
+  }
+  const newVnode4 = {
+    type: 'div',
+    children: null
+  }
+
+
+  renderer.render(vnode, document.querySelector('#app'))
+
+  setTimeout(() => {
+    renderer.render(newVnode, document.querySelector('#app'))
+  }, 2000);
+</script>

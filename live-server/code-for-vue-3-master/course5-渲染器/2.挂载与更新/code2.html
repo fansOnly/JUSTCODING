@@ -1,0 +1,115 @@
+<div id="app"></div>
+
+<script src="https://unpkg.com/@vue/reactivity@3.0.5/dist/reactivity.global.js"></script>
+<script>
+  function createRenderer(options) {
+    const { createElement, setElementText, insert, patchProps } = options
+
+    function patch(n1, n2, container) {
+      if (!n1) {
+        mountElement(n2, container)
+      } else {
+        // 打补丁
+      }
+    }
+
+    function mountElement(vnode, container) {
+      const el = createElement(vnode.type)
+
+      if (typeof vnode.children === 'string') {
+        setElementText(el, vnode.children)
+      } else if (Array.isArray(vnode.children)) {
+        vnode.children.forEach(child => {
+          patch(null, child, el)
+        })
+      }
+
+      if (vnode.props) {
+        for (const key in vnode.props) {
+          patchProps(el, key, null, vnode.props[key])
+        }
+      }
+
+      insert(el, container)
+    }
+
+    function render(vnode, container) {
+      if (vnode) {
+        patch(container._vnode, vnode, container)
+      } else {
+        if (container._vnode) {
+          container.innerHTML = ''
+        }
+      }
+      container._vnode = vnode
+    }
+
+    return {
+      render
+    }
+  }
+
+  function shouldSetProps(el, key, value) {
+    if (key === 'form' && el.tagName === 'INPUT') return false
+    return key in el
+  }
+
+  const renderer = createRenderer({
+    createElement(tag) {
+      return document.createElement(tag)
+    },
+    setElementText(el, text) {
+      el.textContent = text
+    },
+    insert(el, parent, anchor = null) {
+      parent.insertBefore(el, anchor)
+    },
+    patchProps(el, key, preValue, nextValue) {
+      if (shouldSetProps(el, key, nextValue)) {
+        const type = typeof el[key]
+        // fix (disabled = '') to (disabled = true)
+        if (type === 'boolean' && nextValue === '') {
+          el[key] = true
+        } else {
+          el[key] = nextValue
+        }
+      } else {
+        el.setAttribute(key, nextValue)
+      }
+    }
+  })
+
+  // demo
+  const vnode = {
+    type: 'div',
+    props: {
+      id: '',
+      class: 'c1'
+    },
+    children: [
+      {
+        type: 'input',
+        props: {
+          form: 'form1'
+        },
+        children: ''
+      },
+      {
+        type: 'p',
+        props: {
+          'aria-valuenow': 11
+        },
+        children: 'hello world'
+      },
+      {
+        type: 'button',
+        props: {
+          disabled: '',
+        },
+        children: 'disabled'
+      }
+    ]
+  }
+
+  renderer.render(vnode, document.getElementById('app'))
+</script>

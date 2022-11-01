@@ -1,0 +1,74 @@
+<div id="app"></div>
+
+<script src="https://unpkg.com/@vue/reactivity@3.0.5/dist/reactivity.global.js"></script>
+<script>
+  function createRenderer(options) {
+    const { createElement, setElementText, insert } = options
+
+    function patch(n1, n2, container) {
+      if (!n1) {
+        mountElement(n2, container)
+      } else {
+        // ...
+      }
+    }
+
+    function mountElement(vnode, container) {
+      const el = createElement(vnode.type)
+      if (typeof vnode.children === 'string') {
+        setElementText(el, vnode.children)
+      } else if (Array.isArray(vnode.children)) {
+        vnode.children.forEach(child => {
+          patch(null, child, el)
+        })
+      }
+      if (vnode.props) {
+        for (const key in vnode.props) {
+          el.setAttribute(key, vnode.props[key])
+        }
+      }
+      insert(el, container)
+    }
+
+    function render(vnode, container) {
+      if (vnode) {
+        patch(container._vnode, vnode, container)
+      } else {
+        if (container._vnode) {
+          container.innerHTML = ''
+        }
+      }
+      container._vnode = vnode
+    }
+
+    return {
+      render
+    }
+  }
+
+  const vnode = {
+    type: 'div',
+    props: {
+      id: 'foo'
+    },
+    children: [
+      {
+        type: 'p',
+        children: 'hello'
+      }
+    ]
+  }
+
+  const renderer = createRenderer({
+    createElement(tag) {
+      return document.createElement(tag)
+    },
+    setElementText(el, text) {
+      el.textContent = text
+    },
+    insert(el, parent, anchor = null) {
+      parent.insertBefore(el, anchor)
+    }
+  })
+  renderer.render(vnode, document.getElementById('app'))
+</script>

@@ -1,0 +1,153 @@
+<div id="app"></div>
+
+<script src="https://unpkg.com/@vue/reactivity@3.0.5/dist/reactivity.global.js"></script>
+<script>
+  function shouldSetProps(el, key, value) {
+    if (key === 'form' && el.tagName === 'INPUT') return false
+    return key in el
+  }
+  function normalizeClass(className) {
+    let res = ''
+    if (typeof className === 'string') {
+      res = className
+    } else if (Array.isArray(className)) {
+      className.forEach(val => {
+        res += ' ' + normalizeClass(val)
+      })
+    } else if (typeof className === 'object' && className !== null) {
+      for (const key in className) {
+        if (className[key]) {
+          res += ' ' + key
+        }
+      }
+    }
+    return res.trim()
+  }
+  function createRenderer(options) {
+    const {
+      createElement,
+      setElementText,
+      insert,
+      patchProps
+    } = options
+    function patch(n1, n2, container) {
+      // 新节点与旧节点类型不一致，卸载旧节点
+      if (n1 && n1.type !== n2.type) {
+        unmount(n1)
+        n1 = null
+      }
+      const { type } = n2
+      if (typeof type === 'string') {
+        if (!n1) {
+          mountELement(n2, container)
+        } else {
+          patchElement(n1, n2)
+        }
+      } else if (typeof type === 'object') {
+        // 组件
+      } else {
+        // ...
+      }
+    }
+    function patchElement(n1, n2) {
+      // 将真实 DOM 挂载在新节点上
+      const el = n2.el = n1.el
+      const oldProps = n1.props
+      const newProps = n2.props
+      // 更新旧节点的属性值
+      for (let key in newProps) {
+        if (newProps[key] !== oldProps[key]) {
+          patchProps(el, key, oldProps[key], newProps[key])
+        }
+      }
+      // 删除新节点上不存在的属性
+      for (let key in oldProps) {
+        if (!newProps[key]) {
+          patchProps(el, key, oldProps[key], null)
+        }
+      }
+    }
+    function mountELement(vnode, container) {
+      const el = vnode.el = createElement(vnode.type)
+
+      if (typeof vnode.children === 'string') {
+        setElementText(el, vnode.children)
+      } else if (Array.isArray(vnode.children)) {
+        vnode.children.forEach(child => {
+          patch(null, child, el)
+        })
+      }
+      if (vnode.props) {
+        for (const key in vnode.props) {
+          patchProps(el, key, null, vnode.props[key])
+        }
+      }
+      insert(el, container)
+    }
+    function unmount(vnode) {
+      const parent = vnode.el.parentNode
+      if (parent) {
+        parent.removeChild(vnode.el)
+      }
+    }
+    function render(vnode, container) {
+      if (vnode) {
+        patch(container._vnode, vnode, container)
+      } else {
+        if (container._vnode) {
+          unmount(container._vnode)
+        }
+      }
+      container._vnode = vnode
+    }
+    return {
+      render
+    }
+  }
+
+  // demo
+  const renderer = createRenderer({
+    createElement(tag) {
+      return document.createElement(tag)
+    },
+    setElementText(el, text) {
+      el.textContent = text
+    },
+    insert(el, parent, anchor = null) {
+      parent.insertBefore(el, anchor)
+    },
+    patchProps(el, key, preValue, nextValue) {
+      if (key === 'class') {
+        el.className = normalizeClass(nextValue)
+      } else if (shouldSetProps(el, key, nextValue)) {
+        const type = typeof el[key]
+        if (type === 'boolean' && nextValue === '') {
+          el[key] = true
+        } else {
+          el[key] = nextValue
+        }
+      } else {
+        el.setAttribute(key, nextValue)
+      }
+    }
+  })
+  const vnode = {
+    type: 'div',
+    props: {
+      class: 'foo bar',
+    },
+    children: 'hello world'
+  }
+  const vnode2 = {
+    type: 'p',
+    props: {
+      id: 'foo1',
+    },
+    children: 'hello lily'
+  }
+
+  renderer.render(vnode, document.querySelector('#app'))
+  setTimeout(() => {
+    renderer.render(vnode2, document.querySelector('#app'))
+  }, 2000);
+</script>
