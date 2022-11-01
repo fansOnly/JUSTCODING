@@ -1,0 +1,33 @@
+<body></body>
+
+<script>
+  function fn() {
+    let name = 'fn'
+    function inner() {
+      debugger
+      console.log(name)
+    }
+    return inner
+  }
+
+  const innerFn = fn()
+  // innerFn()
+
+  function fn2() {
+    let name = 'fn2'
+    function other() {
+      console.log(name)
+    }
+    function fn3() {
+      other()
+      return () => {
+        debugger
+        // console.log(name)
+      }
+    }
+    return fn3
+  }
+
+  const inner2 = fn2()
+  inner2()()
+</script>

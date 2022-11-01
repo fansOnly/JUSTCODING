@@ -1,0 +1,233 @@
+<div id="app"></div>
+
+<script src="https://unpkg.com/@vue/reactivity@3.0.5/dist/reactivity.global.js"></script>
+<script>
+  function shouldSetProps(el, key, value) {
+    if (key === 'form' && el.tagName === 'INPUT') return false
+    return key in el
+  }
+  function normalizeClass(className) {
+    let res = ''
+    if (typeof className === 'string') {
+      res = className
+    } else if (typeof className === 'object' && className !== null) {
+      for (const key in className) {
+        if (className[key]) {
+          res += ' ' + key
+        }
+      }
+    } else if (Array.isArray(className)) {
+      className.forEach(val => {
+        res += ' ' + normalizeClass(val)
+      })
+    }
+    return res.trim()
+  }
+
+  const Text = Symbol()
+  const Comment = Symbol()
+  function createRenderer(options) {
+    const {
+      insert,
+      remove,
+      createElement,
+      createText,
+      createComment,
+      setElementText,
+      setText,
+      patchProps
+    } = options
+    function patch(n1, n2, container) {
+      if (n1 && n1.type !== n2.type) {
+        unmount(n1)
+        n1 = null
+      }
+      const { type } = n2
+      if (typeof type === 'string') {
+        if (!n1) {
+          mountElement(n2, container)
+        } else {
+          patchElement(n1, n2)
+        }
+      } else if (type === Text) {
+        // 文本节点
+        if (!n1) {
+          const el = n2.el = createText(n2.children)
+          insert(el, container)
+        } else {
+          const el = n2.el = n1.el
+          if (n2.children !== n1.children) {
+            setText(el, n2.children)
+          }
+        }
+      } else if (type === Comment) {
+        // 注释节点
+        if (!n1) {
+          const el = n2.el = createComment(n2.children)
+          insert(el, container)
+        } else {
+          // ...
+        }
+      } else if (typeof type === 'object') {
+        // mountComponent()
+      } else {
+        // ...
+      }
+    }
+    function patchElement(n1, n2) {
+      const el = n2.el = n1.el
+      const oldProps = n1.props
+      const newProps = n2.props
+      for (const key in newProps) {
+        if (newProps[key] !== oldProps[key]) {
+          patchProps(el, key, oldProps[key], newProps[key])
+        }
+      }
+      for (const key in oldProps) {
+        if (!(key in newProps)) {
+          patchProps(el, key, oldProps, null)
+        }
+      }
+      patchChildren(n1, n2, el)
+    }
+    function patchChildren(n1, n2, container) {
+      if (typeof n2.children === 'string') {
+        if (Array.isArray(n1.children)) {
+          n1.children.forEach(c => unmount(c))
+        }
+        setElementText(container, n2.children)
+      } else if (Array.isArray(n2.children)) {
+        if (Array.isArray(n1.children)) {
+          // Diff
+        } else {
+          setElementText(container, '')
+          n2.children.forEach(c => {
+            patch(null, c, container)
+          })
+        }
+      } else {
+        if (Array.isArray(n1.children)) {
+          n1.children.forEach(c => unmount(c))
+        } else if (typeof n1.children === 'string') {
+          setElementText(container, '')
+        }
+      }
+    }
+    function mountElement(vnode, container) {
+      const el = vnode.el = createComment(vnode.type)
+
+      if (typeof vnode.children === 'string') {
+        setElementText(el, vnode.children)
+      } else if (Array.isArray(vnode.children)) {
+        vnode.children.forEach(c => {
+          patch(null, c, el)
+        })
+      }
+
+      if (vnode.props) {
+        for (const key in vnode.props) {
+          patchProps(el, key, null, vnode.props[key])
+        }
+      }
+      insert(el, container)
+    }
+    function unmount(vnode) {
+      remove(vnode.el)
+    }
+    function render(vnode, container) {
+      if (vnode) {
+        patch(container._vnode, vnode, container)
+      } else {
+        if (container._vnode) {
+          unmount(container._vnode)
+        }
+      }
+      container._vnode = vnode
+    }
+    return {
+      render
+    }
+  }
+
+  // demo - 文本节点和注释节点
+  const renderer = createRenderer({
+    insert(child, parent, anchor = null) {
+      parent.insertBefore(child, anchor)
+    },
+    remove(child) {
+      const parent = child.parentNode
+      if (parent) {
+        parent.removeChild(child)
+      }
+    },
+    createElement(tag) {
+      return document.createElement(tag)
+    },
+    createText(text) {
+      return document.createTextNode(text)
+    },
+    createComment(text) {
+      return document.createComment(text)
+    },
+    setElementText(el, text) {
+      el.textContent = text
+    },
+    setText(node, text) {
+      node.nodeValue = text
+    },
+    patchProps(el, key, preValue, nextValue) {
+      if (/^on/.test(key)) {
+        const invokers = el._vei || (el._vei = {})
+        let invoker = invokers[key]
+        const name = key.slice(2).toLowerCase()
+        if (nextValue) {
+          if (!invoker) {
+            invoker = el._vei[key] = e => {
+              if (e.timeStamp < invoker.attached) return
+              if (Array.isArray(invoker.value)) {
+                invoker.value.forEach(fn => fn(e))
+              } else {
+                invoker.value(e)
+              }
+              invoker.value = nextValue
+              invoker.attached = performance.now()
+              el.addEventListener(name, invoker)
+            }
+          } else {
+            invoker.value = nextValue
+          }
+        } else {
+          el.removeEventListener(name, invoker)
+        }
+      } else if (key === 'class') {
+        el.className = normalizeClass(nextValue)
+      } else if (shouldSetProps(el, key, nextValue)) {
+        const type = typeof el[key]
+        if (type === 'boolean' && nextValue === '') {
+          el[key] = true
+        } else {
+          el[key] = nextValue
+        }
+      } else {
+        el.setAttribute(key, nextValue)
+      }
+    }
+  })
+
+  const vnode = {
+    type: Text,
+    children: 'this is a text node'
+  }
+  renderer.render(vnode, document.querySelector('#app'))
+
+  const newVnode = {
+    type: Text,
+    children: 'this is text node 2222'
+  }
+
+  setTimeout(() => {
+    renderer.render(newVnode, document.querySelector('#app'))
+  }, 3000);
+
+
+</script>

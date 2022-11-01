@@ -37,7 +37,7 @@
 + TCP的四次挥手
   + 客户端将标志位-断开连接FIN = 1，随机产生一个值为seq = J的数据包发送给服务端，进入FIN_WAIT_1状态
   + 服务端接收后，将ACK = 1，确认号ack = J+1，发送给客户端，进入CLOSE_WAIT状态，客户端接收后进入FIN_WAIT_2状态
-  + 服务端等待一段时间，将FIN = 1 ACK = 1，seq = K，确认号ack = J+1 发送给客户端，进入LAST_ACK状态
+  + 服务端等待一段时间，将FIN = 1，seq = K，确认号ack = J+1 发送给客户端，进入LAST_ACK状态
   + 客户端接收后进入TIME_WAIT状态，将ACK = 1，seq = J+1, 确认号ack = K+1 发送给服务端，服务端接收后进入CLOSED状态
 
 ##### 5、TCP链接后建立发送HTTP请求
