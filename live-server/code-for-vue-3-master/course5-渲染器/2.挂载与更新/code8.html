@@ -84,6 +84,8 @@
         // 新子节点是一组子节点
         if (Array.isArray(n1.children)) {
           // 核心 Diff 算法
+          n1.children.forEach(c => unmount(c))
+          n2.children.forEach(c => patch(null, c, container))
         } else {
           n2.children.forEach(c => {
             patch(null, c, container)

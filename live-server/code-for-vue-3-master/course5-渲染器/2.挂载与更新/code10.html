@@ -2,30 +2,31 @@
 
 <script src="https://unpkg.com/@vue/reactivity@3.0.5/dist/reactivity.global.js"></script>
 <script>
+  const Text = Symbol()
+  const Comment = Symbol()
+  const Fragment = Symbol()
+
   function shouldSetProps(el, key, value) {
     if (key === 'form' && el.tagName === 'INPUT') return false
     return key in el
   }
-  function normalizeClass(className) {
+  function normalizeClass(value) {
     let res = ''
-    if (typeof className === 'string') {
-      res = className
-    } else if (typeof className === 'object' && className !== null) {
-      for (const key in className) {
-        if (className[key]) {
+    if (typeof value === 'string') {
+      res = value
+    } else if (typeof value === 'object' && value !== null) {
+      for (const key in value) {
+        if (value[key]) {
           res += ' ' + key
         }
       }
-    } else if (Array.isArray(className)) {
-      className.forEach(val => {
-        res += ' ' + normalizeClass(val)
+    } else if (Array.isArray(value)) {
+      value.forEach(c => {
+        res += ' ' + normalizeClass(c)
       })
     }
     return res.trim()
   }
-
-  const Text = Symbol()
-  const Comment = Symbol()
   function createRenderer(options) {
     const {
       insert,
@@ -50,7 +51,6 @@
           patchElement(n1, n2)
         }
       } else if (type === Text) {
-        // 文本节点
         if (!n1) {
           const el = n2.el = createText(n2.children)
           insert(el, container)
@@ -61,34 +61,23 @@
           }
         }
       } else if (type === Comment) {
-        // 注释节点
         if (!n1) {
           const el = n2.el = createComment(n2.children)
           insert(el, container)
         } else {
           // ...
         }
+      } else if (type === Fragment) {
+        if (!n1) {
+          n2.children.forEach(c => patch(null, c, container))
+        } else {
+          patchChildren(n1, n2, container)
+        }
       } else if (typeof type === 'object') {
         // mountComponent()
       } else {
         // ...
       }
-    }
-    function patchElement(n1, n2) {
-      const el = n2.el = n1.el
-      const oldProps = n1.props
-      const newProps = n2.props
-      for (const key in newProps) {
-        if (newProps[key] !== oldProps[key]) {
-          patchProps(el, key, oldProps[key], newProps[key])
-        }
-      }
-      for (const key in oldProps) {
-        if (!(key in newProps)) {
-          patchProps(el, key, oldProps, null)
-        }
-      }
-      patchChildren(n1, n2, el)
     }
     function patchChildren(n1, n2, container) {
       if (typeof n2.children === 'string') {
@@ -98,14 +87,13 @@
         setElementText(container, n2.children)
       } else if (Array.isArray(n2.children)) {
         if (Array.isArray(n1.children)) {
-          // Diff
+          // 核心 Diff 算法
+          // patchComponent()
           n1.children.forEach(c => unmount(c))
           n2.children.forEach(c => patch(null, c, container))
         } else {
           setElementText(container, '')
-          n2.children.forEach(c => {
-            patch(null, c, container)
-          })
+          n2.children.forEach(c => patch(null, c, container))
         }
       } else {
         if (Array.isArray(n1.children)) {
@@ -115,15 +103,38 @@
         }
       }
     }
+    function patchElement(n1, n2) {
+      const el = n2.el = n1.el
+      const oldProps = n1.props
+      const newProps = n2.props
+
+      for (const key in newProps) {
+        if (newProps[key] !== oldProps[key]) {
+          patchProps(el, key, oldProps[key], newProps[key])
+        }
+      }
+
+      for (let key in oldProps) {
+        if (!(key in newProps)) {
+          patchProps(el, key, oldProps[key], null)
+        }
+      }
+      patchChildren(n1, n2, el)
+    }
+    function unmount(vnode) {
+      // 卸载 Fragment 子节点
+      if (vnode.type === Fragment) {
+        vnode.children.forEach(c => unmount(c))
+      }
+      remove(vnode.el)
+    }
     function mountElement(vnode, container) {
       const el = vnode.el = createElement(vnode.type)
 
       if (typeof vnode.children === 'string') {
         setElementText(el, vnode.children)
       } else if (Array.isArray(vnode.children)) {
-        vnode.children.forEach(c => {
-          patch(null, c, el)
-        })
+        vnode.children.forEach(c => patch(null, c, el))
       }
 
       if (vnode.props) {
@@ -131,10 +142,8 @@
           patchProps(el, key, null, vnode.props[key])
         }
       }
+
       insert(el, container)
-    }
-    function unmount(vnode) {
-      remove(vnode.el)
     }
     function render(vnode, container) {
       if (vnode) {
@@ -151,7 +160,7 @@
     }
   }
 
-  // demo - 文本节点和注释节点
+  // demo - Fragment
   const renderer = createRenderer({
     insert(child, parent, anchor = null) {
       parent.insertBefore(child, anchor)
@@ -179,7 +188,7 @@
     },
     patchProps(el, key, preValue, nextValue) {
       if (/^on/.test(key)) {
-        const invokers = el._vei || (el._vei = {})
+        const invokers = el._vei[key] || (el._vei = {})
         let invoker = invokers[key]
         const name = key.slice(2).toLowerCase()
         if (nextValue) {
@@ -191,10 +200,10 @@
               } else {
                 invoker.value(e)
               }
-              invoker.value = nextValue
-              invoker.attached = performance.now()
-              el.addEventListener(name, invoker)
             }
+            invoker.value = nextValue
+            invoker.attached = performance.now()
+            el.addEventListener(name, invoker)
           } else {
             invoker.value = nextValue
           }
@@ -217,19 +226,37 @@
   })
 
   const vnode = {
-    type: Text,
-    children: 'this is a text node'
+    type: 'ul',
+    children: [
+      {
+        type: Fragment,
+        children: [
+          { type: 'li', children: '1' },
+          { type: 'li', children: '2' },
+          { type: 'li', children: '3' },
+        ]
+      }
+    ]
   }
+  const vnode2 = {
+    type: 'div',
+    children: [
+      {
+        type: Fragment,
+        children: [
+          { type: 'p', children: '1' },
+          { type: 'p', children: '2.5' },
+          { type: 'p', children: '3' },
+          { type: 'p', children: '4' },
+        ]
+      },
+    { type: 'section', children: '分割线' }
+    ]
+  }
+
   renderer.render(vnode, document.querySelector('#app'))
 
-  const newVnode = {
-    type: Text,
-    children: 'this is text node 2222'
-  }
-
   setTimeout(() => {
-    renderer.render(newVnode, document.querySelector('#app'))
+    renderer.render(vnode2, document.querySelector('#app'))
   }, 3000);
-
-
 </script>

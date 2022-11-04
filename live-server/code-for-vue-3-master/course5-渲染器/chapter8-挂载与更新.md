@@ -408,3 +408,35 @@
 > 示例代码详见 2-code9.html
 
 -----
+
+##### 8.10 Fragment 片段
+
+1. Vue.js 3 中实现多根节点模板
+
+2. 渲染 Fragment 类型的节点时，渲染器只会渲染 Fragment 的子节点
+
+    ```js
+    function patch(n1, n2, container) {
+      // ...
+      const { type } = n2
+      if (typeof type === 'string') {
+        // ...
+      } else if (type === Fragment) {
+        if (!n1) {
+          n2.children.forEach(c => patch(null, c, container))
+        } else {
+          patchChildren(n1, n2, container)
+        }
+      } else {
+        // ...
+      }
+    }
+    function unmount(vnode) {
+      if (vnode.type === Fragment) {
+        vnode.children.forEach(c => unmount(c))
+      }
+      remove(vnode)
+    }
+    ```
+
+> 示例代码详见 2-code10.html
