@@ -2,6 +2,7 @@
 
 <script src="https://unpkg.com/@vue/reactivity@3.0.5/dist/reactivity.global.js"></script>
 <script>
+  const isString = val => typeof val === 'string'
   const isObject = val => typeof val === 'object' && val !== null
   const isArray = Array.isArray
 
@@ -11,7 +12,7 @@
   }
   function normalizeClass(value) {
     let res = ''
-    if (typeof value === 'string') {
+    if (isString(value)) {
       res = value
     } else if (isObject(value)) {
       for (const key in value) {
@@ -20,9 +21,9 @@
         }
       }
     } else if (isArray(value)) {
-      for (let i = 0; i < value.length; i++) {
-        res += ' ' + normalizeClass(value[i])
-      }
+      value.forEach(k => {
+        res += ' ' + normalizeClass(k)
+      })
     }
     return res.trim()
   }
@@ -39,10 +40,10 @@
           } else {
             invoker.value(e)
           }
-          invoker.value = value
-          invoker.attached = performance.now()
-          el.addEventListener(eventName, invoker)
         }
+        invoker.value = value
+        invoker.attached = performance.now()
+        el.addEventListener(eventName, invoker)
       } else {
         invoker.value = value
       }
@@ -53,9 +54,7 @@
   function patchClass(el, value) {
     el.className = normalizeClass(value)
   }
-  function patchStyle(el, preValue, nextValue) {
-    // ...
-  }
+  function patchStyle(el, preValue, nextValue) { }
   function patchDOMProp(el, key, value) {
     const type = typeof el[key]
     if (type === 'boolean' && value === '') {
@@ -68,9 +67,9 @@
     el.setAttribute(key, value)
   }
 
+  const Fragment = Symbol('fragment')
   const Text = Symbol('text')
   const Comment = Symbol('comment')
-  const Fragment = Symbol('fragment')
   function createRenderer(options) {
     const {
       insert,
@@ -82,14 +81,13 @@
       setText,
       patchProps
     } = options
-
     function patch(n1, n2, container) {
       if (n1 && n1.type !== n2.type) {
         unmount(n1)
         n1 = null
       }
       const { type } = n2
-      if (typeof type === 'string') {
+      if (isString(type)) {
         if (!n1) {
           mountElement(n2, container)
         } else {
@@ -115,17 +113,32 @@
         if (!n1) {
           const el = n2.el = createComment(n2.children)
           insert(el, container)
-        } else {
-          // ...
-        }
+        } else {}
       } else if (isObject(type)) {
         // mountComponent()
       } else {
         // ...
       }
     }
+    function patchElement(n1, n2) {
+      const el = n2.el = n1.el
+      const oldProps = n1.props
+      const newProps = n2.props
+
+      for (const key in newProps) {
+        patchProps(el, key, oldProps[key], newProps[key])
+      }
+
+      for (const key in oldProps) {
+        if (!(key in newProps)) {
+          patchProps(el, key, oldProps[key], null)
+        }
+      }
+
+      patchChildren(n1, n2, el)
+    }
     function patchChildren(n1, n2, container) {
-      if (typeof n2.children === 'string') {
+      if (isString(n2.children)) {
         if (isArray(n1.children)) {
           n1.children.forEach(c => unmount(c))
         }
@@ -135,60 +148,57 @@
           // diff
           const oldChildren = n1.children
           const newChildren = n2.children
-          const oldLen = oldChildren.length
-          const newLen = newChildren.length
-          const commonLength = Math.min(oldLen, newLen)
-          for (let i = 0; i < commonLength; i++) {
-            patch(oldChildren[i], newChildren[i], container)
-          }
-          if (newLen > commonLength) {
-            for (let i = commonLength; i < newLen; i++) {
-              patch(null, newChildren[i], container)
-            }
-          } else if (oldLen > commonLength) {
-            for (let i = commonLength; i < oldLen; i++) {
-              unmount(oldChildren[i])
+          // 查找过程中的最大索引值
+          let lastIndex = 0
+          for (let i = 0; i < newChildren.length; i++) {
+            const newVnode = newChildren[i]
+            for (let j = 0; j < oldChildren.length; j++) {
+              const oldVnode = oldChildren[j]
+              if (newVnode.key === oldVnode.key) {
+                // 可复用节点
+                // 更新节点内容
+                console.log('复用节点 key', newVnode.key)
+                patch(oldVnode, newVnode, container)
+                if (lastIndex > j) {
+                  console.log(`当前节点索引变化 old: ${j} => new: ${lastIndex}`)
+                  // 当前节点需要移动
+                  const prevVnode = newChildren[i - 1]
+                  // 不存在 prevVnode 则意味着当前节点是第一个节点
+                  if (prevVnode) {
+                    // 获取 prevVnode 节点对应的真实 DOM 的下一个兄弟节点作为锚点元素
+                    const anchor = prevVnode.el.nextSibling
+                    // 将当前节点 newVnode 对应的真实 DOM 插入到锚点元素之前
+                    insert(newVnode.el, container, anchor)
+                  }
+                } else {
+                  // 更新最大索引
+                  lastIndex = j
+                }
+                break
+              }
             }
           }
         } else {
           setElementText(container, '')
-          n2.children.forEach(c => patch(null, c, container))
+          n1.children.forEach(c => patch(null, c, container))
         }
       } else {
         if (isArray(n1.children)) {
           n1.children.forEach(c => unmount(c))
-        } else if (typeof n1.children === 'string') {
+        } else if (isString(n1.children)) {
           setElementText(container, '')
         }
       }
     }
-    function patchElement(n1, n2) {
-      const el = n2.el = n1.el
-      const oldProps = n1.props
-      const newProps = n2.props
-
-      for (const key in newProps) {
-        if (newProps[key] !== oldProps[key]) {
-          patchProps(el, key, oldProps[key], newProps[key])
-        }
-      }
-      for (const key in oldProps) {
-        if(!(key in newProps)) {
-          patchProps(el, key, oldProps[key], null)
-        }
-      }
-      patchChildren(n1, n2, el)
-    }
     function mountElement(vnode, container) {
       const el = vnode.el = createElement(vnode.type)
 
-      if (typeof vnode.children === 'string') {
+      if (isString(vnode.children)) {
         setElementText(el, vnode.children)
       } else if (isArray(vnode.children)) {
-        vnode.children.forEach(c => {
-          patch(null, c, el)
-        })
+        vnode.children.forEach(c => patch(null, c, el))
       }
+
       if (vnode.props) {
         for (const key in vnode.props) {
           patchProps(el, key, null, vnode.props[key])
@@ -213,12 +223,13 @@
       }
       container._vnode = vnode
     }
+
     return {
       render
     }
   }
 
-  // demo - 减少 DOM 操作的次数
+  // demo - 元素的移动
   const renderer = createRenderer({
     insert(child, parent, anchor = null) {
       parent.insertBefore(child, anchor)
@@ -246,7 +257,7 @@
     },
     patchProps(el, key, preValue, nextValue) {
       if (/^on/.test(key)) {
-        patchEvent(el, key, preValue, nextValue)
+        patchEvent(el, key, nextValue)
       } else if (key === 'class') {
         patchClass(el, nextValue)
       } else if (key === 'style') {
@@ -262,19 +273,19 @@
   const oldVnode = {
     type: 'div',
     children: [
-      { type: 'p', children: '1' },
-      { type: 'p', children: '2' },
+      { type: 'p', children: 'world', key: 3 },
+      { type: 'p', children: '1', key: 1 },
+      { type: 'p', children: '2', key: 2 }
     ]
   }
   const app = document.querySelector('#app')
   renderer.render(oldVnode, app)
-
   const newVnode = {
     type: 'div',
     children: [
-      { type: 'p', children: '4' },
-      { type: 'p', children: '5' },
-      { type: 'p', children: '6' }
+      { type: 'p', children: '1', key: 1 },
+      { type: 'p', children: '2', key: 2 },
+      { type: 'p', children: 'hello', key: 3 }
     ]
   }
   setTimeout(() => {
