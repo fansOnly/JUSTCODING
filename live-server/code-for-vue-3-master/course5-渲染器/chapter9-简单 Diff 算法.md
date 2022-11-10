@@ -177,3 +177,103 @@
 -----
 
 ##### 9.5 添加元素
+
+1. 找到新节点
+2. 将新节点挂载到正确位置
+
+    ```js
+    // 旧节点 p-1 >> p-2 >> p-3
+    // 新节点 p-3 >> p-1 >> p-4 >> p-2
+
+    //step.1 查找 p-3：p-1 >> p-2 >> p-3
+    //step.2 查找 p-1：p-2 >> p-3 >> p-1
+    //step.3 查找 p-4：p-2 >> p-3 >> p-4 >> p-1
+    //step.4 查找 p-2：p-3 >> p-1 >> p-4 >> p-2
+
+    function patchChildren(n1, n2, container) {
+      if (typeof n2.children === 'string') {
+        // ...
+      } else if (Array.isArray(n2.children)) {
+        if (Array.isArray(n1.children)) {
+          const oldChildren = n1.children
+          const newChildren = n2.children
+          let lastIndex = 0
+          for (let i = 0; i < newChildren.length; i++) {
+            const newVnode = newChildren[i]
+            // 是否存在可复用的节点
+            let find = false
+            for (let j = 0; j < oldChildren.length; j++) {
+              const oldVnode = oldChildren[j]
+              if (newVnode.key === oldVnode.key) {
+                find = true
+                if (j < lastIndex) {
+                  const preVnode = newChildren[i - 1]
+                  const anchor = preVnode.el.nextSibling
+                  insert(newVnode.el, container, anchor)
+                } else {
+                  lastIndex = j
+                }
+                break
+              }
+            }
+
+            if (!find) {
+              // 新节点
+              const preVnode = newChildren[i - 1]
+              let anchor = null
+              if (prevVnode) {
+                anchor = preVnode.el.nextSibling
+              } else {
+                // 新节点为第一个节点
+                anchor = container.firstChild
+              }
+              patch(null, newVnode, container, anchor)
+            }
+          }
+        } else {
+          // ...
+        }
+      } else {
+        // ...
+      }
+    }
+    function patch(n1, n2, container, anchor) {
+      // ...
+      mountElement(n2, container, anchor)
+      // ...
+    }
+    function mountElement(vnode, container, anchor) {
+      // ...
+      insert(el, container, anchor)
+    }
+    ```
+
+> 示例代码详见 3-code5.html
+
+-----
+
+##### 9.6 移除不存在的元素
+
+1. 基本更新结束后，遍历旧的一组子节点，去新的一组子节点中寻找相同 key 值的节点，如果找不到，说明该节点需要删除
+
+    ```js
+    function patchChildren(n1, n2, container) {
+      if (typeof n2.children === 'string') {
+        // ...
+      } else if (Array.isArray(n2.children)) {
+        // ...
+        for (let i = 0; i < oldChildren.length; i++) {
+          const oldVnode = oldChildren[i]
+          const has = newChildren.find(v => v.key === oldVnode.key)
+          if (!has) {
+            // 删除节点
+            unmount(oldVnode)
+          }
+        }
+      } else {
+        // ...
+      }
+    }
+    ```
+
+> 示例代码详见 3-code6.html
