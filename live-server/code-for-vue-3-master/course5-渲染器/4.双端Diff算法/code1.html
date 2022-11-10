@@ -1,0 +1,321 @@
+<div id="app"></div>
+
+<script src="https://unpkg.com/@vue/reactivity@3.0.5/dist/reactivity.global.js"></script>
+<script>
+  const isString = val => typeof val === 'string'
+  const isObject = val => typeof val === 'object' && val !== null
+  const isArray = Array.isArray
+
+  function shouldSetProps(el, key, value) {
+    if (key === 'form' && el.tagName === 'INPUT') return false
+    return key in el
+  }
+  function normalizeClass(value) {
+    let res = ''
+    if (isString(value)) {
+      res = value
+    } else if (isObject(value)) {
+      for (const key in value) {
+        if (value[key]) {
+          res += ' ' + key
+        }
+      }
+    } else if (isArray(value)) {
+      value.forEach(v => {
+        res += ' ' + normalizeClass(v)
+      })
+    }
+    return res.trim()
+  }
+  function patchEvent(el, key, preValue, nextValue) {
+    const invokers = el._vei || (el._vei = {})
+    let invoker = invokers[key]
+    const evtName = key.slice(2).toLowerCase()
+    if (nextValue) {
+      if (!invoker) {
+        invoker = el._vei[key] = e => {
+          if (e.timeStamp < invoker.attached) return
+          if (isArray(invoker.value)) {
+            invoker.value.forEach(fn => fn(e))
+          } else {
+            invoker.value(e)
+          }
+        }
+        invoker.value = nextValue
+        invoker.attached = performance.now()
+        el.addEventListener(evtName, invoker)
+      } else {
+        invoker.value = nextValue
+      }
+    } else {
+      el.removeEventListener(evtName, invoker)
+    }
+  }
+  function patchClass(el, value) {
+    el.className = normalizeClass(value)
+  }
+  function patchStyle(el, preValue, nextValue) { }
+  function patchDOMProp(el, key, value) {
+    const type = typeof el[key]
+    if (type === 'boolean' && value === '') {
+      el[key] = true
+    } else {
+      el[key] = value
+    }
+  }
+  function patchAttr(el, key, value) {
+    el.setAttribute(key, value)
+  }
+
+  const Fragment = Symbol('fragment')
+  const Text = Symbol('text')
+  const Comment = Symbol('comment')
+  function createRenderer(options) {
+    const {
+      insert,
+      remove,
+      createElement,
+      createText,
+      createComment,
+      setElementText,
+      setText,
+      patchProps
+    } = options
+    function patch(n1, n2, container, anchor) {
+      if (n1 && n1.type !== n2.type) {
+        unmount(n1)
+        n1 = null
+      }
+      const { type } = n2
+      if (isString(type)) {
+        if (!n1) {
+          mountElement(n2, container, anchor)
+        } else {
+          patchElement(n1, n2)
+        }
+      } else if (type === Fragment) {
+        if (!n1) {
+          n2.children.forEach(c => patch(null, c, container))
+        } else {
+          patchChildren(n1, n2, container)
+        }
+      } else if (type === Text) {
+        if (!n1) {
+          const el = n2.el = createText(n2.children)
+          insert(el, container)
+        } else {
+          const el = n2.el = n1.el
+          if (n2.children !== n1.children) {
+            setText(el, n2.children)
+          }
+        }
+      } else if (type === Comment) {
+        if (!n1) {
+          const el = n2.el = createComment(n2.children)
+          insert(el, container)
+        } else {
+          // ...
+        }
+      } else if (isObject(type)) {
+        // mountComponent()
+      } else {
+        // ...
+      }
+    }
+    function patchElement(n1, n2) {
+      const el = n2.el = n1.el
+      const oldProps = n1.props
+      const newProps = n2.props
+
+      for (const key in newProps) {
+        patchProps(el, key, oldProps[key], newProps[key])
+      }
+      for (const key in oldProps) {
+        if (!(key in newProps)) {
+          patchProps(el, key, oldProps[key], null)
+        }
+      }
+      patchChildren(n1, n2, el)
+    }
+    function patchChildren(n1, n2, container) {
+      if (isString(n2.children)) {
+        if (isArray(n1.children)) {
+          n1.children.forEach(c => unmount(c))
+        }
+        setElementText(container, n2.children)
+      } else if (isArray(n2.children)) {
+        if (isArray(n1.children)) {
+          patchKeyedChildren(n1, n2, container)
+        } else {
+          setElementText(container, '')
+          n2.children.forEach(c => patch(nul, c, container))
+        }
+      } else {
+        if (isArray(n1.children)) {
+          n1.children.forEach(c => unmount(c))
+        } else if (isString(n1.children)) {
+          setElementText(container, '')
+        }
+      }
+    }
+    // 核心 Diff 算法
+    function patchKeyedChildren(n1, n2, container) {
+      const oldChildren = n1.children
+      const newChildren = n2.children
+      let oldStartIdx = 0
+      let oldEndIdx = oldChildren.length - 1
+      let newStartIdx = 0
+      let newEndIdx = newChildren.length - 1
+      let oldStartVnode = oldChildren[oldStartIdx]
+      let oldEndVnode = oldChildren[oldEndIdx]
+      let newStartVnode = newChildren[newStartIdx]
+      let newEndVnode = newChildren[newEndIdx]
+
+      oldChildren.forEach((item, index) => {
+        const newChild = newChildren[index] || {}
+        console.log(`旧节点：key = ${item.key}, children = ${item.children} | 新节点：key = ${newChild?.key}, children = ${newChild?.children}`)
+      })
+
+
+      while (oldStartIdx <= oldEndIdx && newStartIdx <= newEndIdx) {
+        if (oldStartVnode.key === newStartVnode.key) {
+          patch(oldStartVnode, newStartVnode, container)
+          oldStartVnode = oldChildren[++oldStartIdx]
+          newStartVnode = newChildren[++newStartIdx]
+
+          console.log('')
+          console.log(`头部节点相同 key = ${oldStartVnode.key}`)
+          console.log(`旧节点索引更新 oldStartIdx[${oldStartIdx - 1} -> ${oldStartIdx}] oldEndIdx[${oldEndIdx} -> ${oldEndIdx}]`)
+          console.log(`新节点索引更新 newStartIdx[${newStartIdx - 1} -> ${newStartIdx}] newEndIdx[${newEndIdx} -> ${newEndIdx}]`)
+        } else if (oldEndVnode.key === newEndVnode.key) {
+          patch(oldEndVnode, newEndVnode, container)
+          oldEndVnode = oldChildren[--oldEndIdx]
+          newEndVnode = newChildren[--newEndIdx]
+
+          console.log('')
+          console.log(`尾部节点相同 key = ${oldEndVnode.key}`)
+          console.log(`旧节点索引更新 oldStartIdx[${oldStartIdx} -> ${oldStartIdx}] oldEndIdx[${oldEndIdx + 1} -> ${oldEndIdx}]`)
+          console.log(`新节点索引更新 newStartIdx[${newStartIdx} -> ${newStartIdx}] newEndIdx[${newEndIdx + 1} -> ${newEndIdx}]`)
+        } else if (oldStartVnode.key === newEndVnode.key) {
+          patch(oldStartVnode, newEndVnode, container)
+          insert(oldStartVnode.el, container, oldEndVnode.el.nextSibling)
+          oldStartVnode = oldChildren[++oldStartIdx]
+          newEndVnode = newChildren[--newEndIdx]
+
+          console.log('')
+          console.log(`头尾节点相同 key = ${oldStartVnode.key}`)
+          console.log(`旧节点索引更新 oldStartIdx[${oldStartIdx - 1} -> ${oldStartIdx}] oldEndIdx[${oldEndIdx} -> ${oldEndIdx}]`)
+          console.log(`新节点索引更新 newStartIdx[${newStartIdx} -> ${newStartIdx}] newEndIdx[${newEndIdx + 1} -> ${newEndIdx}]`)
+        } else if (oldEndVnode.key === newStartVnode.key) {
+          patch(oldEndVnode, newStartVnode, container)
+          insert(oldEndVnode.el, container, oldStartVnode.el)
+          oldEndVnode = oldChildren[--oldEndIdx]
+          newStartVnode = newChildren[++newStartIdx]
+
+          console.log('')
+          console.log(`尾头节点相同 key = ${oldEndVnode.key}`)
+          console.log(`旧节点索引更新 oldStartIdx[${oldStartIdx} -> ${oldStartIdx}] oldEndIdx[${oldEndIdx + 1} -> ${oldEndIdx}]`)
+          console.log(`新节点索引更新 newStartIdx[${newStartIdx - 1} -> ${newStartIdx}] newEndIdx[${newEndIdx} -> ${newEndIdx}]`)
+        }
+      }
+    }
+    function mountElement(vnode, container, anchor) {
+      const el = vnode.el = createElement(vnode.type)
+      if (isString(vnode.children)) {
+        setElementText(el, vnode.children)
+      } else if (isArray(vnode.children)) {
+        vnode.children.forEach(c => patch(null, c, el))
+      }
+      if (vnode.props) {
+        for (const key in vnode.props) {
+          patchProps(el, key, null, vnode.props[key])
+        }
+      }
+      insert(el, container, anchor)
+    }
+    function unmount(vnode) {
+      if (vnode.type === Fragment) {
+        vnode.children(c => unmount(c))
+      }
+      remove(vnode.el)
+    }
+    function render(vnode, container) {
+      if (vnode) {
+        patch(container._vnode, vnode, container)
+      } else {
+        if (container._vnode) {
+          unmount(container._vnode)
+        }
+      }
+      container._vnode = vnode
+    }
+    return {
+      render
+    }
+  }
+
+  // demo - 双端 Diff 算法
+  const renderer = createRenderer({
+    insert(child, parent, anchor = null) {
+      parent.insertBefore(child, anchor)
+    },
+    remove(child) {
+      const parent = child.parentNode
+      if (parent) {
+        parent.remove(child)
+      }
+    },
+    createElement(tag) {
+      return document.createElement(tag)
+    },
+    createText(text) {
+      return document.createTextNode(text)
+    },
+    createComment(text) {
+      return document.createComment(text)
+    },
+    setElementText(el, text) {
+      el.textContent = text
+    },
+    setText(node, text) {
+      node.nodeValue = text
+    },
+    patchProps(el, key, preValue, nextValue) {
+      if (/^on/.test(key)) {
+        patchEvent(el, key, prevValue, nextValue)
+      } else if (key === 'class') {
+        patchClass(el, nextValue)
+      } else if (key === 'style') {
+        patchStyle(el, prevValue, nextValue)
+      } else if (shouldSetProps(el, key, nextValue)) {
+        patchDOMProp(el, key, nextValue)
+      } else {
+        patchAttr(el, key, nextValue)
+      }
+    }
+  })
+
+  const app = document.querySelector('#app')
+  const oldVnode = {
+    type: 'div',
+    children: [
+      { type: 'p', children: '1', key: 1 },
+      { type: 'p', children: '2', key: 2 },
+      { type: 'p', children: '3', key: 3 },
+      { type: 'p', children: '4', key: 4 }
+    ]
+  }
+  renderer.render(oldVnode, app)
+  const newVnode = {
+    type: 'div',
+    children: [
+      { type: 'p', children: '4', key: 4 },
+      { type: 'p', children: '2', key: 2 },
+      { type: 'p', children: '1', key: 1 },
+      { type: 'p', children: '3', key: 3 }
+    ]
+  }
+  setTimeout(() => {
+    renderer.render(newVnode, app)
+  }, 3000);
+</script>
