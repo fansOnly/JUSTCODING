@@ -25,6 +25,9 @@
     - 如果尾头相同，patch 打补丁，移动（insert）旧尾部节点对应的真实 DOM 到头部
 
     ```js
+    // p-1 p-2 p-3 p-4
+    // p-4 p-2 p-1 p-3
+
     function patchChildren(n1, n2, container) {
       if (typeof n2.children === 'string') {
         // ...
@@ -93,6 +96,9 @@
 3. 上述操作会导致更新过程中，旧的一组子节点中节点值为 undefined 的情况，此时应该直接更新索引，进入下一轮循环
 
     ```js
+    // p-1 p-2 p-3 p-4
+    // p-2 p-4 p-1 p-3
+
     function patchKeyedChildren(n1, n2, container) {
       // ...
       while (oldStartIdx <= oldEndIdx && newStartIDx <= newEndIdx) {
@@ -128,7 +134,88 @@
     }
     ```
 
-> 示例代码详见 4-code2.html
+> 示例代码详见 4-code3.html
 
 -----
 
+##### 10.4 添加新元素
+
+1. 如果新的一组子节点的头部节点是新增节点，将其作为新节点挂载到真实 DOM 头部
+
+    ```js
+    // p-1 p-2 p-3
+    // p-4 p-1 p-3 p-2
+
+    function patchKeyedChildren(n1, n2, container) {
+      // ...
+      while (oldStartIdx <= oldEndIdx && newStartIdx <= newEndIdx) {
+        if (oldStartVnode.key === newStratVnode.key) {
+          // ...
+        } else if (oldEndVnode.key === newEndVnode.key) {
+          // ...
+        } else if (oldStartVnode.key === newEndVnode.key) {
+          // ...
+        } else if (oldEndVnode.key === newStartVnode.key) {
+          // ...
+        } else {
+          const idxInOld = oldChildren.findIndex(v => v.key === newStartVnode.key)
+          if (idxInOld > 0) {
+            // ...
+          } else {
+            // 作为新节点挂载到头部
+            patch(null, newStartVnode, container, oldStartVnode.el)
+          }
+        }
+      }
+    }
+    ```
+
+2. 如果循环结束后，新的一组子节点中依然存在剩余的节点，将它们依次挂载到头部
+
+    ```js
+    // p-1 p-2 p-3
+    // p-4 p-1 p-2 p-3
+
+    function patchKeyedChildren(n1, n2, container) {
+      // ...
+      while (oldStartIdx <= oldEndIdx && newStartIdx <= newEndIdx) {
+        // ...
+      }
+      // 循环结束，处理剩下的节点
+      if (oldEndIdx < oldStartIdx && newStartIdx <= newEndIdx) {
+        // 新子节点剩余，需要挂载
+        for (let i = newStartIdx; i < newEndIdx; i++) {
+          patch(null, newChildren[i], container, oldStartVnode.el)
+        }
+      }
+    }
+    ```
+
+> 示例代码详见 4-code4.html
+
+-----
+
+##### 10.5 移除元素
+
+1. 循环结束后，如果旧节点剩余元素，需要移除
+
+    ```js
+    // p-1 p-2 p-3
+    // p-1 p-3
+    function patchKeyedChildren(n1, n2, container) {
+      // ...
+      while(oldStartIdx <= oldEndIdx && newStartIdx <= newEndIdx) {
+        // ...
+      }
+      if (oldEndIdx < oldStartIdx && newStartIdx <= newEndIdx) {
+        // 新增元素
+      } else if (newEndIdx < newStartIdx && oldStartIdx <= oldEndIdx) {
+        // 移除元素
+        for (let i = oldStartIdx; i <= oldEndIdx; i++) {
+          unmount(oldChildren[i])
+        }
+      }
+    }
+    ```
+
+> 示例代码详见 4-code5.html

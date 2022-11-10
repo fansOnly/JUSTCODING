@@ -257,6 +257,9 @@
 1. 基本更新结束后，遍历旧的一组子节点，去新的一组子节点中寻找相同 key 值的节点，如果找不到，说明该节点需要删除
 
     ```js
+    // p-1 p-2 p-3
+    // p-3 p-1
+    
     function patchChildren(n1, n2, container) {
       if (typeof n2.children === 'string') {
         // ...
