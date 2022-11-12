@@ -40,7 +40,7 @@ effect() // 页面显示 hello world
 + Vue.js 2 通过 Object.defineProperty()
 + Vue.js 3 通过 Proxy
 
-  > 示例代码详见 1-code1.html
+  > 示例代码详见 1-code4-1.html
 
 -----
 
@@ -51,7 +51,7 @@ effect() // 页面显示 hello world
     + 新建一个全局的副作用函数变量，记录当前正在执行的副作用函数
     + 待完善：副作用函数与目标属性没有建立明确的对应关系
 
-    > 代码示例详见 1-code2.html
+    > 示例代码详见 1-code4-2.html
 
 2. 常见的响应式关联的场景
 
@@ -89,14 +89,14 @@ effect() // 页面显示 hello world
     + Map 由 key -> Set 组成
     + Set 里面存储 effect
 
-    > 代码示例详见 1-code3.html
+    > 示例代码详见 1-code4-3.html
 
 4. 代码封装
 
     + 追踪依赖：track
     + 触发副作用函数：trigger
 
-    > 代码示例详见 1-code4.html
+    > 示例代码详见 1-code4-4.html
 
 -----
 
@@ -137,7 +137,7 @@ effect() // 页面显示 hello world
     + 执行完毕后，重新建立联系，在新的联系中不会包含遗留的副作用函数
     + 避免死循环：在调用 forEach 遍历 Set 时，如果一个值已经被访问过，但改值被删除并重新添加到集合中，如果这时 forEach 遍历没有结束，该值会重新被访问
 
-> 代码示例详见 1-code5.html
+> 示例代码详见 1-code4-5.html
 
 -----
 
@@ -168,7 +168,7 @@ effect() // 页面显示 hello world
     ```
 2. 嵌套的 effect 存在问题：统一同一时间只有一个 activeEffect，最后保留的 activeEffect 始终是内层的副作用函数，当外层数据触发依赖收集时，执行的副作用函数依旧是内层的。需要新增一个记录全局的副作用函数的栈结构 effectStack，并让 activeEffect 始终指向栈顶。
 
-    > 示例代码详见 1-code6.html
+    > 示例代码详见 1-code4-6.html
 
 -----
 
@@ -189,7 +189,7 @@ effect(() => {
 1. 在执行上述代码时，既会访问 obj.foo 的值，也会修改 obj.foo 的值，这会导致副作用函数不停的调用自己，产生栈溢出。
 2. 在执行当前副作用函数的时候需要判断，如果 trigger 触发的副作用函数正在执行，则跳过。
 
-> 示例代码详见 1-code7.html
+> 示例代码详见 1-code4-7.html
 
 -----
 
@@ -215,9 +215,9 @@ console.log('end')
 3. 通过 options.scheduler 实现调度。
 
 + 执行顺序控制
-    > 示例代码详见 1-code8.html
+    > 示例代码详见 1-code4-8.html
 + 执行次数控制
-    > 示例代码详见 1-code9.html
+    > 示例代码详见 1-code4-9.html
 
 -----
 
@@ -303,7 +303,7 @@ console.log('end')
 
 3. 一个计算属性内部拥有自己 effect，它是懒执行的，只有在读取计算属性的值时才会执行。对于计算属性的 getter 函数，它里面访问的响应式数据只会把 computed 内部的 effect 收集为依赖。当把计算属性用于另外一个 effect 函数时，发生 effect 嵌套，外层的 effect 函数不会被内层的 effect 中的响应式依赖收集。再读取计算属性的值时，需要手动调用 track 函数进行追踪，在计算属性依赖的响应式数据发生变化时，手动调用 trigger 函数触发响应。
 
-> 示例代码详见 1-code10.html
+> 示例代码详见 1-code4-10.html
 
 -----
 
@@ -462,7 +462,7 @@ console.log('end')
     }
     ```
 
-> 示例代码详见 1-code11.html
+> 示例代码详见 1-code4-11.html
 
 -----
 
@@ -521,4 +521,4 @@ console.log('end')
     }
     ```
 
-> 示例代码详见 1-code12.html
+> 示例代码详见 1-code4-12.html

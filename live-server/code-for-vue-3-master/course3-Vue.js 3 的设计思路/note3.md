@@ -33,7 +33,7 @@ const vnode = {
 
 2.实现渲染器
 
-> 示例代码详见 code1.html
+> 示例代码详见 code3-1.html
 
 + renderer 函数接收两个参数
   + vnode：虚拟 DOM 对象
@@ -70,13 +70,13 @@ const component = {
   + mountElement
   + mountComponent
 
-> 示例代码详见 code2.html
+> 示例代码详见 code3-2.html
 
 4.组件的描述也可以是一个对象
 
 + 返回一个 render 函数
 
-> 示例代码详见 code3.html
+> 示例代码详见 code3-3.html
 
 -----
 
