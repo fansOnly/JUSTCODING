@@ -21,12 +21,12 @@
  *
  * 实体首部
  * 1. Allow
- * 2. Expries
+ * 2. Expires
  * 3. Last-Modified
  * 4. Content-Language
  * 5. Content-Encoding
- * 6. Content-length
- * 7. Content-type
+ * 6. Content-Length
+ * 7. Content-Type
  */
 
 

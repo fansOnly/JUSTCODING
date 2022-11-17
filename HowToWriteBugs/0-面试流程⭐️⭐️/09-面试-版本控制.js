@@ -6,7 +6,7 @@
 
 // 流程
 // 1 git init
-// 2 git checkout <branchname>
+// 2 git checkout [branch name]
 // 3 git add.
 // 4 git status
 // 5 git commit -m ""
@@ -15,7 +15,7 @@
 
 // 8 git pull  =  git fetch + git merge
 
-// git rebase -i --autosquash <branchname>
+// git rebase -i --autosquash [branch name]
 
 
 // README.md
@@ -26,7 +26,7 @@
 // git config --global user.name "xxx"
 // git config --global user.email xxx
 
-// git clone xxx <rename>  重命名本地文件夹
+// git clone xxx [rename]  重命名本地文件夹
 
 // git config --global alias.ci commit 将commit指定别名ci
 
@@ -42,6 +42,7 @@
 // git commit -am "msg"
 
 
+// git stash list
 // git stash   将工作区的内容放在堆栈中，不提交
 // git stash pop 恢复工作区的内容，删除stash
 // git stash apply 恢复工作区的内容
@@ -63,18 +64,15 @@
 // git rebase -i <hash-prev>
 
 
-// git reset HEAD <file>  取消暂存的文件
+// git checkout -- [file name]  取消工作区中的文件
 
 
-// git checkout -- <file>  取消工作区中的文件
-
-
-// git reset --soft <hash>
-// git reset --hard <hash>
+// git reset --soft [hash]  保留本地修改
+// git reset --hard [hash]  不保留本地修改
 
 
 
-// git branch -d <branchname> 删除某个分之
+// git branch -d [branch name] 删除某个分之
 
 // git branch -v 查看本地分支
 // git branch -av 查看本地和远程分支
@@ -85,7 +83,7 @@
 // git push origin local-branch:remote-branch  本地代码推送到远程某个分支
 
 
-// git cherry-pick <hash>  获取某个分支的某次提交内容
+// git cherry-pick [hash]  获取某个分支的某次提交内容
 
 
 // git 变基
