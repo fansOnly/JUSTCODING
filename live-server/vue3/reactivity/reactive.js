@@ -48,6 +48,14 @@ export function shallowReadonly(obj) {
   return createReactive(obj, true, shallowReadonlyHandlers, shallowReadonlyCollectionHandlers, shallowReadonlyMap)
 }
 
+/**
+ * 创建响应式
+ * @param {*} target 
+ * @param {*} isReadonly 
+ * @param {*} baseHandlers 
+ * @param {*} collectionHandlers 
+ * @param {*} proxyMap 
+ */
 function createReactive(target, isReadonly = false, baseHandlers, collectionHandlers, proxyMap) {
   const existProxy = proxyMap.get(target)
   if (existProxy) return existProxy

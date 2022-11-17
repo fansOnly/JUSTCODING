@@ -1,4 +1,6 @@
 
+export * from './errorHanding'
+
 export const hasOwnProperty = Object.prototype.hasOwnProperty
 export const hasOwn = (obj, val) => hasOwn.call(obj, val)
 
@@ -12,9 +14,16 @@ export const toRawType = (val) => {
 export const isMap = val => {
   return toTypeString(val) === '[object Map]'
 }
+export const isSet = val => {
+  return toTypeString(val) === '[object Set]'
+}
+export const isPlainObject = val => {
+  return toTypeString(val) === '[object Object]'
+}
 export const isString = val => typeof val === 'string'
 export const isSymbol = val => typeof val === 'symbol'
 export const isObject = val => typeof val === 'object' && val !== null
+export const isFunction = val => typeof val === 'function'
 
 export const isArray = Array.isArray
 
@@ -30,3 +39,5 @@ export const isIntegerKey = key =>
   '' + parseInt(key, 10) === key
 
 export const extend = Object.assign
+
+export const NOOP = () => {}
