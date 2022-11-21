@@ -31,7 +31,7 @@ new Promise(resolev => {
  * 又等一次循环到这个Promise 实例它的.then()回调执行后，才会注册下面的这个.then(),于是就被推迟了两个时序
  * begin - 1 - 2 - 3 - then - 4
  */
-let v = new Promise(resolve => {
+ var v = new Promise(resolve => {
   console.log("begin");
   resolve("then");
 });
@@ -60,7 +60,7 @@ new Promise(resolve => {
  * Promise.resolve(p)
  * begin - 1 - then - 2 - 3 - 4
  */
-let v = new Promise(resolve => {
+var v = new Promise(resolve => {
   console.log("begin");
   resolve("then");
 });
