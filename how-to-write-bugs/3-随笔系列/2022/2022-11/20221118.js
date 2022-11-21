@@ -72,7 +72,7 @@ function patchKeyedChildren(n1, n2, container) {
   if (j > oldEnd && j <= newEnd) {
     // 旧节点遍历结束，新节点剩余
     const anchorIndex = oldEnd + 1
-    const anchor = anchorIndex < oldChildren.length ? oldChildren[anchorIndex].el : null
+    const anchor = anchorIndex < newChildren.length ? newChildren[anchorIndex].el : null
     while (j <= newEnd) {
       patch(null, newChildren[j++], container, anchor)
     }
