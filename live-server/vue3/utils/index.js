@@ -41,3 +41,9 @@ export const isIntegerKey = key =>
 export const extend = Object.assign
 
 export const NOOP = () => {}
+
+const onRE = /^on[^a-z]/
+// Vue 事件绑定
+export const isOn = key => onRE.test(key)
+
+export const isModelListener = key => key.startsWith('onUpdate:')

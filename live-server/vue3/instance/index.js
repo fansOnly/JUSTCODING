@@ -1,3 +1,1 @@
-function creteApp() {}
-
-export default creteApp
+export function creteApp() {}
