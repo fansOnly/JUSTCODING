@@ -1,5 +1,3 @@
-import { patchProp } from "./patchProp";
-
 const doc = typeof document !== 'undefined' ? document : null
 
 export const nodeOps = {
@@ -26,6 +24,5 @@ export const nodeOps = {
   },
   setText(node, text) {
     node.nodeValue = text
-  },
-  patchProp
+  }
 }

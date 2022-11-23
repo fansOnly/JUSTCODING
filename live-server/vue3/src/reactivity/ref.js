@@ -1,4 +1,4 @@
-import { reactive } from './reactive'
+import { reactive } from './reactive.js'
 
 export function ref(val) {
   const wrapper = {

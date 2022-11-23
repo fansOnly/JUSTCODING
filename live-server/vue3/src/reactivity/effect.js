@@ -1,4 +1,4 @@
-import { toNumber, isArray, isMap } from '../utils'
+import { toNumber, isArray, isMap } from '../utils/index.js'
 
 // 存储副作用函数的 “桶”
 const targetMap = new WeakMap()
@@ -44,20 +44,39 @@ function cleanupEffect(effect) {
  * 追踪依赖
  * @param {*} target
  * @param {*} key
- * @param {*} type 关联的操作
+ * @param {*} type 关联的操作类型
  */
 export function track(target, key, type) {
-  if (!activeEffect || !shouldTrack) return
-  let depsMap = targetMap.get(target)
-  if (!depsMap) {
-    targetMap.set(target, (depsMap = new Map()))
+  if (activeEffect && shouldTrack) {
+    let depsMap = targetMap.get(target)
+    if (!depsMap) {
+      targetMap.set(target, (depsMap = new Map()))
+    }
+    let deps = depsMap.get(key)
+    if (!deps) {
+      depsMap.set(key, (deps = new Set()))
+    }
+    deps.add(activeEffect)
+    activeEffect.deps.push(deps)
   }
-  let deps = depsMap.get(key)
-  if (!deps) {
-    depsMap.set(key, (deps = new Set()))
-  }
-  deps.add(activeEffect)
-  activeEffect.deps.push(deps)
+}
+
+export let shouldTrack = true
+const trackStack = []
+
+export function pauseTracking() {
+  // trackStack.push(shouldTrack)
+  shouldTrack = false
+}
+
+export function enableTracking() {
+  // trackStack.push(shouldTrack)
+  shouldTrack = true
+}
+
+export function resetTracking() {
+  const last = trackStack.pop()
+  shouldTrack = last === undefined ? true : last
 }
 
 /**
@@ -104,30 +123,26 @@ export function trigger(target, key, type, newVal, oldVal) {
       deps.push(depsMap.get(MAP_KEY_ITERATE_KEY))
     }
   }
+  // 默认的副作用函数收集
+  deps.push(depsMap.get(key))
+
   // 运行副作用函数
-  deps.forEach(effect => {
+  triggerEffects(deps)
+}
+
+export function triggerEffects(dep) {
+  const effects = isArray(dep) ? dep : [...dep]
+  for (const effect of effects) {
+    triggerEffect(effect)
+  }
+}
+
+function triggerEffect(effect) {
+  if (effect && effect !== activeEffect) {
     if (effect?.options?.scheduler) {
       effect.options.scheduler(effect)
     } else {
       effect()
     }
-  })
-}
-
-export let shouldTrack = true
-const trackStack = []
-
-export function pauseTracking() {
-  // trackStack.push(shouldTrack)
-  shouldTrack = false
-}
-
-export function enableTracking() {
-  // trackStack.push(shouldTrack)
-  shouldTrack = true
-}
-
-export function resetTracking() {
-  const last = trackStack.pop()
-  shouldTrack = last === undefined ? true : last
+  }
 }

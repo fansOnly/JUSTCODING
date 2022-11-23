@@ -8,6 +8,6 @@ export function callWithErrorHandling(fn, instance, type, args = []) {
   return res
 }
 
-
-
-export function handlerError(error, instance, type) {}
+export function handlerError(error, instance, type) {
+  console.error('🚀 ™', error)
+}

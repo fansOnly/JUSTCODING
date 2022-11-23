@@ -80,7 +80,7 @@
       },
       ownKeys(target) {
         track(target, ITERATE_KEY)
-        return Reflect.ownKeys(target, key)
+        return Reflect.ownKeys(target)
       },
       deleteProperty(target, key) {
         if (isReadonly) {
@@ -129,7 +129,7 @@
     }
     effectsToRun.forEach(effectFn => {
       if (effectFn?.options?.scheduler) {
-        effectFn.options.scheduler(effectFn)
+        effectFn.options.scheduler()
       } else {
         effectFn()
       }

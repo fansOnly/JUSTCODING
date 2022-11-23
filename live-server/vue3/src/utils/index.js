@@ -1,8 +1,9 @@
 
-export * from './errorHanding'
+export * from './errorHanding.js'
+export * from './normalizeProp.js'
 
 export const hasOwnProperty = Object.prototype.hasOwnProperty
-export const hasOwn = (obj, val) => hasOwn.call(obj, val)
+export const hasOwn = (val, key) => hasOwnProperty.call(val, key)
 
 export const objectToString = Object.prototype.toString
 export const toTypeString = (val) => objectToString.call(val)
@@ -41,9 +42,43 @@ export const isIntegerKey = key =>
 export const extend = Object.assign
 
 export const NOOP = () => {}
+export const EMPTY_OBJ = {}
+export const EMPTY_ARRAY = []
 
 const onRE = /^on[^a-z]/
 // Vue 事件绑定
 export const isOn = key => onRE.test(key)
 
 export const isModelListener = key => key.startsWith('onUpdate:')
+
+export const def = (obj, key, value) => {
+  Object.defineProperty(obj, key, {
+    configurable: true,
+    enumerable: false,
+    value
+  })
+}
+
+const cacheStringFunction = fn => {
+  const cache = Object.create(null)
+  return (str) => {
+    const hit = cache[str]
+    return hit || (cache[str] = fn(str))
+  }
+}
+
+const camelizeRE = /-(\w)/g
+
+export const camelize = cacheStringFunction(str => {
+  return str.replace(camelizeRE, (_, c) => (c ? c.toUpperCase() : ''))
+})
+
+const hyphenateRE = /\B([A-Z])/g
+
+export const hyphenate = cacheStringFunction(str => {
+  return str.replace(hyphenateRE, '-$1').toLowerCase()
+})
+
+export const capitalize = cacheStringFunction(str => {
+  return str.charAt(0).toUpperCase() + str.slice(1)
+})

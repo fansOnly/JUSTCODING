@@ -1,4 +1,4 @@
-import { isArray } from "../../utils"
+import { isArray } from "../../utils/index.js"
 
 let cachedNow = 0
 const p = Promise.resolve()

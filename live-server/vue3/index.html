@@ -6,9 +6,64 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Vue3 project</title>
   <!-- <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script> -->
-  <script src="./instance/index.js"></script>
 </head>
 <body>
   <div id="app"></div>
+
+  <script type="module">
+    import { createApp, render } from './src/runtime-dom/index.js'
+    import { reactive, effect, watch } from './src/reactivity/index.js'
+
+    const data = reactive(['1', '2', '3' ,'4', '5'])
+
+    const component = {
+      type: 'div',
+      children: [
+        { type: 'p', children: '1', key: 1, props: {
+          class: ['p1', 'p1-1']
+        } },
+        { type: 'p', children: '2', key: 2, props: {
+          style: 'color: green; font-size: 12px'
+        } },
+        { type: 'p', children: '3', key: 3, props: {
+          style: {fontSize: '30px', 'font-weight': 500, '-webkit-transition': 'background-color 3s'}
+        } },
+        { type: 'p', children: '4', key: 4 },
+        { type: 'button', children: 'click me', key: 5, props: {
+          onClick: () => alert('click button.')
+        } },
+        { type: 'p', children: '6', key: 6 },
+      ]
+    }
+    
+    const app = createApp(component)
+    console.log('🚀 ™ app', app)
+    app.mount('#app')
+
+    watch(() => data, (newVal, oldVal) => {
+      console.log('🚀 ™ newVal, oldVal', newVal, oldVal)
+      newVal.forEach((val, index) => {
+        component.children[index].children = val
+      })
+    }, {
+      immediate: true
+    })
+
+    effect(() => {
+      console.log('data updated...', data)
+      render(component, app._container)
+    })
+
+    setTimeout(() => {
+      data[2] = 'second'
+    }, 3000);
+  </script>
+  <style>
+    .p1 {
+      font-size: 20px;
+      color: red;
+      font-weight: 500;
+    }
+  </style>
 </body>
 </html>

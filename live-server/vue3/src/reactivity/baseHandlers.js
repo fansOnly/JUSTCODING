@@ -1,9 +1,8 @@
-import { ITERATE_KEY, track, trigger } from './effect'
-import { isObject, isArray, isSymbol, isIntegerKey, hasOwn, extend } from '../utils'
-import { reactiveFlags, trackOpTypes, triggerOpTypes } from './constants'
-import { isRef } from '../ref'
-import { readonly, reactive, toRaw, isReadonly } from '../reactivity'
-import { pauseTracking, enableTracking } from '../effect'
+import { ITERATE_KEY, track, trigger, pauseTracking, enableTracking } from './effect.js'
+import { isObject, isArray, isSymbol, isIntegerKey, hasOwn, extend } from '../utils/index.js'
+import { reactiveFlags, trackOpTypes, triggerOpTypes } from './constants.js'
+import { isRef } from './ref.js'
+import { readonly, reactive, toRaw, isReadonly } from './reactive.js'
 
 /**
  * get
@@ -80,7 +79,7 @@ const arrayInstrumentations = createArrayInstrumentations()
 function createArrayInstrumentations() {
   const instrumentations = {}
   ;['includes', 'indexOf', 'lastIndexOf'].forEach(key => {
-    instrumentations[key] = function(this, ...args) {
+    instrumentations[key] = function(...args) {
       const arr = toRaw(this)
       // ?
       // for (let i = 0; i < arr.length; i++) {
@@ -101,10 +100,12 @@ function createArrayInstrumentations() {
    * 根据它们的语义，只有在设置 length 时触发响应式
    */
   ;['unshift', 'shift', 'push', 'pop', 'splice'].forEach(key => {
-    pauseTracking()
-    const res = toRaw(this)[key].apply(this, args)
-    enableTracking()
-    return res
+    instrumentations[key] = function(...args) {
+      pauseTracking()
+      const res = toRaw(this)[key].apply(this, args)
+      enableTracking()
+      return res
+    }
   })
   return instrumentations
 }
@@ -140,8 +141,8 @@ function deleteProperty(target, key) {
  */
 function ownKeys(target) {
   // 数组的遍历会收到 length 属性影响，应该与 length 属性关联
-  track(isArray(target) ? 'length' : ITERATE_KEY, trackOpTypes.ITERATE)
-  return Reflect.ownKeys(target, key)
+  track(target, isArray(target) ? 'length' : ITERATE_KEY, trackOpTypes.ITERATE)
+  return Reflect.ownKeys(target)
 }
 
 export const mutableHandlers = {

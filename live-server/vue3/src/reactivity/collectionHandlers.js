@@ -1,7 +1,7 @@
-import { ITERATE_KEY, MAP_KEY_ITERATE_KEY, track, trigger } from "./effect"
-import { trackOpTypes, triggerOpTypes, reactiveFlags } from "./constants"
-import { toRaw, reactive, toReadonly, toReactive, isShallow } from './reactive'
-import { hasOwn, isMap, isObject } from "../utils"
+import { ITERATE_KEY, MAP_KEY_ITERATE_KEY, track, trigger } from "./effect.js"
+import { trackOpTypes, triggerOpTypes, reactiveFlags } from "./constants.js"
+import { toRaw, reactive, toReadonly, toReactive, isShallow } from './reactive.js'
+import { hasOwn, isMap, isObject } from "../utils/index.js"
 
 const getProto = key => Reflect.getPrototypeOf(key)
 const toShallow = value => value
@@ -10,7 +10,7 @@ const toShallow = value => value
  * Map
  */
 function get(target, key, isReadonly = false, shallow = false) {
-  const target = this[reactiveFlags.RAW]
+  target = this[reactiveFlags.RAW]
   const rawTarget = toRaw(target)
   const { has } = getProto(rawTarget)
   const rawKey = toRaw(ket)
@@ -27,7 +27,7 @@ function get(target, key, isReadonly = false, shallow = false) {
   }
  }
 
-function has(this, key, isReadonly = false) {
+function has(key, isReadonly = false) {
   const target = this[reactiveFlags.RAW]
   const rawTarget = toRaw(target)
   const rawKey = toRaw(key)
@@ -45,7 +45,7 @@ function has(this, key, isReadonly = false) {
 /**
  * Set
  */
-function add(this, value) {
+function add(value) {
   value = toRaw(value)
   const target = toRaw(this)
   const has = target.has(value)
@@ -59,7 +59,7 @@ function add(this, value) {
 /**
  * Map
  */
-function set(this, key, value) {
+function set(key, value) {
   value = toRaw(value)
   const target = toRaw(this)
   const { has, get } = getProto(target)
@@ -84,7 +84,7 @@ function size(target, isReadonly = false) {
   return Reflect.get(target, 'size', target)
 }
 
-function deleteKey(this, key) {
+function deleteKey(key) {
   const target = toRaw(this)
   const { has, get } = getProto(rawTarget)
   let hadKey = has.call(target, key)
@@ -100,7 +100,7 @@ function deleteKey(this, key) {
   return res
 }
 
-function clear(this) {
+function clear() {
   const target = toRaw(this)
   const hasItems = target.size !== 0
   const oldTarget = isMap(target) ? new Map(target) : new Set(target)
@@ -115,7 +115,7 @@ function clear(this) {
  * forEach
  */
 function createForEach(isReadonly = false, isShallow = false) {
-  return function(this, callback, thisArg) {
+  return function(callback, thisArg) {
     const target = this[reactiveFlags.RAW]
     const rawTarget = toRaw(target)
     const wrap = isShallow ? toShallow : isReadonly ? toReadonly : toReactive
@@ -133,7 +133,7 @@ function createForEach(isReadonly = false, isShallow = false) {
  * 统一的迭代器生成方法
  */
 function createIterableMethod(method, isReadonly = false, isShallow = false) {
-  return function (this, ...args) {
+  return function (...args) {
     const target = this[reactiveFlags.RAW]
     const rawTarget = toRaw(target)
     const targetIsMap = isMap(rawTarget)
@@ -166,14 +166,14 @@ function createIterableMethod(method, isReadonly = false, isShallow = false) {
 }
 
 function createReadonlyMethod(method) {
-  return function(this, ...args) {
+  return function(...args) {
     return method === triggerOpTypes.DELETE ? false : this
   }
 }
 
 function createInstrumentations () {
   const mutableInstrumentations = {
-    get(this, key) {
+    get(key) {
       return get(this, key)
     },
     get size() {
@@ -188,7 +188,7 @@ function createInstrumentations () {
   }
 
   const shallowInstrumentations = {
-    get(this, key) {
+    get(key) {
       return get(this, key, false, true)
     },
     size() {
@@ -203,13 +203,13 @@ function createInstrumentations () {
   }
 
   const readonlyInstrumentations = {
-    get(this, key) {
+    get(key) {
       return get(this, key, true)
     },
     size() {
       return size(this, true)
     },
-    has(this, key) {
+    has(key) {
       return has.call(this, key, true)
     },
     add: createReadonlyMethod(triggerOpTypes.ADD),
@@ -220,13 +220,13 @@ function createInstrumentations () {
   }
 
   const shallowReadonlyInstrumentations = {
-    get(this, key) {
+    get(key) {
       return get.call(this, key, true, true)
     },
     size() {
       return size(this, true)
     },
-    has(this, key) {
+    has(key) {
       return has.call(this, key, true)
     },
     add: createReadonlyMethod(triggerOpTypes.ADD),

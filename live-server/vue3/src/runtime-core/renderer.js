@@ -1,5 +1,7 @@
-import { isArray, isObject, isString } from "../utils"
-import { Comment, Fragment, isSameVNodeType, Text, Static } from './vnode'
+import { isArray, isString } from "../utils/index.js"
+import { Comment, Fragment, isSameVNodeType, Text, Static } from './vnode.js'
+import { createAppAPI } from './apiCreateApp.js'
+import { createComponentInstance } from "./component.js"
 
 export function createRenderer(options) {
   const {
@@ -87,7 +89,7 @@ export function createRenderer(options) {
   const processComponent = (n1, n2, container, anchor) => {
     if (n1 === null) {
       // add
-      mountComponent(n1, n2, container, anchor)
+      mountComponent(n2, container, anchor)
     } else {
       // patch
       updateComponent(n1, n2)
@@ -239,8 +241,13 @@ export function createRenderer(options) {
           // e.g. 4, 3, 2
           newIndex = keyToNewIndexMap.get(n1.key)
         } else {
-          // 未绑定 key 的节点，尝试寻找相同节点类型的节点
-          // TODO
+          // 未绑定 key 的节点，尝试在新节点中寻找相同节点类型的节点
+          for (j = s2; j <= e2; j++) {
+            if (newIndexToOldIndexMap[j - s2] === -1 && isSameVNodeType(n1, c2[j])) {
+              newIndex = j
+              break
+            }
+          }
         }
         if (newIndex === undefined) {
           // 新节点不存在当前旧节点元素
@@ -300,16 +307,8 @@ export function createRenderer(options) {
     const el = n2.el = n1.el
     const oldProps = n1.props
     const newProps = n2.props
-    
-    for (const key in newProps) {
-      patchProp(el, key, oldProps[key], newProps[key])
-    }
 
-    for (const key in oldProps) {
-      if (!(ket in newProps)) {
-        patchProp(el, key, oldProps[key], null)
-      }
-    }
+    patchProps(el, oldProps, newProps)
 
     patchChildren(n1, n2, el)
   }
@@ -332,12 +331,28 @@ export function createRenderer(options) {
     insert(el, container, anchor)
   }
 
-  const mountComponent = (n1, n2, container, anchor) => {}
+  const mountComponent = (initialVNode, container, anchor) => {
+    initialVNode.component = createComponentInstance(initialVNode)
+  }
 
   const updateComponent = (n1, n2) => {}
 
-  const patchProps = (n1, n2) => {
-    
+  const patchProps = (el, oldProps, newProps) => {
+    if (oldProps !== newProps) {
+      for (const key in newProps) {
+        const prev = oldProps[key]
+        const next = newProps[key]
+        if (prev !== next) {
+          patchProp(el, key, prev, next)
+        }
+      }
+  
+      for (const key in oldProps) {
+        if (!(ket in newProps)) {
+          patchProp(el, key, oldProps[key], null)
+        }
+      }
+    }
   }
 
   const mountChildren = (children, container, anchor) => {
@@ -355,9 +370,11 @@ export function createRenderer(options) {
     remove(vnode.el)
   }
 
+  const unmountComponent = (instance) => {}
+
   const render = (vnode, container) => {
     if (vnode) {
-      patch(container._vnode, vnode, container)
+      patch(container._vnode || null, vnode, container)
     } else {
       if (container._vnode) {
         unmount(container._vnode)
@@ -367,7 +384,8 @@ export function createRenderer(options) {
   }
 
   return {
-    render
+    render,
+    createApp: createAppAPI(render)
   }
 }
 

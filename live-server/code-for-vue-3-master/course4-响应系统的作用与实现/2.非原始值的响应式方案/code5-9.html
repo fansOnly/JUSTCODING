@@ -89,7 +89,7 @@
       },
       ownKeys(target) {
         track(Array.isArray(target) ? 'length' : ITERATE_KEY)
-        return Reflect.ownKeys(target, key)
+        return Reflect.ownKeys(target)
       },
       deleteProperty(target, key) {
         if (isReadonly) {

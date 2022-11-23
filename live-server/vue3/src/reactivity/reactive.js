@@ -1,12 +1,12 @@
-import { isObject, toRawType } from '../utils'
-import { reactiveFlags } from './constants'
-import { mutableHandlers, shallowMutableHandlers, readonlyHandlers, shallowReadonlyHandlers } from './baseHandlers'
+import { def, isObject, toRawType } from '../utils/index.js'
+import { reactiveFlags } from './constants.js'
+import { mutableHandlers, shallowMutableHandlers, readonlyHandlers, shallowReadonlyHandlers } from './baseHandlers.js'
 import {
   mutableCollectionHandlers,
   readonlyCollectionHandlers,
   shallowCollectionHandlers,
   shallowReadonlyCollectionHandlers
-} from './collectionHandlers'
+} from './collectionHandlers.js'
 
 function targetTypeMap(rawType) {
   switch(rawType) {
@@ -65,7 +65,7 @@ function createReactive(target, isReadonly = false, baseHandlers, collectionHand
   const targetType = getTargetType(target)
   console.log('targetType: ', targetType);
   const proxy = new Proxy(target, targetType === 2 ? collectionHandlers : baseHandlers)
-  existProxy.set(target, proxy)
+  proxyMap.set(target, proxy)
   return proxy
 }
 
@@ -99,4 +99,9 @@ export function toReactive(value) {
 
 export function toReadonly(value) {
   return isObject(value) ? readonly(value) : value
+}
+
+export function markRaw(value) {
+  def(value, reactiveFlags.SKIP, true)
+  return value
 }

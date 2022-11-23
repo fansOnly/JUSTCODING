@@ -87,7 +87,7 @@
     if (typeof value !== 'object' || value === null || seen.has(value)) return
     seen.add(value)
     for (const key in value) {
-      traverse(target[key, seen])
+      traverse(value[key], seen)
     }
     return value
   }

@@ -1,9 +1,9 @@
-import { patchAttr } from "./modules/attrs"
-import { patchClass } from "./modules/class"
-import { patchDOMProp } from "./modules/props"
-import { patchEvent } from "./modules/events"
-import { patchStyle } from "./modules/style"
-import { isOn, isModelListener, isString } from '../utils'
+import { patchAttr } from "./modules/attrs.js"
+import { patchClass } from "./modules/class.js"
+import { patchDOMProp } from "./modules/props.js"
+import { patchEvent } from "./modules/events.js"
+import { patchStyle } from "./modules/style.js"
+import { isOn, isModelListener, isString } from '../utils/index.js'
 
 const nativeOnRE = /^on[a-z]/
 
