@@ -1,16 +1,59 @@
-import { effect } from "./effect.js"
-import { isRef } from './ref.js'
+import { ReactiveEffect } from "./effect.js"
+import { isRef } from "./ref.js"
 import { isReactive, isShallow } from "./reactive.js"
-import { NOOP, isFunction, isArray, isObject, isMap, isSet, isPlainObject, callWithErrorHandling } from '../utils/index.js'
+import {
+  NOOP,
+  isFunction,
+  isArray,
+  isObject,
+  isMap,
+  isSet,
+  isPlainObject,
+  callWithErrorHandling,
+  hasChanged,
+} from "../utils/index.js"
+
+const INITIAL_WATCHER_VALUE = {}
+
+export function watchEffect(effect, options = {}) {
+  return doWatch(effect, null, options)
+} 
+
+export function watch(source, cb, options) {
+  if (!isFunction(cb)) {
+    warn(
+      `\`watch(fn, options?)\` signature has been moved to a separate API. ` +
+        `Use \`watchEffect(fn, options?)\` instead. \`watch\` now only ` +
+        `supports \`watch(source, cb, options?) signature.`
+    )
+  }
+  return doWatch(source, cb, options)
+}
 
 /**
- * @param {*} source 
- * @param {*} cb 
- * @param {*} options 
+ * @param {*} source
+ * @param {*} cb
+ * @param {object} options
  * @param {boolean} options.immediate
+ * @param {boolean} options.deep
  * @param {boolean} [options.flush = pre]
  */
-export function watch(source, cb, { immediate, deep, flush }) {
+function doWatch(source, cb, { immediate, deep, flush }) {
+  if (!cb) {
+    if (immediate !== undefined) {
+      console.warn(
+        `watch() "immediate" option is only respected when using the ` +
+          `watch(source, callback, options?) signature.`
+      )
+    }
+    if (deep !== undefined) {
+      console.warn(
+        `watch() "deep" option is only respected when using the ` +
+          `watch(source, callback, options?) signature.`
+      )
+    }
+  }
+
   let instance = null
   let getter = () => { }
   let forceTrigger = false
@@ -21,24 +64,31 @@ export function watch(source, cb, { immediate, deep, flush }) {
     forceTrigger = isShallow(source)
   } else if (isReactive(source)) {
     getter = () => source
-    deep = true
+    deep = true // 响应式数据默认开启深度监听
   } else if (isArray(source)) {
     // TODO 多监听源
     isMultipleSource = true
-    forceTrigger = source.some(s => isReactive(s) || isShallow(s))
+    forceTrigger = source.some((s) => isReactive(s) || isShallow(s))
     getter = () =>
-      source.map(s => {
+      source.map((s) => {
         if (isRef(s)) {
           return s.value
         } else if (isReactive(s)) {
           return traverse(s)
         } else if (isFunction(s)) {
-          return callWithErrorHandling(s, instance, 'watcher getter')
+          return callWithErrorHandling(s, instance, "watcher getter")
+        } else {
+          console.warn(
+            `Invalid watch source: `,
+            s,
+            `A watch source can only be a getter/effect function, a ref, ` +
+              `a reactive object, or an array of these types.`
+          )
         }
       })
   } else if (isFunction(source)) {
     if (cb) {
-      getter = () => callWithErrorHandling(source, instance, 'watcher getter')
+      getter = () => callWithErrorHandling(source, instance, "watcher getter")
     } else {
       // no cb, simple effect
       getter = () => {
@@ -48,7 +98,7 @@ export function watch(source, cb, { immediate, deep, flush }) {
         if (cleanup) {
           cleanup()
         }
-        return callWithErrorHandling(source, instance, 'watcher callback')
+        return callWithErrorHandling(source, instance, "watcher callback")
       }
     }
   } else {
@@ -61,40 +111,57 @@ export function watch(source, cb, { immediate, deep, flush }) {
     getter = () => traverse(baseGetter())
   }
 
-  // 竞态问题，存储用户的过期回调
+  // 存储用户的过期回调
+  // 解决竞态问题
   let cleanup
   function onCleanup(fn) {
-    cleanup = () => callWithErrorHandling(fn, instance, 'watcher cleanup')
+    cleanup = effect.onStop = () => callWithErrorHandling(fn, instance, "watcher cleanup")
   }
 
-  let oldVal = isMultipleSource ? new Array(source.length).fill({}) : {}
+  let oldValue = isMultipleSource
+    ? new Array(source.length).fill(INITIAL_WATCHER_VALUE)
+    : INITIAL_WATCHER_VALUE
 
   // 将调度函数流程提取出来
   const job = () => {
+    if (!effect.active) return
     if (cb) {
       // watch(source, cb)
       // 在 scheduler 中执行副作用函数，拿到的是新值
-      const newVal = effectFn()
-      console.log('newVal: ', newVal);
-      if (deep || forceTrigger) {
+      const newValue = effect.run()
+      if (
+        deep ||
+        forceTrigger ||
+        (isMultipleSource
+          ? newValue.some((v, i) => hasChanged(v, oldValue[i]))
+          : hasChanged(newValue, oldValue))
+      ) {
         // 在调用回调函数之前，清空过期回调
         if (cleanup) {
           cleanup()
         }
-        callWithErrorHandling(cb, instance, 'watcher callback', [newVal, oldVal, onCleanup])
+        callWithErrorHandling(cb, instance, "watcher callback", [
+          newValue,
+          oldValue === INITIAL_WATCHER_VALUE ||
+            (isMultipleSource && oldValue[0] === INITIAL_WATCHER_VALUE)
+            ? undefined
+            : oldValue,
+          onCleanup,
+        ])
         // 更新旧值，副作用函数执行完成后，新值就沦为旧值
-        oldVal = newVal
+        // TODO 引用类型？
+        oldValue = newValue
       }
     } else {
       // watchEffect
-      effectFn()
+      effect.run()
     }
   }
 
   let scheduler
-  if (flush === 'sync') {
+  if (flush === "sync") {
     scheduler = job
-  } else if (flush === 'post') {
+  } else if (flush === "post") {
     scheduler = () => {
       const p = Promise.resolve()
       p.then(job)
@@ -107,30 +174,31 @@ export function watch(source, cb, { immediate, deep, flush }) {
     scheduler = job
   }
 
-  const effectFn = effect(
-    () => getter,
-    {
-      lazy: true,
-      scheduler
-    }
-  )
+  const effect = new ReactiveEffect(getter, scheduler)
 
   if (cb) {
     if (immediate) {
       job()
     } else {
       // 副作用函数是“懒”执行的，在外面手动调用副作用函数，得到的是旧值
-      oldVal = effectFn()
+      oldValue = effect.run()
     }
   } else {
-    effectFn()
+    effect.run()
+  }
+
+  return () => {
+    effect.stop()
   }
 }
 
+// this.$watch
+export function instanceWatch(source, value, options) {}
+
 /**
  * 递归的遍历对象属性，关联副作用函数时，确保每个属性都能监听到
- * @param {*} value 
- * @param {*} seen 
+ * @param {*} value
+ * @param {*} seen
  */
 function traverse(value, seen = new Set()) {
   if (!isObject(value) || seen.has(value)) return
@@ -142,7 +210,7 @@ function traverse(value, seen = new Set()) {
       traverse(value[i], seen)
     }
   } else if (isMap(value) || isSet(value)) {
-    value.forEach(v => {
+    value.forEach((v) => {
       traverse(v, seen)
     })
   } else if (isPlainObject(value)) {
