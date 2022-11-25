@@ -374,7 +374,6 @@ export function createRenderer(options) {
 
   const render = (vnode, container) => {
     if (vnode) {
-      console.log('containe', container._vnode || null, vnode);
       patch(container._vnode || null, vnode, container)
     } else {
       if (container._vnode) {
