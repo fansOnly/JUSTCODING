@@ -63,7 +63,6 @@ function createReactive(target, isReadonly = false, baseHandlers, collectionHand
   if (isReadonly) return target
 
   const targetType = getTargetType(target)
-  console.log('targetType: ', targetType);
   const proxy = new Proxy(target, targetType === 2 ? collectionHandlers : baseHandlers)
   proxyMap.set(target, proxy)
   return proxy

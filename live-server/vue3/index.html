@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -7,56 +8,85 @@
   <title>Vue3 project</title>
   <!-- <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script> -->
 </head>
+
 <body>
   <div id="app"></div>
 
   <script type="module">
     import { createApp, render } from './src/runtime-dom/index.js'
-    import { reactive, effect, watch } from './src/reactivity/index.js'
+    import { reactive, effect, watch, watchEffect, ref } from './src/reactivity/index.js'
 
-    const data = reactive(['1', '2', '3' ,'4', '5'])
-
-    const component = {
+    const data = reactive(['1', '2', '3', '4', 'click me'])
+    const component1 = {
       type: 'div',
       children: [
-        { type: 'p', children: '1', key: 1, props: {
-          class: ['p1', 'p1-1']
-        } },
-        { type: 'p', children: '2', key: 2, props: {
-          style: 'color: green; font-size: 12px'
-        } },
-        { type: 'p', children: '3', key: 3, props: {
-          style: {fontSize: '30px', 'font-weight': 500, '-webkit-transition': 'background-color 3s'}
-        } },
-        { type: 'p', children: '4', key: 4 },
-        { type: 'button', children: 'click me', key: 5, props: {
-          onClick: () => alert('click button.')
-        } },
+        {
+          type: 'p', children: '', key: 1, props: {
+            class: ['p1', 'p1-1']
+          }
+        },
+        {
+          type: 'p', children: '', key: 2, props: {
+            style: 'color: green; font-size: 12px'
+          }
+        },
+        {
+          type: 'p', children: '', key: 3, props: {
+            style: { fontSize: '30px', 'font-weight': 500, '-webkit-transition': 'background-color 3s' }
+          }
+        },
+        { type: 'p', children: '', key: 4 },
+        {
+          type: 'button', children: '', key: 5, props: {
+            onClick: () => alert('click button.')
+          }
+        },
         { type: 'p', children: '6', key: 6 },
       ]
     }
-    
-    const app = createApp(component)
+
+    const count = ref(0)
+    const component2 = {
+      type: 'div',
+      children: 'x'
+    }
+
+    const app = createApp(component2)
     console.log('🚀 ™ app', app)
     app.mount('#app')
 
-    watch(() => data, (newVal, oldVal) => {
-      console.log('🚀 ™ newVal, oldVal', newVal, oldVal)
-      newVal.forEach((val, index) => {
-        component.children[index].children = val
-      })
-    }, {
-      immediate: true
-    })
+    // watch(data, (newVal, oldVal) => {
+    //   console.log('🚀 ™ newVal, oldVal', newVal, oldVal)
+    //   newVal.forEach((val, index) => {
+    //     component1.children[index].children = val
+    //   })
+    //   render(component1, app._container)
+    // }, {
+    //   immediate: true,
+    //   // flush: 'post',
+    //   // deep: true
+    // })
 
-    effect(() => {
-      console.log('data updated...', data)
-      render(component, app._container)
+    // watchEffect(() => {
+    //   console.log('data =>', data)
+    // })
+
+    // setTimeout(() => {
+    //   console.log('')
+    //   console.log('changed...')
+    //   data[2] = 'second'
+    // }, 3000)
+
+    watchEffect(() => {
+      console.log('count', count.value)
+      component2.children = count.value
+      // render(component2, app._container)
+      app._context.reload()
     })
 
     setTimeout(() => {
-      data[2] = 'second'
-    }, 3000);
+      count.value++
+    }, 2000)
   </script>
   <style>
     .p1 {
@@ -64,6 +94,8 @@
       color: red;
       font-weight: 500;
     }
+
   </style>
 </body>
+
 </html>

@@ -82,3 +82,6 @@ export const hyphenate = cacheStringFunction(str => {
 export const capitalize = cacheStringFunction(str => {
   return str.charAt(0).toUpperCase() + str.slice(1)
 })
+
+// compare value, accounting for NaN
+export const hasChanged = (value, oldValue) => !Object.is(value, oldValue)
