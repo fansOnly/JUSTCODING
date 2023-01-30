@@ -14,18 +14,19 @@
 
 // ============================================ HTTP 状态码⭐️ ===================================================
 
-// 1xx - 
+// 1xx -
 
 // 1 2xx
 // a 200 - 请求成功
 // b 201
 // c 202
-// d 204 
+// d 204
 
 // 2 3xx
 // a 301 - Moved Permanently: 永久重定向：请求的网页永久移动到新位置，自动将请求者转到新位置
 // b 302 - Found: 临时重定向：请求的网页临时移动到新位置，后续的请求仍然从原来的位置发起
 // c 304 - Not Modified: 请求的内容未修改，此时不会返回内容，命中协商缓存
+// d 307 - 临时重定向
 
 // 3 4xx - 前端请求错误
 // a 400 - Bad Request: 错误请求：客户端传参不对等
@@ -36,7 +37,7 @@
 // 5xx - 服务端错误
 // a 500 - Inter Serber Error: 服务器内部错误，无法完成请求
 // b 501 - Not Implemented: 尚未实施，服务器不具备完成请求的功能
-// c 502 - Bad Gateway：上游服务器相应错误，服务器网关错误
+// c 502 - Bad Gateway：上游服务器响应错误，服务器网关错误
 // d 503 - Service Unavailable: 服务不可用，如服务器超载或者停机维护，通常是暂时状态
 
 // =============================================== HTTP缓存⭐️⭐️ ===============================================
@@ -104,11 +105,12 @@
 
 // b Connection: HTTP/1.1, 是否需要持久连接, 默认keep-alive, close
 // c Transfer-Encoding: 报文主体的传输编码格式, chunked(分块)/identity(未压缩和修改)/gzip(LZ77压缩)/deflate(zlib结构压缩)/compress(LZW压缩,弃用)
+// d Date
 
 // 2 请求头首部
 
 // a Accept: 告知客户端可以处理的内容类型 - text/html, image/*, */*
-// b If-Modified-Since: 将 Last-Modefied 传给服务器询问资源是否过期 - If-Modefied-Since: Wed, 21 Oct 2020 07:28:50 GMT
+// b If-Modified-Since: 将 Last-Modified 传给服务器询问资源是否过期 - If-Modified-Since: Wed, 21 Oct 2020 07:28:50 GMT
 // c If-Unmodified-Since: 同上
 // d If-None-Match: 将 ETag 的值发送给服务器, 询问服务器资源是否过期 - If-None-Match: "bfc129c88ca92d82d"
 // e If-Match: 同上
@@ -127,13 +129,15 @@
 // a Allow: 支持的 http 请求方法 - GET, POST, HEAD
 // b Last-Modified: 资源最后修改时间, 判断服务器资源是否修改
 // c Expired: 响应过期时间 - <http-date>
+// d Content-Length
+// e Accept Ranges
 
 // ===================================== HTTP 1.0 VS 1.1 ============================================
 
 // 1 长连接: HTTP/1.1 支持长连接, 每次 TCP 请求可以传送多个 HTTP 连接(串联方式), 最多支持 6 个 TCP 连接 ⭐
-// 2 缓存处理: HTTP/1.1 新增 Entity tag, If-Unmodefied-Since, If-Match, If-None-Match 等请求头控制缓存
+// 2 缓存处理: HTTP/1.1 新增 Entity tag, If-Unmodified-Since, If-Match, If-None-Match 等请求头控制缓存
 // 3 带宽优化及网络连接的优化: HTTP/1.1 新增 range 头域, 支持断点续传
-// 4 Host 头处理: 
+// 4 Host 头处理:
 // a HTTP/1.0 认为每台服务器都有唯一的 IP 地址
 // b HTTP/1.1 请求头必须携带 Host 头信息,不然会返回 400
 // ps 虚拟主机技术可以实现多台主机可以共享一个 IP 地址
@@ -159,7 +163,7 @@
 
 // ============================== HTTP 3.0 ==============================
 
-// 1 UDP 协议
+// 1 UDP 协议 / QUIC
 // 2 多路复用
 // 3 0-RTT
 // 4 TLS 加密
