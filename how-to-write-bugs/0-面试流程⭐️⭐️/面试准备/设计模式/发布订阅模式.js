@@ -6,7 +6,7 @@ class EventBus {
     if (!this.eventMap.has(event)) {
       this.eventMap.set(event, [fn])
     } else {
-      const events = this.eventMap.get(event)
+      const events = this.eventMap.get(event) || []
       this.eventMap.set(event, events.concat(fn))
     }
   }
@@ -48,9 +48,9 @@ evtbus.on('change', f2)
 evtbus.on('click', f1)
 evtbus.once('click', f3)
 evtbus.once('click', f2)
-console.log('evtbus: ', evtbus);
+console.log('evtbus: ', evtbus)
 
 evtbus.emit('change', 'a')
 evtbus.emit('click', 'a')
 
-console.log('evtbus: ', evtbus);
+console.log('evtbus: ', evtbus)

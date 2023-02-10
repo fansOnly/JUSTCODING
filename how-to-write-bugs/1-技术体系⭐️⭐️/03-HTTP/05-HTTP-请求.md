@@ -48,6 +48,7 @@
     - HTTP/1.1, 是否需要持久连接, 默认 keep-alive, close
   - Transfor-Encoding
     - 报文主体的传输编码格式, chunked(分块)/identity(未压缩和修改)/gzip(LZ77 压缩)/deflate(zlib 结构压缩)/compress(LZW 压缩,弃用)
+  - Date
 
 - 常用请求首部
 
@@ -74,7 +75,7 @@
 
   - Location
     - 页面重定向地址, 一般用于 3xx 的相应处理 - \<url>
-  - ETag
+  - ETag（强 / 弱）
     - 资源的版本标识, 如果没有变动, web 服务器不需要发送完整的响应
   - Server
     - 处理请求的服务器软件信息

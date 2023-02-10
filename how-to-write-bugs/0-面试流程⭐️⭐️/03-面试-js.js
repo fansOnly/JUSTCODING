@@ -132,11 +132,11 @@ function myBind() {
     }
 }
 // example
-const Bar = function() {
+const Bar = function () {
     console.log(this, this.name, arguments)
 }
 Bar.prototype.name = 'bar'
-const bound = Bar.myBind({ name: 'foo'}, 22, 33)
+const bound = Bar.myBind({ name: 'foo' }, 22, 33)
 new bound() // fBound {},bar, [22, 23]
 bound() // {name: 'foo'} ,foo, [22, 23]
 
@@ -173,10 +173,10 @@ function myInstanceof(L, R) {
 // ************************************************************************************************************************
 
 // 防抖和节流⭐️
-// 防抖 - 在短时间内多次触发同一实践，限制只执行一次
+// 防抖 - 在短时间内多次触发同一事件，限制只执行一次
 // resize/scroll
 
-// 节流 - 类似阀门管制一样，阀门会定期开放，函数执行一次之后，在一个时间段内会失效关闭，过了时间则会重新激活开启
+// 节流 - 控制执行间隔，按照一定的频率执行
 // input输入框
 // 拖拽
 

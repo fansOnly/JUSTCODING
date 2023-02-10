@@ -122,7 +122,7 @@
 
 // a Location: 页面重定向地址, 一般用于 3xx 的相应处理 - <url>
 // b ETag: 资源的版本标识, 如果没有变动, web 服务器不需要发送完整的响应
-// c Server: 处理请求的服务器软件信息 - <product> - nginx/iis/tomacat/jertty
+// c Server: 处理请求的服务器软件信息 - <product> - nginx/iis/tomcat
 
 // 4 实体头首部
 

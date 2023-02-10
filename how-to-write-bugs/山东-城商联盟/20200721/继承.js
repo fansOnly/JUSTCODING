@@ -40,12 +40,12 @@ Child5.say() // this is clone
 var Child6 = function (name) {
     Father.call(this, name)
 }
-function inhertPrototype(sub, sup) {
+function inheritPrototype(sub, sup) {
     var o = Object.create(sup.prototype)
     sub.prototype = o
     o.constructor = sub
 }
-inhertPrototype(Child6, Father)
+inheritPrototype(Child6, Father)
 var c6 = new Child6('c6')
 console.log(c6.__proto__.__proto__.__proto__.__proto__)
 c6.say() // say => c6

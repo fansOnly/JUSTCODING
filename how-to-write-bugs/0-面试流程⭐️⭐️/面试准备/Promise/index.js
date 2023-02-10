@@ -52,7 +52,7 @@ class Promise {
             } catch (error) {
               reject(error)
             }
-          }, 0);
+          }, 0)
         })
         this.rejectedFns.push(() => {
           setTimeout(() => {
@@ -66,7 +66,7 @@ class Promise {
             } catch (error) {
               reject(error)
             }
-          }, 0);
+          }, 0)
         })
       } else if (this.state === 'fulfilled') {
         setTimeout(() => {
@@ -76,7 +76,7 @@ class Promise {
           } catch (error) {
             reject(error)
           }
-        }, 0);
+        }, 0)
       } else {
         setTimeout(() => {
           try {
@@ -85,7 +85,7 @@ class Promise {
           } catch (error) {
             reject(error)
           }
-        }, 0);
+        }, 0)
       }
     })
     return promise2
@@ -121,8 +121,8 @@ function resolvePromise(promise2, x, resolve, reject) {
      *       也就是继续执行x，如果执行的时候拿到一个y，还要继续解析y
      */
     x.then(y => {
-        resolvePromise(promise2, y, resolve, reject)
-    }, reject);
+      resolvePromise(promise2, y, resolve, reject)
+    }, reject)
   } else if (x !== null && (typeof x === 'object' || typeof x === 'function')) {
     // 2.3.3 如果 x 为对象或函数
     // 2.3.3.1 把 x.then 赋值给 then
@@ -134,17 +134,17 @@ function resolvePromise(promise2, x, resolve, reject) {
     if (typeof then === 'function') {
       let called = false
       try {
-          // 2.3.3.3 如果 then 是函数，将 x 作为函数的作用域 this 调用之
-          // 2.3.3.3.1 如果 resolvePromise 以值 y 为参数被调用，则运行 [[Resolve]](promise, y)
-          then.call(x, y => {
-            if (called) return
-            called = true
-            resolvePromise(promise2, y, resolve, reject)
-          }, error => {
-            if (called) return
-            called = true
-            reject(error)
-          })
+        // 2.3.3.3 如果 then 是函数，将 x 作为函数的作用域 this 调用之
+        // 2.3.3.3.1 如果 resolvePromise 以值 y 为参数被调用，则运行 [[Resolve]](promise, y)
+        then.call(x, y => {
+          if (called) return
+          called = true
+          resolvePromise(promise2, y, resolve, reject)
+        }, error => {
+          if (called) return
+          called = true
+          reject(error)
+        })
       } catch (error) {
         if (called) return
         called = true
@@ -158,19 +158,19 @@ function resolvePromise(promise2, x, resolve, reject) {
   }
 }
 
-Promise.resolve = function(value) {
+Promise.resolve = function (value) {
   return new Promise(resolve => {
     resolve(value)
   })
 }
 
-Promise.reject = function(error) {
+Promise.reject = function (error) {
   return new Promise((resolve, reject) => {
     reject(error)
   })
 }
 
-Promise.race = function(promises) {
+Promise.race = function (promises) {
   return new Promise((resolve, reject) => {
     for (let i = 0; i < promises.length; i++) {
       promises[i].then(resolve, reject)
@@ -178,7 +178,7 @@ Promise.race = function(promises) {
   })
 }
 
-Promise.all = function(promises) {
+Promise.all = function (promises) {
   return new Promise((resolve, reject) => {
     let called = 0
     const res = []
@@ -194,7 +194,7 @@ Promise.all = function(promises) {
   })
 }
 
-Promise.any = function(promises) {
+Promise.any = function (promises) {
   return new Promise((resolve, reject) => {
     let called = 0
     const res = []
@@ -210,7 +210,7 @@ Promise.any = function(promises) {
   })
 }
 
-Promise.allSettled = function(promises) {
+Promise.allSettled = function (promises) {
   return new Promise((resolve, reject) => {
     let called = 0
     const res = []
@@ -230,7 +230,7 @@ Promise.allSettled = function(promises) {
   })
 }
 
-Promise.deferred = function() {
+Promise.deferred = function () {
   let result = {}
   result.promise = new Promise((resolve, reject) => {
     result.resolve = resolve
