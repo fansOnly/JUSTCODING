@@ -23,9 +23,10 @@ class EventBus {
     this.eventMap.set(event, events.filter(item => item !== fn))
   }
   once(event, fn) {
+    let self = this
     function f(...args) {
       fn(...args)
-      this.off(event, f)
+      self.off(event, f)
     }
     this.on(event, f)
   }

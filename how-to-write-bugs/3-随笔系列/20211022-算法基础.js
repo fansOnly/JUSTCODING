@@ -64,17 +64,17 @@ const fibonacci = n => {
   return fibonacci(n - 1) + fibonacci(n - 2)
 }
 console.time()
-console.log(fibonacci(10))
+console.log(fibonacci(20))
 console.timeEnd()
 
-
-const fib2 = (n, cache = {}) => {
-  if (n < 2) return 1
-  return cache[n] || (cache[n] = fibonacci(n - 1) + fibonacci(n - 2))
+function fibonacci2(n, start = 1, total = 1) {
+  if (n < 2) return total
+  return fibonacci2(n - 1, total, start + total)
 }
 console.time()
-console.log(fib2(10))
+console.log(fibonacci2(20))
 console.timeEnd()
+
 
 
 /**
@@ -84,9 +84,9 @@ const transform = arr => {
   let result = []
   for (let i = 0; i < arr.length; i++) {
     if (Array.isArray(arr[i])) {
-      result.push({children: transform(arr[i])})
+      result.push({ children: transform(arr[i]) })
     } else if (typeof arr[i] === 'number') {
-      result.push({value: arr[i]})
+      result.push({ value: arr[i] })
     }
   }
 
@@ -130,7 +130,7 @@ console.log(transform2(arr))
  */
 const smartRepeat = str => {
   let i = 0
-  // 次数栈 + 字符栈 或者使用 符合栈 [{ char: '', times: 0 }]
+  // 次数栈 + 字符栈 或者使用 复合栈 [{ char: '', times: 0 }]
   let stack1 = [], stack2 = []
   // 剩余的字符串
   let temp = str

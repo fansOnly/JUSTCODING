@@ -25,7 +25,7 @@ function quickSort(arr) {
     return quickSort(left).concat([flag], quickSort(right))
 }
 
-var list = [1,6,8,9,3,5,64,77,22,5]
+var list = [1, 6, 8, 9, 3, 5, 64, 77, 22, 5]
 var rrs = quickSort(list)
 console.log(rrs)
 
@@ -80,7 +80,7 @@ console.log(LCS('aabbcc11', 'ppooiiuubcc123'))
 
 
 // 数组去重
-var arr = [1,2,3,4,3,4,2,5,67,8,]
+var arr = [1, 2, 3, 4, 3, 4, 2, 5, 67, 8,]
 var res1 = [...new Set(arr)]
 console.log(res1)
 
@@ -104,10 +104,10 @@ const sum = (a, b, ...args) => {
 console.log(sum(1, 2, 3))
 
 // 1
-const curry = function(fn) {
+const curry = function (fn) {
     const { length } = fn
     const args = Array.prototype.slice.call(arguments, 1)
-    return function() {
+    return function () {
         const args2 = Array.prototype.slice.call(arguments)
         const newArgs = args.concat(args2)
         if (newArgs.length >= length) {
@@ -118,7 +118,7 @@ const curry = function(fn) {
 }
 
 const currySum = curry(sum)
-console.log(currySum(1)(2,3,4))
+console.log(currySum(1)(2, 3, 4))
 
 // 2
 const curry2 = (fn, ...args) => {
@@ -128,7 +128,7 @@ const curry2 = (fn, ...args) => {
 }
 
 const currySum2 = curry2(sum, 4)
-console.log('currySum2: ', currySum2(1,2,3));
+console.log('currySum2: ', currySum2(1, 2, 3))
 
 
 // 反转二叉树
@@ -146,7 +146,7 @@ console.log('currySum2: ', currySum2(1,2,3));
 // 2 内层循环 - 从j=i+1开始, 到数组长度结束
 // 3 返回相加等于和的两个数
 function findNumBySum(arr, sum) {
-    for( let i = 0; i < arr.length - 1 && arr[i] < sum / 2; i++) {
+    for (let i = 0; i < arr.length - 1 && arr[i] < sum / 2; i++) {
         for (let j = i + 1; j < arr.length - 1; j++) {
             if (arr[i] + arr[j] === sum) {
                 return [arr[i], arr[j]]
@@ -155,7 +155,7 @@ function findNumBySum(arr, sum) {
     }
     return []
 }
-var arr = [1,2,3,4,5,7,9,12,14,23,24,26,29]
+var arr = [1, 2, 3, 4, 5, 7, 9, 12, 14, 23, 24, 26, 29]
 console.log(findNumBySum(arr, 30))
 
 
@@ -203,7 +203,7 @@ console.log(findNumBySum(arr, 30))
 
 // 使用尾递归对斐波那契优化
 function fibonacci(n) {
-    if (n <= 1) return 1
+    if (n < 2) return 1
     return fibonacci(n - 1) + fibonacci(n - 2)
 }
 console.time()
@@ -211,7 +211,7 @@ console.log(fibonacci(10))
 console.timeEnd()
 
 function fibonacci2(n, ac1, ac2) {
-    if (n <= 1) return ac2
+    if (n < 2) return ac2
     return fibonacci2(n - 1, ac2, ac1 + ac2)
 }
 console.time()

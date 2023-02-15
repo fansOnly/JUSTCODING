@@ -3,7 +3,7 @@
  */
 function once(fn) {
   let ret, executed = true
-  return function() {
+  return function () {
     if (!executed) return ret
     ret = fn.apply(this, arguments)
     executed = false
@@ -16,10 +16,10 @@ var f1 = () => {
   return 100
 }
 
-var r =  once(f1)
+var r = once(f1)
 
-console.log('r(): ', r());
-console.log('r(): ', r());
+console.log('r(): ', r())
+console.log('r(): ', r())
 
 
 
@@ -27,7 +27,7 @@ console.log('r(): ', r());
  * 千位分割
  */
 function numFormat(integer, sign = ',') {
-  return (integer+'').replace(/(?!^)(?=(\d{3})+$)/g, sign)
+  return (integer + '').replace(/(?!^)(?=(\d{3})+$)/g, sign)
 }
 
 console.log(numFormat(1234567890))
@@ -38,12 +38,11 @@ console.log(numFormat(1234567890))
  * 洗牌函数
  */
 function shuffle(arr) {
-  const res = [...arr]
-  for (let i = res.length; i > 0; i--) {
-    const index = Math.floor(Math.random() * i);
-    [res[index], res[i - 1]] = [res[i-1], res[index]]
+  for (let i = arr.length; i > 0; i--) {
+    const r = Math.floor(Math.random() * i);
+    [arr[r], arr[i - 1]] = [arr[i - 1], arr[r]]
   }
-  return res
+  return arr
 }
 
 console.log(shuffle([1, 2, 3, 4, 5, 6, 7]))
@@ -55,24 +54,24 @@ console.log(shuffle([1, 2, 3, 4, 5, 6, 7]))
 /**
  *
  */
- function* getResult(params) {
+function* getResult(params) {
   yield new Promise((resolve, reject) => {
-      setTimeout(() => {
-          resolve(1);
-          console.log(1);
-      }, 1000);
+    setTimeout(() => {
+      resolve(1)
+      console.log(1)
+    }, 1000)
   })
   yield new Promise((resolve, reject) => {
-      setTimeout(() => {
-          resolve(2);
-          console.log(2);
-      }, 500);
+    setTimeout(() => {
+      resolve(2)
+      console.log(2)
+    }, 500)
   })
   yield new Promise((resolve, reject) => {
-      setTimeout(() => {
-          resolve(3);
-          console.log(3);
-      }, 100);
+    setTimeout(() => {
+      resolve(3)
+      console.log(3)
+    }, 100)
   })
 }
 
@@ -112,7 +111,7 @@ async function asyncPool(limit, arr, iteratorFn) {
 
 const timeout = delay => new Promise(resolve => setTimeout(() => {
   resolve(delay)
-  console.log('delay: ', delay);
+  console.log('delay: ', delay)
 }, delay))
 
 asyncPool(2, [2000, 1000, 3000, 2500], timeout)

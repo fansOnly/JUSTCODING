@@ -3,7 +3,7 @@
  * 参数：callback(accumulator[, currentValue[, index[, array]]])[, initialValue]
  * https://tc39.es/ecma262/#sec-array.prototype.reduce
  */
-Array.prototype.myReduce = function(callbackFn, initialValue) {
+Array.prototype.myReduce = function (callbackFn, initialValue) {
     if (this === null) {
         throw new TypeError('Array.prototype.reduce called on null.')
     }
@@ -17,7 +17,7 @@ Array.prototype.myReduce = function(callbackFn, initialValue) {
     if (initialValue) {
         accumulator = initialValue
     } else {
-        while(k < len && !(k in O)) {
+        while (k < len && !(k in O)) {
             k++
         }
         if (k >= len) {
@@ -25,10 +25,10 @@ Array.prototype.myReduce = function(callbackFn, initialValue) {
         }
         accumulator = O[k++] // 设定初始值后，将数组的开始下标后移一位
     }
-    if (k === len && accumulator === 'unfefined') {
+    if (k === len && accumulator === 'undefined') {
         throw new TypeError()
     }
-    while(k < len) {
+    while (k < len) {
         if (k in O) {
             accumulator = callbackFn.call(undefined, accumulator, O[k], k, O)
         }
@@ -37,7 +37,7 @@ Array.prototype.myReduce = function(callbackFn, initialValue) {
     return accumulator
 }
 
-const arr = [ 1, 2, 3 ]
+const arr = [1, 2, 3]
 
 const res = arr.myReduce((acc, cur) => acc + cur, 0)
 

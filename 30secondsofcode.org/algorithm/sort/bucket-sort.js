@@ -14,9 +14,12 @@ const bucketSort = (arr, size = 5) => {
         () => []
     )
     arr.forEach(val => {
-        buckets[Math.floor((max - min) / size)].push(val)
+        buckets[Math.floor((val - min) / size)].push(val)
     })
-    return buckets.reduce((acc, val) => [...acc, val.sort((a, b) => a - b)])
+    // console.log('buckets: ', buckets)
+    return buckets.reduce((acc, val) => [...acc, ...val.sort((a, b) => a - b)], [])
 }
 
-console.log(bucketSort([6, 3, 4, 1]))
+console.time()
+console.log(bucketSort([6, 3, 4, 1, 11, 33, 99, 55, 87, 100]))
+console.timeEnd()

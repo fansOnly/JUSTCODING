@@ -2,9 +2,7 @@ const formatPrice = (str) => {
   return str.replace(/^\D*(\d*(?:\.\d{0,2})?).*$/g, '$1')
 }
 
-console.log(formatPrice('aa222.a1.336655'))
-
-
+console.log(formatPrice('aa222.336655'))
 
 const formatNumber = val => {
   return val.replace(/(?!^)(?=(\d{3})+(?!\d))/g, ',')

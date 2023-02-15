@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>requestAnimationFrame</title>
+  <style>
+    .box {
+      width: 50px;
+      height: 50px;
+      background-color: #ccc;
+    }
+
+  </style>
+</head>
+
+<body>
+  <div class="box"></div>
+  <script>
+    const elem = document.querySelector('.box')
+    let start, previousTimeStamp
+    let done = false
+
+    function step(timestamp) {
+      if (start === undefined) {
+        start = timestamp
+      }
+      const elapsed = timestamp - start
+      if (previousTimeStamp !== timestamp) {
+        const count = Math.min(0.1 * elapsed, 200)
+        elem.style.transform = 'translateX(' + count + 'px)'
+        if (count === 200) done = true
+      }
+      if (elapsed < 2000) {
+        previousTimeStamp = timestamp
+        if (!done) {
+          window.requestAnimationFrame(step)
+        }
+      }
+    }
+    window.requestAnimationFrame(step)
+  </script>
+</body>
+
+</html>
