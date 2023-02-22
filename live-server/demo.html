@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <div id="app">
+    {{name}}
+  </div>
+  <script>
+    class Dep {
+      constructor() {
+        this.depList = []
+      }
+      addDep(watcher) {
+        this.depList.push(watcher)
+      }
+      noticeWatcher() {
+        console.log('noticeWatcher')
+        this.depList.forEach(item => {
+          item.upDateDom()
+        })
+      }
+    }
+
+    const observe = (target) => {
+      if (typeof target !== 'object') return
+      new Observe(target)
+    }
+
+    class Observe {
+      constructor(data) {
+        Object.entries(data).forEach(item => {
+          const dep = new Dep()
+          Object.defineProperty(data, item[0], {
+            get() {
+              if (Dep.target !== null) {
+                dep.addDep(Dep.target)
+              }
+              return item[1]
+            },
+            set(newValue) {
+              if (typeof newValue === 'object') {
+                observe(newValue)
+              }
+              item[1] = newValue
+              dep.noticeWatcher()
+            }
+          })
+        })
+      }
+    }
+
+    class Vue {
+      constructor({ el, data }) {
+        this.el = document.querySelector(el)
+        this.data = data
+        observe(data)
+      }
+    }
+
+    class Watcher {
+      constructor(target, key, callBack) {
+        this.target = target
+        this.key = key
+        this.callBack = callBack
+        this.getValue()
+        Dep.target = null
+      }
+      upDateDom() {
+        this.callBack()
+      }
+
+      getValue() {
+        Dep.target = this
+        this.target[this.key]
+      }
+    }
+
+    var app = new Vue({
+      el: '#app',
+      data: {
+        name: 'wxs'
+      }
+    })
+
+    console.log('app: ', app)
+    new Watcher(app.data, 'name', () => {
+      console.log('假设这是一个dom更新函数')
+    })
+
+    app.data.name = '111'
+
+  </script>
+</body>
+
+</html>

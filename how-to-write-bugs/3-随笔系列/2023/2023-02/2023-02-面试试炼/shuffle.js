@@ -7,9 +7,13 @@ const shuffle = (arr) => {
 }
 
 const arr = [1, 2, 3, 4, 5, 7, 8, 9, 11]
+console.time()
 console.log(shuffle(arr))
+console.timeEnd()
 
-
+/**
+ * 优化版
+ */
 const shuffle2 = arr => {
   let r, n = arr.length
   while (n > 0) {
@@ -18,4 +22,6 @@ const shuffle2 = arr => {
   }
   return arr
 }
+console.time()
 console.log(shuffle2(arr))
+console.timeEnd()
