@@ -1,6 +1,9 @@
 function myNew(ctor, ...args) {
   const target = Object.create(ctor.prototype)
   const res = ctor.call(target, ...args)
+  // 1.忽略构造函数返回的普通值
+  // 2.如果构造函数返回对象类型，则返回这个对象
+  // 3.否则返回初始对象
   return typeof res === 'object' && res !== null ? res : target
 }
 

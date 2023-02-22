@@ -1,0 +1,49 @@
+/**
+ * 无限累加版本
+ */
+function curry2(fn, ...args) {
+  const allArgs = [...args]
+  return function curried(...args2) {
+    if (!args2.length) return fn.apply(this, allArgs)
+    allArgs.push(...args2)
+    return curried
+  }
+}
+
+const add2 = (...args) => {
+  return [...args].reduce((acc, cur) => acc + cur)
+}
+const curriedAdd2 = curry2(add2, 4)
+
+console.log(curriedAdd2(1)(2)())
+
+/**
+ * 普通版本
+ */
+function curry(fn, ...args) {
+  return function (...args2) {
+    const allArgs = [...args, ...args2]
+    return allArgs.length >= fn.length ? fn.apply(this, allArgs) : curry.call(this, fn, ...allArgs)
+  }
+}
+
+const add = (a, b, c) => a + b + c
+const curriedAdd = curry(add)
+
+console.log(curriedAdd(1, 2, 3))
+
+/**
+ * es6 版本
+ */
+const curry6 = (fn, ...args) => (...args2) => fn.length > [...args, ...args2].length ? fn.call(this, ...args, ...args2) : curry6.call(this, fn, ...args, ...args2)
+
+
+/**
+ * 反柯里化
+ */
+function unCurry(fn) {
+  return function () {
+    const context = [].shift.call(arguments)
+    return fn.call(context, ...arguments)
+  }
+}
