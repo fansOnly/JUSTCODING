@@ -35,7 +35,7 @@
 // d 404 - Not Found: 请求的地址不存在
 
 // 5xx - 服务端错误
-// a 500 - Inter Serber Error: 服务器内部错误，无法完成请求
+// a 500 - Inter Server Error: 服务器内部错误，无法完成请求
 // b 501 - Not Implemented: 尚未实施，服务器不具备完成请求的功能
 // c 502 - Bad Gateway：上游服务器响应错误，服务器网关错误
 // d 503 - Service Unavailable: 服务不可用，如服务器超载或者停机维护，通常是暂时状态

@@ -46,7 +46,7 @@
     - no-store: 禁用缓存
   - Connection
     - HTTP/1.1, 是否需要持久连接, 默认 keep-alive, close
-  - Transfor-Encoding
+  - Transfer-Encoding
     - 报文主体的传输编码格式, chunked(分块)/identity(未压缩和修改)/gzip(LZ77 压缩)/deflate(zlib 结构压缩)/compress(LZW 压缩,弃用)
   - Date
 
