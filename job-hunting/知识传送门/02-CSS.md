@@ -24,7 +24,7 @@
 
 ##### 4、边距折叠
 
-##### 5、BFC ⭐️⭐️
+##### 5、BFC - BLOCK FORMATTING CONTEXT
 
 - 根元素 <html>
 - 浮动元素 float 不为 none
@@ -43,6 +43,16 @@
 
 - IE 怪异盒子模型：content + padding + border
 - 标准盒子模型：content
+
+###### 6.1、盒子宽度
+
+- clientWidth
+  - width + padding-L-R
+- offsetWidth
+  - width + padding-L-R + border-L-R
+- scrollWidth
+  - 获取指定标签层的真实宽度
+  - 可视区域宽度 + 隐藏区域宽度
 
 ##### 7、Flex 布局 ⭐️⭐️
 
@@ -75,7 +85,7 @@
 - flex: auto / 0 / 1
   - flex-grow：放大规则，容器分配剩余空间的相对比例
   - flex-shrink：缩小规则
-  - flex-basic：主轴方向的初始大小
+  - flex-basis：主轴方向的初始大小
 
 ##### 8、CSS 优化、提高性能的方法
 
@@ -92,12 +102,13 @@
 
 ##### 9、面试题：谈谈响应式布局 ⭐️⭐️
 
-1. 媒体查询：
-2. 百分比：
-3. rem：相对根元素
-4. em：相对父元素
-5. vw/vh：视口单位
-6. rpx：微信小程序
+- 媒体查询：
+- 百分比：
+- rem：相对根元素
+  - 淘宝 flexible.js - px 转 rem
+- em：相对父元素
+- vw/vh：视口单位
+- rpx：微信小程序
 
 ##### 10、面试题：CSS 实现三角形
 

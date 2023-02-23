@@ -1,3 +1,10 @@
+/**
+ * 1. context 存在则为 context，不存在则为 window
+ * 2. 将 context[fn] 指向 this
+ * 3. 执行 context[fn]() 得到返回结果
+ * 4. 删除 context[fn]
+ * 5. 返回结果
+ */
 Function.prototype.myCall = function (context, ...args) {
   context = context || 'window'
   const fn = Symbol()
@@ -18,6 +25,9 @@ Function.prototype.myApply = function (context, args) {
   return res
 }
 
+/**
+ * 1. 如果新函数作为构造函数使用，则忽略传入的 this 值
+ */
 Function.prototype.myBind = function (context, ...args) {
   context = context || 'window'
   const self = this
