@@ -38,6 +38,9 @@ console.log(curriedAdd(1, 2, 3))
 const curry6 = (fn, ...args) => (...args2) => fn.length > [...args, ...args2].length ? fn.call(this, ...args, ...args2) : curry6.call(this, fn, ...args, ...args2)
 
 
+// =============================================================
+// =============================================================
+// =============================================================
 /**
  * 反柯里化
  */
@@ -47,3 +50,27 @@ function unCurry(fn) {
     return fn.call(context, ...arguments)
   }
 }
+
+function Toast() {
+  this.message = 'toast'
+}
+Toast.prototype = {
+  constructor: Toast,
+  show: function () {
+    console.log(this.message)
+  }
+}
+const toast = new Toast()
+toast.show() // toast
+
+const objShow = unCurry(Toast.prototype.show)
+objShow({ message: 'hello' }) // hello
+
+Function.prototype.unCurry = function () {
+  const context = this
+  return function () {
+    return Function.prototype.call.apply(context, arguments)
+  }
+}
+const objShow2 = Toast.prototype.show.unCurry()
+objShow2({ message: 'hello2' }) // hello2

@@ -22,15 +22,30 @@
 
 ##### 2、包装对象
 
-- 为什么一个字符串可以有 length 属性？
 - 指的是与数值、字符串、布尔值分别相对应的 Number、String、Boolean 三个原生对象。这三个原生对象可以把原始类型的值变成（包装成）对象
-- 创建包装对象 -> 调用方法 -> 立即销毁
+- 伪代码
+  - 创建包装对象 -> 调用方法 -> 立即销毁
+- 为什么一个字符串可以有 length 属性？
+
+  ```js
+  const str = 'str'
+  const len = str.length
+
+  const str2 = new String('str')
+  const len = str2.length
+  str2 = null
+  ```
 
 ##### 3、闭包 ⭐️⭐️
 
 - 当一个函数内部可以访问外部函数的作用域时，产生了闭包
 
 ##### 4、内存泄漏
+
+- 过多的全局变量
+- 未清除的事件绑定
+- 未清除的计时器
+- 不合理的闭包
 
 ##### 5、es5 继承相关 ⭐️⭐️⭐️
 
@@ -40,8 +55,11 @@
 - 原型式继承
 - 寄生式继承
 - 寄生组合继承
+  - [代码实现](../%E9%9D%A2%E8%AF%95%E8%BE%85%E5%8A%A9%E5%8C%85/JavaScript/%E7%BB%A7%E6%89%BF.md)
 
 ##### 6、作用域 & this
+
+- JavaScript 是静态作用域，在函数定义时就确定了作用域
 
 - 作用域分类
 
@@ -62,7 +80,124 @@
 
 - 作用域链
 
-- this 继承
+- 函数创建和执行过程解析
+
+  ```js
+   var str = 'global value'
+   function fn() {
+     var str2 = 'local value'
+     return str2
+   }
+   fn()
+
+   // 1. 函数 fn 被创建，保存作用域链到内部属性 [[scope]]
+   ECStack = {
+     GlobalContext
+   }
+   fn.[[scope]] = {
+     GlobalContext: VO
+   }
+   // 2. 执行 fn 函数，创建函数执行上下文，并将函数执行上下文压入栈顶
+   ECStack = {
+     fnContext,
+     GlobalContext
+   }
+   // 3. 复制函数 [[scope]] 属性创建作用域链
+   fnContext = {
+     Scope: fn.[[scope]]
+   }
+   // 4. 创建 AO，创建 arguments 对象，创建函数声明和变量声明
+   fnContext = {
+     AO: {
+       arguments: {
+         length: 0
+       },
+       str2: undefined
+     },
+     Scope: [Scope]
+   }
+   // 5. 将活动对象 AO 压入作用域链
+   fnContext = {
+     AO: {
+       arguments: {
+         length: 0
+       },
+       str2: undefined
+     },
+     Scope: [AO, Scope]
+   }
+   // 6. 执行函数，str2 赋值
+   fnContext = {
+     AO: {
+       arguments: {
+         length: 0
+       },
+       str2: 'local value'
+     },
+     Scope: [AO, Scope]
+   }
+   // 7. 函数执行完，将函数执行上下文弹出
+   ECStack = {
+     GlobalContext
+   }
+  ```
+
+- 分解执行上下文过程
+
+  ```js
+   let a = 20;
+   const b = 30;
+   var c;
+   function multiply(e, f) {
+       var g = 20;
+       return e * f * g;
+   }
+   c = multiply(20, 30);
+
+   // 伪代码示例
+   // 1. 全局执行上下文
+   GlobalExecutionContext = {
+     ThisBinding: <GLobal Object>,
+     LexicalEnvironment: { // 词法环境
+       EnvironmentRecord: {
+         Type: 'Object',
+         a: <uninitialized>,
+         b: <uninitialized>,
+         multiply: <func>
+       },
+       outer: null
+     },
+     VariableEnvironment: { // 变量环境
+       EnvironmentRecord: {
+         Type: 'Object',
+         c: undefined
+       },
+       outer: null
+     }
+   }
+   // 2. 函数执行上下文
+   FunctionExecutionContext = {
+     ThisBinding: <GLobal Object>,
+     LexicalEnvironment: {
+       EnvironmentRecord: {
+         Type: 'Declarative',
+         Arguments: {
+           0: 20,
+           1: 30,
+           length: 2
+         }
+       },
+       outer: <GlobalLexicalEnvironment>
+     },
+     VariableEnvironment: {
+       EnvironmentRecord: {
+         Type: 'Declarative',
+         g: undefined
+       },
+       outer: <GlobalLexicalEnvironment>
+     }
+   }
+  ```
 
 ##### 7、原型链
 
@@ -71,8 +206,10 @@
 
 ##### 8、变量提升
 
-- 函数提升优先，函数体会跟随函数声明一起提升
-- 函数同名变量提升会被忽略
+- 变量声明和函数声明在预编译阶段都会被提升到作用域的最顶端，函数提升的优先级高于变量提升
+  - 变量提升只提升声明，不提升赋值
+  - 函数提升会将函数体一起提升
+  - 如果存在同样名称的变量声明和函数声明，变量声明会被忽略
 
 ##### 9、bind vs call vs apply
 
@@ -93,33 +230,29 @@
 
 ![Alt text](../%E9%9D%A2%E8%AF%95%E8%BE%85%E5%8A%A9%E5%8C%85/JavaScript/regexp.jpg)
 
-##### 13、面试题：手写 es5 继承(5 种) ⭐️⭐️⭐️
-
-- [代码实现](../%E9%9D%A2%E8%AF%95%E8%BE%85%E5%8A%A9%E5%8C%85/JavaScript/%E7%BB%A7%E6%89%BF.md)
-
-##### 14、面试题：实现 new / instanceOf / create ⭐️⭐️
+##### 13、面试题：实现 new / instanceOf / create ⭐️⭐️
 
 - [代码实现](../%E9%9D%A2%E8%AF%95%E8%BE%85%E5%8A%A9%E5%8C%85/JavaScript/new-create-instanceof.js)
 
-##### 15、面试题：数据类型判断
+##### 14、面试题：数据类型判断
 
 - typeof
 - instanceOf
 - 内部属性\[[Class]]:['object Xxx']
 
-##### 16、面试题：描述 Javascript 中相等和全等的区别
+##### 15、面试题：描述 Javascript 中相等和全等的区别
 
 ![代码实现](../%E9%9D%A2%E8%AF%95%E8%BE%85%E5%8A%A9%E5%8C%85/JavaScript/equal.png)
 
-##### 17、面试题：实现 a == 1 && a == 2 ⭐️⭐️
+##### 16、面试题：实现 a == 1 && a == 2 ⭐️⭐️
 
 - [代码实现](../%E9%9D%A2%E8%AF%95%E8%BE%85%E5%8A%A9%E5%8C%85/JavaScript/a%20==%201%20&%20a%20==%202.js)
 
-##### 18、面试题：实现一个 event 类(发布订阅模式/观察者模式) ⭐️⭐️⭐️
+##### 17、面试题：实现一个 event 类(发布订阅模式/观察者模式) ⭐️⭐️⭐️
 
 - [代码实现](../%E9%9D%A2%E8%AF%95%E8%BE%85%E5%8A%A9%E5%8C%85/JavaScript/event-bus.js)
 
-##### 19、面试题：实现一个金钱格式化函数 1000000 => 1,000,000
+##### 18、面试题：实现一个金钱格式化函数 1000000 => 1,000,000
 
 ```js
 const formatNumber = (val) => {
@@ -127,6 +260,6 @@ const formatNumber = (val) => {
 }
 ```
 
-##### 20、面试题：实现一个并发请求控制函数 asyncPool
+##### 19、面试题：实现一个并发请求控制函数 asyncPool
 
 - [代码实现](../%E9%9D%A2%E8%AF%95%E8%BE%85%E5%8A%A9%E5%8C%85/JavaScript/async-load-image.js)

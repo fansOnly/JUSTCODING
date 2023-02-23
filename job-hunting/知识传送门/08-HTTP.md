@@ -7,8 +7,8 @@
 - 1xx
   - 100 - 服务器响应成功，等待下一步处理
 - 2xx
-  - 200 - 请求成功
-  - 201 - 请求
+  - 200 - 请求成功 / 跨域预检响应
+  - 204 没有资源返回
   - 206 - 范围请求
 - 3xx
   - 301 - 永久重定向
@@ -47,6 +47,7 @@
   - Transfer-Encoding
   - Date
 - 实体首部
+  - Content-Type
   - Allow
   - Last-Modified
   - Expires
