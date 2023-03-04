@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>红黑树</title>
+</head>
+
+<body>
+  <script>
+    /**
+ * 红黑树
+ * 
+ * 定义
+ * 1. 节点是红色或黑色
+ * 2. 根节点是黑色
+ * 3. 每个叶子节点都是黑色的空节点 - NIL 节点
+ * 4. 每个红色节点的子节点都是黑色节点，从叶子节点到根的所有路径声不能有两个连续重复的红色节点
+ * 5. 从任一节点到其每个叶子节点的所有路径都包含相同数目的黑色节点
+ * 
+ * 特点
+ * 1. 从根到叶子节点的最长可能路径，不会超过最短可能路径的两倍
+ * 
+ * 变换
+ * 1. 变色
+ * 1.1 插入的新节点默认都是红色的
+ * 2. 左旋转
+ * 2.1 逆时针旋转红黑树的两个子节点，父节点被自己的右子节点取代，自己成为自己的左子节点
+ * 3.2 调整后，原右子节点的左子节点，需要向左平移到原父节点的右子节点位置
+ * 3. 右旋转
+ * 3.1 顺时针旋转红黑树的两个子节点，父节点被自己的左子节点取代，自己成为自己的右子节点
+ * 3.2 调整后，原左子节点的右子节点，需要向右平移到原父节点的左子节点位置
+ */
+    class Node {
+      constructor(key) {
+        this.key = key
+        this.left = null
+        this.right = null
+        this.color = 'RED'  // BLACK / RED
+      }
+    }
+
+    class RedBlackTree {
+      constructor() {
+        this.root = null
+      }
+      /**
+       * 插入
+       * 1. 没有父节点，插入根节点，变成黑色，补位两个 NIL 子节点
+       * 2. 父节点是黑色，作为其子节点，补位两个 NIL 子节点
+       * 3. 父节点是红色节点，祖父节点是黑色节点
+       * 3.1 叔叔节点也是红色节点，操作：祖红，父黑，叔黑
+       * 3.2 叔叔节点是黑色节点，当前插入位置是左子节点，操作：父黑，祖红，以父节点为中心右旋转
+       * 3.3 叔叔节点是黑色节点，当前插入位置是右子节点，操作：以父节点为中心左旋转，变成 3.2
+       */
+      insert(key) {
+        const node = new Node(key)
+        if (!this.root) {
+          // 1. 没有父节点
+          this.updateRoot(node)
+          this.fixNilNode(this.root)
+        } else {
+          this.insertNode(node, this.root, null)
+        }
+      }
+      insertNode(newNode, parentNode, grandNode) {
+        if (newNode.key < parentNode.key) {
+          // 左子节点
+          if (!this.hasLeftChild(parentNode)) {
+            console.log(`节点 ${newNode.key} 成为节点 ${parentNode.key} 的左子节点`)
+            parentNode.left = newNode
+            this.fixNilNode(newNode)
+            if (parentNode.color === 'RED') {
+              // 3. 父节点是红色
+              this.onParentRed(parentNode, grandNode)
+            }
+          } else {
+            this.insertNode(newNode, parentNode.left, parentNode)
+          }
+        } else {
+          // 右子节点
+          if (!this.hasRightChild(parentNode)) {
+            console.log(`节点 ${newNode.key} 成为节点 ${parentNode.key} 的右子节点`)
+            parentNode.right = newNode
+            this.fixNilNode(newNode)
+            if (parentNode.color === 'RED') {
+              // 3. 父节点是红色
+              this.onParentRed(parentNode, grandNode)
+            }
+          } else {
+            this.insertNode(newNode, parentNode.right, parentNode)
+          }
+        }
+      }
+      /**
+       * 根据 key 值搜索节点
+       */
+      search(key) {
+        const node = new Node(key)
+        return this.searchNode(this.root, node)
+      }
+      searchNode(node, newNode) {
+        if (!node) return null
+        if (newNode.key < node.key) {
+          return this.searchNode(node.left, newNode)
+        } else if (newNode.key > node.key) {
+          return this.searchNode(node.right, newNode)
+        } else {
+          return node
+        }
+      }
+      /**
+       * 删除指定的 key 节点
+       * 1. 删除根节点
+       * 2. 删除中间节点
+       * 3. 删除只包含 NIL 节点的节点
+       */
+      remove(key) {
+        let delNode = this.search(key)
+        console.log('要删除的节点 => ', delNode)
+        let { parent, isLeft } = this.findParent(delNode)
+        console.log('要删除节点的父节点 => ', parent)
+        // 处理“叶子”节点
+        if (this.isLastLevelNode(delNode)) {
+          // 删除根节点
+          if (key === this.root.key) {
+            this.root = null
+          } else {
+            const NILNode = this.createNILNode()
+            parent[isLeft ? 'left' : 'right'] = NILNode
+          }
+        } else if (!this.hasLeftChild(delNode) || !this.hasRightChild(delNode)) {
+          // 只有一个常规子节点
+          const childNode = this.hasLeftChild(delNode) ? delNode.left : delNode.right
+          if (key === this.root.key) {
+            this.root = childNode
+          } else if (isLeft) {
+            parent.left = childNode
+          } else {
+            parent.right = childNode
+          }
+
+          // 删除完节点后，判断当前红黑树是否符合规范
+          // 主要是判断两个变换的节点位置
+          if (this.checkIsSuccessiveRedNode(childNode, parent)) {
+            const { parent: grand } = this.findParent(parent)
+            this.onParentRed(parent, grand)
+          }
+        } else {
+          /**
+           * 具有两个常规子节点
+           * 删除后，后续节点需要替换处理，一下二选其一，默认使用后继节点
+           * 1. 前驱，比当前节点小一点点的节点，左子树的最大节点
+           * 2. 后继，比当前节点大一点点的节点，右子树的最小节点
+           */
+          const succeedNode = this.getSucceedNode(delNode)
+          console.log('获取后继节点 => ', succeedNode)
+          // 1. 将后继节点指向当前删除节点的父节点的 左/右 子节点
+          if (this.root.key === key) {
+            this.root = succeedNode
+            if (succeedNode.color === 'RED') {
+              succeedNode.color = 'BLACK'
+            }
+          } else if (isLeft) {
+            parent.left = succeedNode
+          } else {
+            parent.right = succeedNode
+          }
+          // 2. 将当前删除节点的左子节点指向后继节点的左子节点
+          succeedNode.left = delNode.left
+
+          // 删除完节点后，判断当前红黑树是否符合规范
+          // 主要是判断两个变换的节点位置
+          // 如果是使用后继节点，需要考虑当前后继节点的右子节点和其左子节点的颜色
+          const rightChildNode = succeedNode.right
+          const rightChildLeftChildNode = rightChildNode.left
+          if (this.checkIsSuccessiveRedNode(rightChildLeftChildNode, rightChildNode)) {
+            this.onParentRed(rightChildNode, succeedNode)
+          }
+        }
+      }
+      // 获取后继节点
+      getSucceedNode(node) {
+        let succeedNode = node
+        let succeedParentNode = node
+        let current = node.right
+        while (current.key !== 'NIL') {
+          succeedParentNode = succeedNode
+          succeedNode = current
+          current = current.left
+        }
+        // 如果后继节点
+        // 1. 是删除节点的直接右子节点，直接替换删除节点
+        // 2. 不是删除节点的直接右子节点，将删除节点的右子节点指向后继节点的右子节点
+        // 2.1 如果是叶子节点，直接替换删除节点
+        // 2.2 如果是非叶子节点，将其右子节点（只能有右子节点）改为其父节点的左子节点
+        if (node.right.key !== succeedNode.key) {
+          succeedParentNode.left = succeedNode.right
+          succeedNode.right = node.right
+        }
+
+        return succeedNode
+      }
+      /**
+       * 获取节点的度
+       */
+      getNodeDegree(node) { }
+      /**
+       * 获取树的度
+       */
+      getTreeDegree() { }
+      /**
+       * 获取树的深度
+       */
+      getTreeDepth() { }
+      inOrderTraverse(cb) {
+        this.inOrderTraverseNode(this.root, cb)
+      }
+      inOrderTraverseNode(node, cb) {
+        if (node) {
+          this.inOrderTraverseNode(node.left, cb)
+          cb(node)
+          this.inOrderTraverseNode(node.right, cb)
+        }
+      }
+      preOrderTraverse(cb) {
+        this.preOrderTraverseNode(this.root, cb)
+      }
+      preOrderTraverseNode(node, cb) {
+        if (node) {
+          cb(node)
+          this.preOrderTraverseNode(node.left, cb)
+          this.preOrderTraverseNode(node.right, cb)
+        }
+      }
+      postOrderTraverse(cb) {
+        this.postOrderTraverseNode(this.root, cb)
+      }
+      postOrderTraverseNode(node, cb) {
+        if (node) {
+          this.postOrderTraverseNode(node.left, cb)
+          this.postOrderTraverseNode(node.right, cb)
+          cb(node)
+        }
+      }
+      // 内部辅助函数
+      /**
+       * 父节点是红色时
+       */
+      onParentRed(PNode, GNode) {
+        console.log('')
+        console.log(`父节点 ${PNode.key} 是红色`)
+        if (GNode) {
+          const UNode = GNode.right
+          if (UNode.color === 'RED') {
+            // 叔叔节点是红色
+            console.log(`叔叔节点 ${UNode.key} 是红色`)
+            this.onUncleRed(PNode, UNode, GNode)
+          } else {
+            // 叔叔节点是黑色
+            console.log(`叔叔节点 ${UNode.key} 是黑色`)
+            this.onUncleBlackAndInsertLeft(PNode, GNode)
+          }
+          // 判断变换后，是否出现连续的红色节点
+          // 如果有，递归处理
+          if (this.checkIsSuccessiveRedNode(GNode)) {
+            const { parent: GGNode } = this.findParent(GNode)
+            const { parent: GGGNode } = this.findParent(GGNode)
+            this.onParentRed(GGNode, GGGNode)
+          }
+        }
+      }
+      /**
+       * 情况 3 祖黑，父红，叔红
+       * 操作-祖红，父黑，叔黑
+       */
+      onUncleRed(PNode, UNode, GNode) {
+        GNode.color = 'RED'
+        UNode.color = 'BLACK'
+        PNode.color = 'BLACK'
+        console.log('')
+        console.log('情况三，执行颜色变换')
+        console.log(`祖父节点 ${GNode.key} 变为 ${GNode.color}`)
+        console.log(`父节点 ${PNode.key} 变为 ${PNode.color}`)
+        console.log(`叔叔节点 ${UNode.key} 变为 ${UNode.color}`)
+        // 此时需要判断 GNode 是否为根节点
+        // 如果是根节点，需要将其改为黑色
+        if (GNode.key === this.root.key) {
+          GNode.color = 'BLACK'
+          console.log('')
+          console.log(`根节点 ${this.root.key} 变为 ${this.root.color}`)
+        }
+      }
+      /**
+       * 情况 4 祖黑，父红，叔黑，插入左子节点
+       * 操作-父黑，祖红，右旋转
+       */
+      onUncleBlackAndInsertLeft(PNode, GNode) {
+        console.log('')
+        console.log('情况四, 祖黑，父红，叔黑，插入左子节点')
+        PNode.color = 'BLACK'
+        GNode.color = 'RED'
+        console.log(`祖父节点 ${GNode.key} 变为 ${GNode.color}`)
+        console.log(`父节点 ${PNode.key} 变为 ${PNode.color}`)
+        this.rightRotate(PNode, GNode)
+      }
+      /**
+       * 情况 5 祖黑，父红，叔黑，插入右子节点
+       */
+      onUncleBlackAndInsertRight(PNode, GNode) {
+        console.log('')
+        console.log('情况五，祖黑，父红，叔黑，插入右子节点')
+        this.leftRotate(PNode, GNode)
+        this.onParentRed(PNode, GNode)
+      }
+      /**
+       * 右旋转
+       * 1. 顺时针旋转红黑树的两个子节点，父节点被自己的左子节点取代，自己成为自己的右子节点
+       * 2. 调整后，原左子节点的右子节点，需要向右平移到原父节点的左子节点位置
+       */
+      rightRotate(CNode, PNode) {
+        console.log('')
+        console.log('执行右旋转')
+        const { parent = null, isLeft = true } = this.findParent(PNode)
+        const oldNodeRight = CNode.right
+        CNode.right = PNode
+        console.log(`原祖父节点 ${PNode.key} 变成父节点 ${CNode.key} 的右子节点`)
+        PNode.left = oldNodeRight
+        console.log(`父节点 ${CNode.key} 原右子节点变成原祖父节点 ${PNode.key} 的左子节点`)
+        this.fixNilNode(PNode)
+        if (parent) {
+          parent[isLeft ? 'left' : 'right'] = CNode
+        } else {
+          // CNode 此时为根节点
+          this.updateRoot(CNode)
+        }
+      }
+      /**
+       * 左旋转
+       * 1. 逆时针旋转红黑树的两个子节点，父节点被自己的右子节点取代，自己成为自己的左子节点
+       * 2. 调整后，原右子节点的左子节点，需要向左平移到原父节点的右子节点位置
+       */
+      leftRotate(CNode, PNode) {
+        console.log('')
+        console.log('执行左旋转')
+        const { parent = null, isLeft = true } = this.findParent(PNode)
+        const oldNodeLeft = CNode.left
+        CNode.left = PNode
+        console.log(`原祖父节点 ${PNode.key} 变成父节点 ${CNode.key} 的左子节点`)
+        PNode.right = oldNodeLeft
+        console.log(`父节点 ${CNode.key} 原左子节点变成原祖父节点 ${PNode.key} 的右子节点`)
+        this.fixNilNode(PNode)
+        if (parent) {
+          parent[isLeft ? 'left' : 'right'] = CNode
+        } else {
+          // CNode 此时为根节点
+          this.updateRoot(CNode)
+        }
+      }
+      // 查找父节点，返回父节点和当前节点是左/右子节点标识
+      findParent(node) {
+        let current = this.root
+        let parent = null
+        let isLeft = true
+        while (current) {
+          if (node.key < current.key) {
+            parent = current
+            isLeft = true
+            current = current.left
+          } else if (node.key > current.key) {
+            parent = current
+            isLeft = false
+            current = current.right
+          } else {
+            return { parent, isLeft }
+          }
+        }
+        return { parent, isLeft }
+      }
+      // 判断父子节点是否都是红色
+      checkIsSuccessiveRedNode(node, parent = null) {
+        if (!parent) {
+          const { parent: parentNode } = this.findParent(node)
+          parent = parentNode
+        }
+        if (!parent) return false
+        return node.color === 'RED' && parent.color === 'RED'
+      }
+      // 更新根节点
+      updateRoot(node) {
+        console.log('')
+        console.log(`更新根节点 ${node.key}`)
+        this.root = node
+        if (node.color === 'RED') {
+          console.log('根节点变为黑色')
+          node.color = 'BLACK'
+        }
+      }
+      /**
+       * 是否为两个子节点均为 NIL 节点的父节点
+       */
+      isLastLevelNode(node) {
+        return node.left && node.right && node.left.key === 'NIL' && node.right.key === 'NIL'
+      }
+      // 用 NIL 节点填充叶子节点
+      fixNilNode(node) {
+        const NILNode = this.createNILNode()
+        node.left = node.left || NILNode
+        node.right = node.right || NILNode
+      }
+      createNILNode() {
+        const NILNode = new Node('NIL')
+        NILNode.color = 'BLACK'
+        return NILNode
+      }
+      hasLeftChild(node) {
+        return node.left && node.left.key !== 'NIL'
+      }
+      hasRightChild(node) {
+        return node.left && node.right.key !== 'NIL'
+      }
+    }
+
+
+    const rbt = new RedBlackTree()
+    console.log('===== 插入 10 =====')
+    rbt.insert(10)
+    console.log('')
+    console.log('===== 插入 9 =====')
+    rbt.insert(9)
+    console.log('')
+    console.log('===== 插入 8 =====')
+    rbt.insert(8)
+    console.log('')
+    console.log('===== 插入 7 =====')
+    rbt.insert(7)
+    console.log('')
+    console.log('===== 插入 6 =====')
+    rbt.insert(6)
+    console.log('')
+    console.log('===== 插入 5 =====')
+    rbt.insert(5)
+    console.log('')
+    console.log('===== 插入 4 =====')
+    rbt.insert(4)
+    console.log('')
+    console.log('===== 插入 3 =====')
+    rbt.insert(3)
+    console.log('')
+    console.log('===== 插入 2 =====')
+    rbt.insert(2)
+    console.log('')
+    console.log('===== 插入 1 =====')
+    rbt.insert(1)
+    console.log('')
+
+    console.log('===== 插入结束 =====')
+    console.log('')
+
+    rbt.remove(2)
+
+    let str = ''
+    rbt.preOrderTraverse((node) => {
+      if (node.key !== 'NIL') {
+        str += `${node.key}-${node.color} `
+      }
+    })
+    console.log(str)
+    console.log(rbt)
+
+
+    console.log(rbt.search(6))
+    console.log(rbt.search(3))
+
+  </script>
+</body>
+
+</html>

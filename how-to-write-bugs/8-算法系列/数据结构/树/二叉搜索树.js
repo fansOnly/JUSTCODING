@@ -1,11 +1,3 @@
-class Node {
-  constructor(key) {
-    this.key = key
-    this.left = null
-    this.right = null
-  }
-}
-
 /**
  * 二叉搜索树
  * 定义
@@ -30,6 +22,14 @@ class Node {
  * 1. AVL 树
  * 2. 红黑树
  */
+class Node {
+  constructor(key) {
+    this.key = key
+    this.left = null
+    this.right = null
+  }
+}
+
 class BinarySearchTree {
   constructor() {
     this.root = null
@@ -147,14 +147,13 @@ class BinarySearchTree {
     } else {
       /**
        * 删除字节点，具有两个字节点
-       * 删除后，后续节点需要替换处理，一下二选其一
+       * 删除后，后续节点需要替换处理，一下二选其一，默认使用后继节点
        * 1. 前驱，比当前节点小一点点的节点，左子树的最大节点
        * 2. 后继，比当前节点大一点点的节点，右子树的最小节点
        */
       const succeedNode = this.getSucceedNode(current)
       console.log('succeedNode: ', succeedNode)
       // 1. 将后继节点指向当前删除节点的父节点的 左/右 子节点
-      // 2. 将当前删除节点的左子节点指向后继节点的左子节点
       if (this.root === current) {
         this.root = succeedNode
       } else if (isLeft) {
@@ -162,6 +161,7 @@ class BinarySearchTree {
       } else {
         parent.right = succeedNode
       }
+      // 2. 将当前删除节点的左子节点指向后继节点的左子节点
       succeedNode.left = current.left
     }
   }
@@ -176,7 +176,7 @@ class BinarySearchTree {
       current = current.left
     }
 
-    // 后继节点
+    // 如果后继节点
     // 1. 是删除节点的直接右子节点，直接替换删除节点
     // 2. 不是删除节点的直接右子节点，将删除节点的右子节点指向后继节点的右子节点
     // 2.1 如果是叶子节点，直接替换删除节点
@@ -190,7 +190,7 @@ class BinarySearchTree {
   /**
    * 中序遍历
    * 1. 左子树
-   * 2. 跟节点
+   * 2. 根节点
    * 3. 右子树
    */
   inOrderTraverse(cb) {
@@ -223,7 +223,7 @@ class BinarySearchTree {
    * 后序遍历
    * 1. 左子树
    * 2. 右子树
-   * 3. 跟节点
+   * 3. 根节点
    */
   postOrderTraverse(cb) {
     this.postOrderTraverseNode(this.root, cb)
