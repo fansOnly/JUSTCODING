@@ -3,7 +3,7 @@
  * Sorts an array of numbers, using the selection sort algorithm.
  * 1. Use the spread operator to clone the original array, arr.
  * 2. Use a for loop to iterate the elements in the array.
- * 3. Use Array.prototype.slice() and Array.prototype.recude() to find the index of the minumum element in the subarray to the right of the current index and perform a swap, if necessary.
+ * 3. Use Array.prototype.slice() and Array.prototype.reduce() to find the index of the minimum element in the subarray to the right of the current index and perform a swap, if necessary.
  */
 const selectionSort = arr => {
     const a = [...arr]
