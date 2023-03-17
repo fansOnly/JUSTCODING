@@ -35,7 +35,10 @@ console.log(curriedAdd(1, 2, 3))
 /**
  * es6 版本
  */
-const curry6 = (fn, ...args) => (...args2) => fn.length > [...args, ...args2].length ? fn.call(this, ...args, ...args2) : curry6.call(this, fn, ...args, ...args2)
+const curry7 = (fn, ...args) => fn.length <= args.length ? fn(...args) : curry7.bind(null, fn, ...args)
+const add7 = (a, b, c) => a + b + c
+const curriedAdd7 = curry7(add7)
+console.log('curriedAdd7: ', curriedAdd7(1)(2)(3))
 
 
 // =============================================================

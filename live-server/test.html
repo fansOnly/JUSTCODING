@@ -1,59 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-        }
         .box {
-            height: 0;
-            margin: 0 auto;
-            padding-top: 50%;
+            width: 930px;
+        }
+
+        .item {
+            float: left;
+            width: 300px;
+            height: 100px;
             background: #ccc;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            border-radius: 6px;
         }
-        .line2 {
-            width: 100px;
-            margin: 50px 0;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            text-overflow: hidden;
-            word-break: break-all;
+
+        .h30 {
+            height: 30px;
         }
+
+        .h80 {
+            height: 80px;
+        }
+
+        .h50 {
+            height: 50px;
+        }
+
+        .h120 {
+            height: 120px;
+        }
+
     </style>
 </head>
+
 <body>
-    <div id="box" class="box"></div>
-    <div class="line2">313133331313333313133331313333</div>
-    <ul class="inline-ul">
-        <li>文档流中的空白符合并??????</li>
-        <li>文档流中的空白符合并</li>
-        <li>文档流中的空白符合并</li>
-        <li>文档流中的空白符合并</li>
-        <li>文档流中的空白符合并</li>
-    </ul>
-    <style>
-        .inline-ul {
-            letter-spacing: 0;
-        }
-        .inline-ul li {
-            display: inline-block;
-             background: #ccc;
-        }
-    </style>
-    <script>
-        function getSize() {
-            const box = document.getElementById('box')
-            const { width, height } = box.getBoundingClientRect()
-            box.innerHTML = `${width}px * ${height}px`
-        }
-        getSize()
-        window.addEventListener("resize", getSize, false);
-    </script>
+    <div class="box">
+        <div class="item"></div>
+        <div class="item h50"></div>
+        <div class="item h120"></div>
+        <div class="item h50"></div>
+        <div class="item h120"></div>
+        <div class="item h50"></div>
+        <div class="item h80"></div>
+        <div class="item h30"></div>
+        <div class="item"></div>
+        <div class="item h120"></div>
+    </div>
 </body>
+
 </html>

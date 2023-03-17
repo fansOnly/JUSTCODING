@@ -34,8 +34,8 @@ Function.prototype.myBind = function (context, ...args) {
   const fBound = function () {
     return self.apply(this instanceof fBound ? this : context, [...args, ...arguments])
   }
-  if (this.prototype) {
-    fBound.prototype = Object.create(this.prototype)
+  if (self.prototype) {
+    fBound.prototype = Object.create(self.prototype)
   }
   return fBound
 }

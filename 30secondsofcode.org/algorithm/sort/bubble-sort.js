@@ -16,8 +16,8 @@ const bubbleSort = arr => {
     for (let i = 0; i < a.length - 1; i++) {
         swapped = false
         for (let j = 0; j < a.length - 1 - i; j++) {
-            if (a[j+1] < a[j]) {
-                [a[j+1], a[j]] = [a[j], a[j+1]];
+            if (a[j + 1] < a[j]) {
+                [a[j + 1], a[j]] = [a[j], a[j + 1]]
                 swapped = true
             }
         }
@@ -25,5 +25,5 @@ const bubbleSort = arr => {
     }
     return a
 }
-const res = bubbleSort([2, 1, 4, 3])
-console.log('res: ', res); // [ 1, 2, 3, 4 ]
+const res = bubbleSort([1, 2, 5, 4, 3])
+console.log('res: ', res) // [ 1, 2, 3, 4 ]

@@ -19,9 +19,9 @@ class ArrayList {
     let swapped = false
     for (let i = 0; i < length - 1; i++) {
       swapped = false
-      for (let j = i + 1; j < length; j++) {
-        if (arr[i] > arr[j]) {
-          this.swap(i, j)
+      for (let j = 0; j < length - 1 - i; j++) {
+        if (arr[j] > arr[j + 1]) {
+          this.swap(j, j + 1)
           swapped = true
         }
       }
@@ -140,6 +140,7 @@ class ArrayList {
 }
 
 const arr = new ArrayList()
+arr.insert(1)
 arr.insert(66)
 arr.insert(88)
 arr.insert(12)
@@ -152,11 +153,11 @@ arr.insert(23)
 console.log('原始顺序')
 console.log(arr.toString())
 
-console.log('sort 排序')
-console.time()
-arr.sort()
-console.timeEnd()
-console.log(arr.toString())
+// console.log('sort 排序')
+// console.time()
+// arr.sort()
+// console.timeEnd()
+// console.log(arr.toString())
 
 
 console.log('冒泡排序')
@@ -165,28 +166,28 @@ arr.bubbleSort()
 console.timeEnd()
 console.log(arr.toString())
 
-console.log('选择排序')
-console.time()
-arr.selectionSort()
-console.timeEnd()
-console.log(arr.toString())
+// console.log('选择排序')
+// console.time()
+// arr.selectionSort()
+// console.timeEnd()
+// console.log(arr.toString())
 
 
-console.log('插入排序')
-console.time()
-arr.insertionSort()
-console.timeEnd()
-console.log(arr.toString())
+// console.log('插入排序')
+// console.time()
+// arr.insertionSort()
+// console.timeEnd()
+// console.log(arr.toString())
 
-console.log('希尔排序')
-console.time()
-arr.shellSort()
-console.timeEnd()
-console.log(arr.toString())
+// console.log('希尔排序')
+// console.time()
+// arr.shellSort()
+// console.timeEnd()
+// console.log(arr.toString())
 
 
-console.log('快速排序')
-console.time()
-arr.quickSort()
-console.timeEnd()
-console.log(arr.toString())
+// console.log('快速排序')
+// console.time()
+// arr.quickSort()
+// console.timeEnd()
+// console.log(arr.toString())

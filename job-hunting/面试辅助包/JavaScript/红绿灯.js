@@ -1,3 +1,9 @@
+/**
+ * 海康威视笔试题
+ * 红灯3秒亮一次，绿灯1秒亮一次，黄灯2秒亮一次；如何使用Promise让三个灯不断交替重复亮灯？
+ * 题目要求红灯亮过后，绿灯才能亮，绿灯亮过后，黄灯才能亮，黄灯亮过后，红灯才能亮
+ */
+
 const red = () => console.log('red')
 const green = () => console.log('green')
 const yellow = () => console.log('yellow')

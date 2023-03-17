@@ -1,3 +1,7 @@
+/**
+ * 请实现一个mergePromise函数，把传进去的数组按顺序先后执行，并且把返回的数据先后放到数组data中。
+ */
+
 const timeout = ms => new Promise((resolve, reject) => {
   setTimeout(() => {
     resolve()
@@ -19,13 +23,24 @@ const ajax3 = () => timeout(2000).then(() => {
   return 3
 })
 
+// 要求分别输出
+// 1
+// 2
+// 3
+// done
+// [1, 2, 3]
+
 const mergePromise = ajaxArray => {
-  let res = []
-  const p = Promise.resolve()
-  for (let i = 0; i < ajaxArray.length; i++) {
-    res.push(p.then(ajaxArray[i]))
-  }
-  return Promise.all(res)
+  // 在这里实现你的代码
+  const data = []
+  let res = Promise.resolve()
+  ajaxArray.forEach(item => {
+    res = res.then(item).then(val => {
+      data.push(val)
+      return data
+    })
+  })
+  return res
 }
 
 mergePromise([ajax1, ajax2, ajax3]).then(data => {
