@@ -1,8 +1,8 @@
 <template>
   <div class="about">
     <router-link to="/contact">Contact</router-link>
+    <button @click="$router.go(-1)">返回</button>
     <h1>This is an about page</h1>
-
 
     <el-form :inline="true" :model="form" class="demo-form-inline">
       <el-form-item label="审批人">
@@ -27,11 +27,10 @@
   </div>
 </template>
 
-
 <script>
-import { mapState, mapActions } from 'vuex'
+import { mapState, mapActions } from "vuex";
 export default {
-  name: 'About',
+  name: "About",
   data() {
     return {
       // form: {
@@ -39,56 +38,56 @@ export default {
       //   region: "",
       // },
       tableData: [],
-    }
+    };
   },
   computed: {
-    ...mapState('state', ['form'])
+    ...mapState("state", ["form"]),
   },
   watch: {
     $route: {
       handler(to, from) {
-        console.log('==== $route ====', to, from)
+        console.log("==== $route ====", to, from);
       },
       immediate: true,
       deep: true,
     },
   },
   beforeRouteEnter(to, from, next) {
-    console.log('beforeRouteEnter')
-    console.log(from?.name + ' => ' + to?.name)
-    next(vm => {
-      if (from?.name === 'Contact') {
-        const tempData = sessionStorage.getItem('tempData') || {}
-        const { form = {}, tableData = [] } = JSON.parse(tempData)
+    console.log("beforeRouteEnter");
+    console.log(from?.name + " => " + to?.name);
+    next((vm) => {
+      if (from?.name === "Contact") {
+        const tempData = sessionStorage.getItem("tempData") || {};
+        const { form = {}, tableData = [] } = JSON.parse(tempData);
         // vm.form = form
-        vm.tableData = tableData
+        vm.tableData = tableData;
       } else {
-        vm.setForm({ name: '', region: '' })
+        vm.setForm({ name: "", region: "" });
       }
-      sessionStorage.removeItem('tempData')
-    })
+      sessionStorage.removeItem("tempData");
+    });
   },
   beforeRouteLeave(to, from, next) {
-    console.log('beforeRouteLeave')
-    console.log(from?.name + ' => ' + to?.name)
-    if (to?.name === 'Contact') {
+    console.log("beforeRouteLeave");
+    console.log(from?.name + " => " + to?.name);
+    if (to?.name === "Contact") {
       // 缓存数据
       const tempData = {
         form: this.form,
-        tableData: this.tableData
-      }
-      sessionStorage.setItem('tempData', JSON.stringify(tempData))
+        tableData: this.tableData,
+      };
+      sessionStorage.setItem("tempData", JSON.stringify(tempData));
     }
-    next()
+    next();
   },
   created() {
-    console.log('created')
+    console.log("created");
   },
   methods: {
-    ...mapActions('state', ['setForm']),
+    ...mapActions("state", ["setForm"]),
     onSubmit() {
-      console.log("submit!")
-      this.getTableData()
+      console.log("submit!");
+      this.getTableData();
     },
     getTableData() {
       this.tableData = [
@@ -112,8 +111,8 @@ export default {
           name: "王小虎",
           address: "上海市普陀区金沙江路 1516 弄",
         },
-      ]
+      ];
     },
   },
-}
+};
 </script>
