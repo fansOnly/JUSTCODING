@@ -1,5 +1,5 @@
 /**
- * 堆排序
+ * 堆排序 - 堆是一种完全二叉树
  * 1、构造一个大顶堆 A[1...n]
  * 2、将堆顶元素 A[1] 与最后一个元素 A[n] 交换，得到一个新的有序区 A[n]，和新的无序区 A[1...n-1]
  * 3、将无序区 A[1...n-1]重新调整为大顶堆
@@ -15,6 +15,7 @@ const heapSort = arr => {
 
 /**
  * 初始化大顶堆
+ * 当用数组表示存储 n 个元素的堆时，叶节点的下标分别为 n/2+1, n/2+2, ..., n
  */
 const buildMaxHeap = arr => {
   for (let i = arr.length >> 1; i >= 0; i--) {
@@ -47,6 +48,8 @@ const swap = (arr, i, j) => {
   arr[j] = temp
 }
 
+console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
+console.log('测试算法')
 const arr = Array.from({ length: 15 }, (_, i) => (i + 1))
 const shuffle = arr => {
   for (let i = arr.length - 1; i > 0; i--) {
@@ -62,7 +65,7 @@ console.log('堆排序', arr)
 
 
 console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
-const max = 100000
+const max = 1000000
 const arr2 = Array.from({ length: max }, (_, i) => (i + 1))
 shuffle(arr2)
 console.log(`性能测试 - ${max} 条数据`)
