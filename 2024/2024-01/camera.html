@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>camera</title>
+</head>
+<body>
+  <video id="video" src=""></video>
+  <button id="button">拍照</button>
+  <script>
+    checkCamera();
+
+    async function checkCamera() {
+      const navigator = window.navigator.mediaDevices;
+      console.log('navigator: ', navigator);
+      const devices = await navigator.enumerateDevices();
+      console.log('devices: ', devices);
+      const hasCamera = devices.findIndex(item => item.kind === 'videoinput')
+      if (hasCamera < 0) return;
+
+      const stream = navigator.getUserMedia({
+        audio: false,
+        video: {
+          width: 500,
+          height: 500,
+          facingMode: 'user', // 前置摄像头
+          // facingMode: { exact: 'environment' }, // 后置摄像头
+        }
+      });
+
+      const video = document.getElementById('video');
+      console.log('video: ', video);
+      video.muted = true;
+      try {
+        video.srcObject = stream;
+      } catch (error) {
+        video.src = window.URL.createObjectURL(new Blob([stream]));
+      }
+
+      video.play();
+    }
+
+    const button = document.getElementById('button');
+    button.onclick = function() {
+      takePicture();
+    };
+
+    async function takePicture() {
+      console.log('=====')
+      const canvas = document.createElement('canvas');
+      canvas.width = video.width;
+      canvas.height = video.height;
+
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      document.body.appendChild(canvas);
+    }
+  </script>
+</body>
+</html>

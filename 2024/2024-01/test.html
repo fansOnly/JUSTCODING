@@ -1,0 +1,18 @@
+<body>
+  <button id="myBtn">Click Me!</button>
+  <script>
+    const myBtn = document.querySelector('#myBtn');
+
+    myBtn.addEventListener('click', handleClick);
+
+    myBtn.addEventListener('click', handleClickTwo);
+
+    function handleClick() {
+      console.log('Run from handleClick function');
+    }
+
+    function handleClickTwo() {
+      console.log('Run from handleClickTwo function');
+    }
+  </script>
+</body>

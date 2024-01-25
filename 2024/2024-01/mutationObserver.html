@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>MutationObserver To-Do List Demo</title>
+  <style>
+    #todo-list {
+      list-style-type: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>待办事项列表</h1>
+
+  <ul id="todo-list">
+    <li>完成作业</li>
+    <li>购物</li>
+  </ul>
+
+  <button id="addTask">添加任务</button>
+  <button id="removeTask">移除任务</button>
+  <p id="taskCount">任务数量：2</p>
+
+  <script>
+    const todoList = document.getElementById('todo-list');
+    const taskCount = document.getElementById('taskCount');
+
+    const observer = new MutationObserver((mutationsList, observer) => {
+      mutationsList.forEach((mutation) => {
+        if (mutation.type === 'childList') {
+          updateTaskCount();
+        }
+      });
+    });
+
+    const config = { childList: true };
+
+    observer.observe(todoList, config);
+
+    document.getElementById('addTask').addEventListener('click', () => {
+      const newTask = document.createElement('li');
+      newTask.textContent = '新任务';
+      todoList.appendChild(newTask);
+    });
+
+    document.getElementById('removeTask').addEventListener('click', () => {
+      const tasks = todoList.getElementsByTagName('li');
+      if (tasks.length > 0) {
+        todoList.removeChild(tasks[0]);
+      }
+    });
+
+    function updateTaskCount() {
+      const tasks = todoList.getElementsByTagName('li');
+      taskCount.textContent = `任务数量：${tasks.length}`;
+    }
+  </script>
+</body>
+</html>
