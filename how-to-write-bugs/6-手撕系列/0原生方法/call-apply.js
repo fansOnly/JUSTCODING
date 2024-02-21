@@ -3,7 +3,7 @@
  * call 接受多个参数
  * apply 接受数组
  */
-Function.prototype.myCall = function(context = window, ...args) {
+Function.prototype.myCall = function(context = 'window', ...args) {
     if (typeof this !== 'function') {
         throw new TypeError('caller must be a function.')
     }
@@ -14,13 +14,13 @@ Function.prototype.myCall = function(context = window, ...args) {
     return result
 }
 
-Function.prototype.myApply = function(context = window, args) {
+Function.prototype.myApply = function(context = 'window', args) {
     if (typeof this !== 'function') {
         throw new TypeError('caller must be a function.')
     }
     const fn = Symbol('fn')
     context[fn] = this
-    const result = context[fn](...args)
+    const result = context[fn](args)
     delete context[fn]
     return result
 }

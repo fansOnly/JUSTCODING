@@ -2,7 +2,7 @@
  * @Author: fansonly
  * @Date: 2021-02-01 20:45:29
  * @Description:
- * @LastEditTime: 2021-08-02 11:03:19
+ * @LastEditTime: 2024-01-25 17:06:53
  */
 class Promise {
     constructor(executor) {
@@ -121,7 +121,7 @@ function resolvePromise(promise2, x, resolve, reject) {
                 then.call(x, y => {
                     if (called) return
                     called = true
-                    resolvePromise(promise2, y, resole, reject)
+                    resolvePromise(promise2, y, resolve, reject)
                 }, err => {
                     if (called) return
                     called = true

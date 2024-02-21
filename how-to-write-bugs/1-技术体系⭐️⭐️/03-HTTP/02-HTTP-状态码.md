@@ -42,7 +42,7 @@ ps：301 302 303响应时，几乎所有的浏览器都会将POST改成GET，删
 * 404：not found，请求的资源不存在服务器
 * 405：Method Not Allowed，服务器禁止使用当前请求方法
     > 客户端通过options方法查看服务器允许的访问方法
-    > Acces-Control-Allow-Methods
+    > Access-Control-Allow-Methods
 
 ---
 
