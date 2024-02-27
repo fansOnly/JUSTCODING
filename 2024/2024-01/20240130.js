@@ -1,56 +1,26 @@
-function myNew (Fn, args) {
-  const obj = Object.create(Fn.prototype);
-  const result = Fn.apply(obj, ...args)
-  return typeof result === 'object' && result !== null ? result : obj;
+function inheritPrototype(sup, sub) {
+  const _proto = Object.create(sup.prototype)
+  sub.prototype = _proto
+  sub.prototype.constructor = sub;
 }
 
-
-function myApply (context = 'window', args) {
-  const fn = Symbol();
-  context[fn] = this
-
-  const res = context[fn](args)
-  delete context[fn]
-  return res
+function Human(name) {
+  this.name = name
+}
+Human.prototype.say = function() {
+  console.log(`my name is ${this.name}${this.age ? ', i am '+this.age+' years old.' : ''}`)
 }
 
-function myCall(context = 'window', ...args) {
-  const fn = Symbol()
-  context[fn] = this
-
-  const res = context[fn](...args)
-  delete context[fn]
-  return res
+function Children(name, age) {
+  this.name = name
+  this.age = age
 }
 
-function myBind(context = 'window', ...args) {
-  const self = this
-
-  const fBound = function() {
-    return self.apply(self instanceof fBound ? this : context, [...args, ...arguments])
-  }
-
-  function Noop() {}
-
-  if (this.prototype) {
-    Noop.prototype = this.prototype
-  }
-  fBound.prototype = new Noop()
-  return fBound
-}
+inheritPrototype(Human, Children)
 
 
-function myCreate(proto) {
-  function Fn() {}
-  Fn.prototype = proto
-  return new Fn()
-}
+const xiaoming = new Children('xiaoming', 13)
+xiaoming.say();
 
-function myInstanceOf(obj, source) {
-  let _proto = Object.getPrototypeOf(obj)
-  while (_proto) {
-    if (_proto === source) return true
-    _proto = Object.getPrototypeOf(_proto)
-  }
-  return false
-}
+const zhangsan = new Children('zhangsan')
+zhangsan.say();
