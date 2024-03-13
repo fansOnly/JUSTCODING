@@ -53,28 +53,6 @@ const longestSubStr = str => {
 console.log(longestSubStr('aaaabbbbbccccccccdddd'))
 
 
-/**
- *  斐波那契数列
- *
- * 1. 递归
- * 2. 尾递归优化
-*/
-const fibonacci = n => {
-  if (n < 2) return 1
-  return fibonacci(n - 1) + fibonacci(n - 2)
-}
-console.time()
-console.log(fibonacci(20))
-console.timeEnd()
-
-function fibonacci2(n, start = 1, total = 1) {
-  if (n < 2) return total
-  return fibonacci2(n - 1, total, start + total)
-}
-console.time()
-console.log(fibonacci2(20))
-console.timeEnd()
-
 
 
 /**

@@ -200,20 +200,3 @@ console.log(findNumBySum(arr, 30))
 
 
 
-
-// 使用尾递归对斐波那契优化
-function fibonacci(n) {
-    if (n < 2) return 1
-    return fibonacci(n - 1) + fibonacci(n - 2)
-}
-console.time()
-console.log(fibonacci(10))
-console.timeEnd()
-
-function fibonacci2(n, ac1, ac2) {
-    if (n < 2) return ac2
-    return fibonacci2(n - 1, ac2, ac1 + ac2)
-}
-console.time()
-console.log(fibonacci2(10))
-console.timeEnd()

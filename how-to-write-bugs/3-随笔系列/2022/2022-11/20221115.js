@@ -54,21 +54,6 @@ for (const item of obj) {
  * 7. 一对一、一对多
  */
 
-// 0, 1, 1, 2, 3, 5, 8, 13, 21, 34
-function fibonacci(n) {
-  if (n <= 1) return 1
-  return fibonacci(n - 1) + fibonacci(n - 2)
-}
-console.log(fibonacci(5))
-
-
-function fibonacci2(n, val = 0, prev = 1) {
-  if (n < 1) return val
-  return fibonacci2(n - 1, prev, val + prev)
-}
-
-console.log(fibonacci2(3))
-
 
 
 /**

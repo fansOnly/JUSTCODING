@@ -113,27 +113,3 @@ console.log(isArray([])) // truej
 //         }
 //     }
 // }
-
-/**
- * 斐波那契数列 - 普通递归，会爆栈
- * @param {*} n 
- */
-function fibonacci(n) {
-    if (n === 0) return 0
-    if (n === 1) return 1
-    return fibonacci(n - 1) + fibonacci(n - 2)
-}
-// console.log(fibonacci(10)) // 55
-
-/**
- * 斐波那契 - 尾递归优化
- * @param {*} n 
- * @param {*} val 
- * @param {*} pre 
- */
-function fibonacci2(n, val = 0, prev = 1) {
-    if (n === 0) return val
-    return fibonacci2(n - 1, prev, val + prev)
-}
-
-// console.log(fibonacci2(10)) // 55

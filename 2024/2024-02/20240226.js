@@ -68,21 +68,6 @@
 
 
 
-// function fibonacci(n) {
-//   if (n < 2) return 1
-//   return fibonacci(n - 1) + fibonacci(n - 2)
-// }
-// console.log(fibonacci(5))
-
-// function fibonacci2(n, s = 1, t = 1) {
-//   if (n < 2) return t
-//   return fibonacci2(n - 1, t, s + t)
-// }
-// console.log(fibonacci2(5))
-
-
-
-
 
 // const toThousands = (number, fixed = 2) => {
 //   let [integer, decimal = '00'] = String(Number(number).toFixed(fixed)).split('.')
