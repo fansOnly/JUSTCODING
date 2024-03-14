@@ -23,7 +23,7 @@ function fib2(n, s = 0, t = 1) {
 
 /**
  * 动态规划解法
- * 
+ * 状态转移!!
  */
 function fib3(n) {
   if (n < 2) return 1
