@@ -1,6 +1,14 @@
 <script setup>
 import { useFps } from './hooks/useFps';
+import { provide, ref } from 'vue';
+import ChildComp from './components/provideAndInject/childComp.vue'
+
+const count = ref(0)
+provide('count', count)
+
 const fps = useFps();
+
+const increase = () => count.value++
 </script>
 
 <template>
@@ -11,7 +19,12 @@ const fps = useFps();
     <a href="https://vuejs.org/" target="_blank">
       <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
     </a>
-  <div>FPS: {{ fps }}</div>
+  <div class="space">FPS: {{ fps }}</div>
+    <div class="space">
+      <div>count: {{ count }}</div>
+      <button @click="increase">增加</button>
+      <ChildComp />
+    </div>
   </div>
 </template>
 
@@ -27,5 +40,8 @@ const fps = useFps();
 }
 .logo.vue:hover {
   filter: drop-shadow(0 0 2em #42b883aa);
+}
+.space {
+  margin-bottom: 30px;
 }
 </style>
