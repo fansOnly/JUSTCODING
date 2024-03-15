@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <button id="btn1" >闭包变量</button>
+  <button id="btn2" >引用dom节点</button>
+
+  <script>
+    const arr = []
+
+    function fn() {
+      const array = new Array(10000).fill('11111')
+
+      return function () {
+        return array
+      }
+    }
+
+    const btn1 = document.getElementById('btn1')
+    btn1.onclick = function() {
+      const res = fn()
+      arr.push(res())
+    }
+
+
+    const btn2 = document.getElementById('btn2')
+    btn2.onclick = function() {
+      name = new Array(10000).fill('xxx')
+    }
+  </script>
+</body>
+</html>
