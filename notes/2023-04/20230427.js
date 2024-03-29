@@ -9,7 +9,7 @@ p.then(() => {
 }).catch((err) => {
     a = 20
 }).finally(() => {
-    a = a || 30
+    a = 30
     console.log(a)
 })
 
