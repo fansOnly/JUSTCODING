@@ -80,7 +80,7 @@
 ##### 7、nginx 反向代理
 
 ```js
-// proxy服务器
+// nginx.conf 服务器
 server {
     listen       81;
     server_name  www.domain1.com;
