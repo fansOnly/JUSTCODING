@@ -84,7 +84,7 @@ console.log(myInstanceOf(s2, Sup2))
 function myCall(context = 'window', ...args) {
   const fn = Symbol()
   context[fn] = this
-  const res = context[key](...args)
+  const res = context[fn](...args)
   delete context[fn]
   return res
 }
