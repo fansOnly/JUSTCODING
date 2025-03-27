@@ -2,7 +2,7 @@ from openpyxl import load_workbook
 from openpyxl.styles import Font, Color, Side, Border, PatternFill, Alignment, GradientFill
 
 # Load the workbook
-# wb = load_workbook(filename='practice/example.xlsx')
+# wb = load_workbook(filename='example.xlsx')
 # sheet = wb['Sheet2']
 
 
@@ -14,7 +14,7 @@ from openpyxl.styles import Font, Color, Side, Border, PatternFill, Alignment, G
 # cell.font = font
 # print(f'cell A1 font after setting: {cell.font}')
 
-# wb.save(filename='practice/example.xlsx')
+# wb.save(filename='example.xlsx')
 
 
 
@@ -28,7 +28,7 @@ from openpyxl.styles import Font, Color, Side, Border, PatternFill, Alignment, G
 # for cell in cells:
 #   cell.border = border
 
-# wb.save(filename='practice/example.xlsx')
+# wb.save(filename='example.xlsx')
 
 
 
@@ -44,7 +44,7 @@ from openpyxl.styles import Font, Color, Side, Border, PatternFill, Alignment, G
 # for cell in cells:
 #   cell.fill = gradient_fill
 
-# wb.save(filename='practice/example.xlsx')
+# wb.save(filename='example.xlsx')
 
 
 
@@ -54,14 +54,14 @@ from openpyxl.styles import Font, Color, Side, Border, PatternFill, Alignment, G
 # for cell in cells:
 #   cell.alignment = alignment
 
-# wb.save(filename='practice/example.xlsx')
+# wb.save(filename='example.xlsx')
 
 
 
 # part 5: set line height and column width
 # sheet.row_dimensions[1].height = 30
 # sheet.column_dimensions['A'].width = 20
-# wb.save(filename='practice/example.xlsx')
+# wb.save(filename='example.xlsx')
 
 
 
@@ -69,5 +69,5 @@ from openpyxl.styles import Font, Color, Side, Border, PatternFill, Alignment, G
 # 合并后的单元格只会显示合并区域中最右上角的单元格的值，会导致其他单元格内容丢失
 # sheet.merge_cells('C9:C10')
 # sheet.unmerge_cells('C9:C10')
-# wb.save(filename='practice/example.xlsx')
+# wb.save(filename='example.xlsx')
 

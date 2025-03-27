@@ -1,7 +1,7 @@
 import openpyxl
 
 # load workbook
-wb = openpyxl.load_workbook('practice/example.xlsx')
+wb = openpyxl.load_workbook('example.xlsx')
 
 
 # get sheet names

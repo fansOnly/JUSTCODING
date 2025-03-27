@@ -5,15 +5,15 @@ warnings.filterwarnings("ignore")
 
 
 # part 1: edit value in original file
-# wb = load_workbook(filename='practice/example.xlsx')
+# wb = load_workbook(filename='example.xlsx')
 # sheet = wb['Sheet4']
 # print(f'before update: {sheet["A1"].value}')
 # sheet["A1"].value = "yy"
 # print(f'after update: {sheet["A1"].value}')
-# wb.save(filename='practice/example.xlsx')
+# wb.save(filename='example.xlsx')
 
 # # save new file
-# # wb.save(filename='practice/example-1.xlsx')
+# # wb.save(filename='example-1.xlsx')
 
 
 
@@ -27,36 +27,36 @@ warnings.filterwarnings("ignore")
 
 # # write formula to a cell
 # sheet['C1'] = '=SUM(A1:B1)'
-# wb.save(filename='practice/example2.xlsx')
+# wb.save(filename='example2.xlsx')
 
 # # validate formula
-# wb2 = load_workbook(filename='practice/example2.xlsx', data_only=True)
+# wb2 = load_workbook(filename='example2.xlsx', data_only=True)
 # sheet2 = wb2['Sheet1']
 # print(f'formula result: {sheet2["C1"].value}')
 
 
 
 # part 3: insert column and row
-# wb = load_workbook(filename='practice/example.xlsx')
+# wb = load_workbook(filename='example.xlsx')
 # sheet = wb['Sheet5']
 
 # insert column
 # print(f'before insert column: {sheet.max_column}')
 # sheet.insert_cols(idx=2, amount=1)
 # print(f'after insert column: {sheet.max_column}')
-# # wb.save(filename='practice/example.xlsx')
+# # wb.save(filename='example.xlsx')
 
 # insert row
 # print(f'before insert row: {sheet.max_row}')
 # sheet.insert_rows(idx=2, amount=3)
 # print(f'after insert row: {sheet.max_row}')
-# # wb.save(filename='practice/example.xlsx')
+# # wb.save(filename='example.xlsx')
 
 # delete column
 # sheet.delete_cols(idx=2, amount=1)
 # sheet.delete_rows(idx=2, amount=3)
-# wb.save(filename='practice/example.xlsx')
+# wb.save(filename='example.xlsx')
 
 # move cell
 # sheet.move_range('A1:B1', rows=2, cols=5)
-# wb.save(filename='practice/example.xlsx')
+# wb.save(filename='example.xlsx')
