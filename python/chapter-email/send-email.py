@@ -40,13 +40,13 @@ html_content = f'''
 msg.attach(MIMEText(html_content, 'html', 'utf-8'))
 
 # 图片-正文
-with open('practice/2.jpg', 'rb') as f:
+with open('2.jpg', 'rb') as f:
     img = MIMEImage(f.read())
     img.add_header('Content-ID', '<image1>')
     msg.attach(img)
 
 # 图片-附件
-cnImageName = 'practice/头像.png'
+cnImageName = '头像.png'
 with open(cnImageName, 'rb') as f:
     img = MIMEImage(f.read())
     encoded_filename = encode_rfc2231(cnImageName, charset='utf-8')
@@ -54,7 +54,7 @@ with open(cnImageName, 'rb') as f:
     msg.attach(img)
 
 # 附件
-with open('practice/1.txt', 'rb') as f:
+with open('1.txt', 'rb') as f:
     attach = MIMEText(f.read(), 'base64', 'utf-8')
     attach["Content-Type"] = 'application/octet-stream'
     attach["Content-Disposition"] = 'attachment; filename="1.txt"'
