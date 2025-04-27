@@ -9,6 +9,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "error-stack-parser": "^2.1.4",
+    "source-map-js": "^1.2.1",
+    "stacktrace-js": "^2.0.2",
     "vue": "^3.3.11"
   },
   "devDependencies": {

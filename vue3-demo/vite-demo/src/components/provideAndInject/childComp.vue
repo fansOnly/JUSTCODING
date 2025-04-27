@@ -6,7 +6,11 @@ defineProps({
   msg: String,
 })
 
-const count = ref(0)
+function test(a) {
+    console.log(a.b.c)
+}
+
+test(null)
 </script>
 
 <template>
