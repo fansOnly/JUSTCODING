@@ -1,122 +1,48 @@
 <template>
   <div>
     <div class="space">FPS: {{ fps }}</div>
-    <div class="space">
-      <div>count: {{ count }}</div>
-      <button @click="increase">增加</button>
-      <ChildComp />
-    </div>
+    <div class="section"></div>
+    <!-- <catchError /> -->
+
+    <div class="section">
+    <video ref="videoRef" controls>
+      <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+    <div><button @click="toggleVideoPip()">画中画</button></div>
+  </div>
   </div>
 </template>
 
 <script setup>
-import sourceMap from 'source-map-js' 
-import ErrorStackParser from 'error-stack-parser';
-import StackTrace from 'stacktrace-js';
 import { useFps } from './hooks/useFps';
-import { provide, ref } from 'vue';
-import ChildComp from './components/provideAndInject/childComp.vue'
-
-const count = ref(0)
-provide('count', count)
+import catchError from './components/catch-error.vue'
+import { ref } from 'vue';
 
 const fps = useFps();
 
-const increase = () => count.value++
+const videoRef = ref(null);
 
-// const error = new Error('BOOM')
-// let stackFrame = ErrorStackParser.parse(error)[0];
-// console.log('stackFrame: ', stackFrame);
-
-var callback = function(stackframes) {
-  console.log('stackframes: ', stackframes);
-  var stringifiedStack = stackframes.map(function(sf) {
-    return sf.toString();
-  }).join('\n');
-  console.log(stringifiedStack);
-
-  reportError(stackframes)
-};
-
-var errback = function(err) { console.log(err.message); };
-
-// StackTrace.get().then(callback).catch(errback)
-
-window.onerror = function(msg, file, line, col, error) {
-  console.log('onerror: ', error);
-    // callback is called with an Array[StackFrame]
-    StackTrace.fromError(error).then(callback).catch(errback);
-};
-
-function check(a) {
-  console.log(a.length)
-}
-
-check(null)
-
-// 错误代码还原
-async function getCodeBySourcemap({ fileName, line, column }, callback) {
-  console.log('fileName, line, column: ', fileName, line, column);
-  let sourceData = await fetch(fileName + '.map').then(res => res.text());
-  sourceData = JSON.parse(sourceData);
-  console.log('sourceData: ', typeof sourceData, sourceData);
-  let { sourcesContent, sources } = sourceData;
-
-  let consumer = new sourceMap.SourceMapConsumer(sourceData);
-  console.log('consumer: ', consumer);
-  
-  let result = consumer.originalPositionFor({line,column});
-  console.log('result: ', result);
-  
-  let code = sourcesContent[sources.indexOf(result.source)];
-  console.log('code: ', code);
-  callback(code);
-}
-
-// 错误上报
-async function reportError(stackframes) {
-  const stackError = stackframes[0]
-  console.log('stackError: ', stackError);
-  getCodeBySourcemap({ fileName: stackError.fileName, line: stackError.lineNumber, column: stackError.columnNumber }, (cb) => {
-    // console.log('cb: ', cb);
-  })
-  try {
-    // await StackTrace.report({
-    //   stackframes: [{
-    //       message: 'error message',
-    //       stack: [
-    //         {functionName: 'fn', fileName: 'file.js', lineNumber: 32, columnNumber: 1},
-    //         {functionName: 'fn2', fileName: 'file.js', lineNumber: 543, columnNumber: 32},
-    //         {functionName: 'fn3', fileName: 'file.js', lineNumber: 8, columnNumber: 1}
-    //       ]
-    //     }],
-    //     url: '',
-    //     message: '',
-    //     requestOptions: {}
-    // })
-  } catch (error) {
-    
+function toggleVideoPip() {
+  if (document.pictureInPictureEnabled) {
+    videoRef.value.requestPictureInPicture().then(() => {
+      console.log('enter pip');
+    }).catch(err => {
+      console.log('enter pip err', err);
+    })
+  } else {
+    console.log('pictureInPicture is not supported');
   }
 }
+
+
 </script>
 
-<style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
-}
-
+<style scoped lang="scss">
 .space {
   margin-bottom: 30px;
+}
+.section {
+  margin-top: 30px;
 }
 </style>
