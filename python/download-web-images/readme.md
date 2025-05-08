@@ -1,0 +1,1 @@
+python downloader.py https://picsum.photos/ -d ./photos
