@@ -9,10 +9,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "element-plus": "^2.9.10",
     "error-stack-parser": "^2.1.4",
+    "pinia": "^3.0.2",
     "source-map-js": "^1.2.1",
     "stacktrace-js": "^2.0.2",
-    "vue": "^3.3.11"
+    "vue": "^3.3.11",
+    "vue-router": "^4.5.1"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.5.2",
