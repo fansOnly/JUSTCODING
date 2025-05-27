@@ -153,8 +153,8 @@ function deleteAtTail() {
 }
 
 tail = deleteAtTail()
-console.log('tail: ', tail);
+// console.log('tail: ', tail);
 
-console.log()
+// console.log()
 preOrder(head)
-console.log(str)
+// console.log(str)

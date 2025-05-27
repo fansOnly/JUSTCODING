@@ -35,7 +35,7 @@
  */
 
 // 双链表实现 MyLinkedList 类
-class Node {
+class ListNode {
   constructor(val) {
     this.val = val;
     this.next = null;
@@ -43,26 +43,26 @@ class Node {
   }
 }
 
-class MyLinkedList {
+export class MyLinkedList {
   constructor() {
-    this.head = new Node(null);
-    this.tail = new Node(null);
+    this.head = new ListNode(null);
+    this.tail = new ListNode(null);
     this.head.next = this.tail;
     this.tail.prev = this.head;
     this.size = 0;
   }
   get(index) {
     const node = this.getNode(index);
-    return node !== null ? node.val : -1
+    return node?.val ?? -1
   }
   getHead() {
-    if (this.isEmpty()) {
+    if (this.size === 0) {
       return null;
     }
     return this.head.next.val;
   }
   getTail() {
-    if (this.isEmpty()) {
+    if (this.size === 0) {
       return null;
     }
     return this.tail.prev.val;
@@ -75,89 +75,64 @@ class MyLinkedList {
     return oldVal;
   }
   addAtHead(val) {
-    const head = new Node(val);
-    const temp = this.head.next;
-    temp.prev = head;
-    head.next = temp;
-
-    this.head.next = head;
-    head.prev = this.head;
-    this.size++;
+    this.addAtIndex(0, val);
   }
   addAtTail(val) {
-    const tail = new Node(val);
-    const temp = this.tail.prev;
-    temp.next = tail;
-    tail.prev = temp;
+    // this.addAtIndex(this.size, val);
+    const newNode = new ListNode(val);
+    const oldTail = this.tail.prev;
 
-    this.tail.prev = tail;
-    tail.next = this.tail;
-    this.size++;
+    oldTail.next = newNode
+    newNode.prev = oldTail
+
+    newNode.next = this.tail
+    this.tail.prev = newNode
+    this.size++
   }
   addAtIndex(index, val) {
-    if (!this.checkInvalidIndex(index)) return;
-    if (index === this.size) {
-      this.addAtTail(val);
-      return;
+    if (index > 0 && index === this.size) {
+      return this.addAtTail(val);
     }
+    if (!this.checkPositionIndex(index)) return;
 
-    const target = this.getNode(index);
-    const newNode = new Node(val);
-    const _prev = target.prev;
-
-    _prev.next = newNode;
-    newNode.prev = _prev;
-
-    target.prev = newNode;
-    newNode.next = target;
-
+    const toAdd = new ListNode(val);
+    const oldNode = this.getNode(index);
     this.size++;
+
+    const _prev = oldNode.prev;
+
+    _prev.next = toAdd;
+    toAdd.prev = _prev;
+
+    oldNode.prev = toAdd;
+    toAdd.next = oldNode;
   }
   deleteHead() {
-    if (this.isEmpty()) {
-      return null;
-    }
-    let head = this.head.next;
-    const _head = head.next;
-    this.head.next = _head;
-    _head.prev = this.head;
-    this.size--;
-    const headVal = head.val;
-    head = null;
-    return headVal;
+    return this.deleteAtIndex(0);
   }
   deleteTail() {
-    if (this.isEmpty()) {
-      return null;
-    }
-    let tail = this.tail.prev;
-    const _tail = tail.prev;
-
-    this.tail.prev = _tail;
-    _tail.next = this.tail;
-    this.size--;
-
-    const tailVal = tail.val;
-    tail = null;
-    return tailVal;
+    return this.deleteAtIndex(this.size - 1);
   }
   deleteAtIndex(index) {
-    if (this.isEmpty()) return;
+    if (this.size === 0) return;
     if (!this.checkInvalidIndex(index)) return;
 
-    let target = this.getNode(index);
-    const _prev = target.prev;
-    const _next = target.next;
+    const toDelete = this.getNode(index);
+    const _prev = toDelete.prev;
+    const _next = toDelete.next;
 
-    target.prev.next = _next;
-    target.next.prev = _prev;
-
-    const targetVal = target.val;
-    target = null;
+    toDelete.prev.next = _next;
+    toDelete.next.prev = _prev;
     this.size--;
-    return targetVal;
+    return toDelete.val;
   }
   getNode(index) {
+    if (this.size === 0 && index === 0 ) {
+      return this.head.next
+    }
+    if (index === this.size) {
+      return this.tail
+    }
     if (!this.checkInvalidIndex(index)) {
       return null;
     }
@@ -182,11 +157,10 @@ class MyLinkedList {
     return this.size === 0;
   }
   checkInvalidIndex(index) {
-    if (index < 0 || index >= this.size) {
-      console.log("invalid index", index);
-      return false;
-    }
-    return true;
+    return index >= 0 && index < this.size
+  }
+  checkPositionIndex(index) {
+    return index >= 0 && index <= this.size
   }
   print(key) {
     let str = "";
@@ -200,20 +174,51 @@ class MyLinkedList {
   }
 }
 
-const myLinkedList = new MyLinkedList();
-myLinkedList.addAtHead(4);
-myLinkedList.print("11111");
-console.log(myLinkedList.get(1));
-myLinkedList.addAtHead(1);
-myLinkedList.addAtHead(5);
-myLinkedList.deleteAtIndex(3);
-myLinkedList.print("22222");
-myLinkedList.addAtHead(7);
-myLinkedList.print("333333");
-console.log(myLinkedList.get(3));
-console.log(myLinkedList.get(3));
-console.log(myLinkedList.get(3));
-myLinkedList.addAtHead(1);
-myLinkedList.print("4444444");
-myLinkedList.deleteAtIndex(4);
-myLinkedList.print("55555555");
+// const myLinkedList = new MyLinkedList();
+// console.log('addAtHead-0')
+// myLinkedList.addAtHead(0)
+// myLinkedList.print("11111");
+
+
+// console.log('addAtIndex-1-1')
+// myLinkedList.addAtIndex(1, 1)
+// myLinkedList.print("22222");
+
+// console.log('get-2', myLinkedList.get(2));
+// console.log('\n')
+
+// console.log('addAtHead-4')
+// myLinkedList.addAtHead(4)
+// myLinkedList.print("333333");
+
+// console.log('get-2', myLinkedList.get(2));
+// console.log('\n')
+
+// console.log('addAtHead-4')
+// myLinkedList.addAtHead(4)
+// myLinkedList.print("44444");
+
+
+// console.log('get-2', myLinkedList.get(2));
+// console.log('\n')
+
+// console.log('get-3', myLinkedList.get(3));
+// console.log('\n')
+
+
+
+// console.log('addAtIndex-1-6')
+// myLinkedList.addAtIndex(1, 6)
+// myLinkedList.print("5555555");
+
+
+
+// console.log('addAtTail-1')
+// myLinkedList.addAtTail(1)
+// myLinkedList.print("66666");
+
+// console.log('addAtHead-0')
+// myLinkedList.addAtHead(0)
+// myLinkedList.print("7777777");
+
+

@@ -120,12 +120,14 @@ class MyLinkedList {
     this.head.next = _head;
 
     this.size--;
+    return head.val;
   }
   deleteTail() {
     if (this.isEmpty()) {
       return null;
     }
 
+    const oldTail = this.getNode(this.size - 1)
     const newTail = this.getNode(this.size - 2)
     if (newTail) {
       newTail.next = null
@@ -134,6 +136,7 @@ class MyLinkedList {
     }
 
     this.size--;
+    return oldTail.val
   }
   deleteAtIndex(index) {
     if (this.isEmpty()) return;
@@ -150,6 +153,7 @@ class MyLinkedList {
     }
 
     this.size--;
+    return target.val;
   }
   getNode(index) {
     if (!this.checkInvalidIndex(index)) {

@@ -1,116 +1,38 @@
-var Node = function(val) {
-  this.val = val
-  this.next = null
+/**
+ * Definition for a binary tree node.
+
+ */
+ function TreeNode(val, left, right) {
+     this.val = (val===undefined ? 0 : val)
+     this.left = (left===undefined ? null : left)
+     this.right = (right===undefined ? null : right)
+ }
+
+/**
+ * @param {TreeNode} root
+ * @param {number[]} voyage
+ * @return {number[]}
+ */
+var flipMatchVoyage = function(root, voyage) {
+  if (root.val !== voyage[0]) return [-1]
+  const res = []
+  traverse(root, voyage, res)
+  return res
+};
+function traverse(root, voyage, res) {
+  if (!root.left || !root.right) return
+  let i = 1
+  while (i < voyage.length) {
+      if (root.left && root.left.val !== voyage[i++]) {
+          res.push(root.val)
+          traverse(root.right, voyage, res)
+          traverse(root.left, voyage, res)
+      } else {
+          traverse(root.left, voyage, res)
+          traverse(root.right, voyage, res)
+      }
+  }
 }
 
-var MyLinkedList = function() {
-  this.head = new Node(null)
-  this.head.next = null
-  this.size = 0
-};
-
-/** 
-* @param {number} index
-* @return {number}
-*/
-MyLinkedList.prototype.get = function(index) {
-  const node = this.getNode(index)
-  return node !== null ? node.val : -1
-};
-
-MyLinkedList.prototype.getNode = function(index) {
-  if (index < 0 || index >= this.size) {
-      return null
-  }
-  let cur = this.head.next
-  for (let i = 0; i < index; i++) {
-      cur = cur.next
-  }
-  return cur
-}
-
-/** 
-* @param {number} val
-* @return {void}
-*/
-MyLinkedList.prototype.addAtHead = function(val) {
-  const newNode = new Node(val)
-  const _next = this.head.next
-  this.head.next = newNode
-  newNode.next = _next
-  
-  this.size++
-};
-
-/** 
-* @param {number} val
-* @return {void}
-*/
-MyLinkedList.prototype.addAtTail = function(val) {
-  const newNode= new Node(val)
-  const tail = this.getNode(this.size - 1)
-  if (tail) {
-      tail.next = newNode
-  } else {
-      this.head.next = newNode
-  }
-
-  this.size++
-};
-
-/** 
-* @param {number} index 
-* @param {number} val
-* @return {void}
-*/
-MyLinkedList.prototype.addAtIndex = function(index, val) {
-  if (index < 0 || index > this.size) return null
-  if (index === this.size) {
-      return this.addAtTail(val)
-  }
-  const newNode = new Node(val)
-  const target = this.getNode(index)
-  const prev = this.getNode(index - 1)
-  if (prev) {
-      prev.next = newNode
-  } else {
-      this.head.next = newNode
-  }
-  newNode.next = target
-
-  this.size++
-};
-
-/** 
-* @param {number} index
-* @return {void}
-*/
-MyLinkedList.prototype.deleteAtIndex = function(index) {
-if (this.size === 0 || index < 0 || index >= this.size) return
-  const target = this.getNode(index)
-  const _next = target.next
-  const prev = this.getNode(index - 1)
-  if (prev) {
-      prev.next = _next
-  } else {
-      this.head.next = _next
-  }
-
-  this.size--
-};
-
-MyLinkedList.prototype.print = function(key) {
-  let str = "";
-    let cur = this.head.next;
-    while (cur !== null) {
-      str += cur.val + "<->";
-      cur = cur.next;
-    }
-    console.log("size", this.size);
-    console.log("print:" + key + "\n", str + "\n");
-}
-
-const myLinkedList = new MyLinkedList();
-myLinkedList.addAtIndex(1, 0);
-myLinkedList.print("11111");
-console.log('pos 0 is', myLinkedList.get(0));
+const res = flipMatchVoyage([1,2,3], [1,3,2])
+console.log('res: ', res);
