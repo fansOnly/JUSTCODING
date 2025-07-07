@@ -11,9 +11,10 @@ const fibonacci = n => {
 console.log(fibonacci(6)) // [ 0, 1, 1, 2, 3, 5 ]
 
 
-const f2 = (n, val = 0, prev = 1) => {
-    if (n === 0) return val
-    return f2(n-1, prev, val + prev)
+function fibonacci6(n, a = 0, b = 1) {
+if (n === 0) return a
+if (n === 1) return b
+return fibonacci6(n - 1, b, a + b)
 }
 
-console.log(f2(10)) // 55
+console.log(fibonacci6(10)) // 55
