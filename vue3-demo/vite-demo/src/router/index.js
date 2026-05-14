@@ -15,6 +15,12 @@ const router = createRouter({
       component: () => import('@/pages/games/snake.vue'),
       meta: { title: '贪吃蛇' },
     },
+    {
+      path: '/title/auto-generate',
+      name: 'TitleAutoGenerate',
+      component: () => import('@/pages/title/auto-generate.vue'),
+      meta: { title: '层级标题自动生成' },
+    },
   ],
 })
 

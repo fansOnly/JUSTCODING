@@ -15,6 +15,7 @@
     <div class="page-list">
       <ul>
         <li><a href="/games/snake">贪吃蛇游戏</a></li>
+        <li><a href="/title/auto-generate">层级标题自动生成</a></li>
       </ul>
     </div>
 </div>

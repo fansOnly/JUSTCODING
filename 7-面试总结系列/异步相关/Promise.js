@@ -1,5 +1,5 @@
 /**
- * 1 - 3 - 5 - 6 - 4 - 2
+ * 5 - 1 - 3 - 6 - 4 - 2
  */
 Promise.resolve().then(() => {
   console.log(1)
